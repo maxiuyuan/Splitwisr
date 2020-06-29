@@ -1,22 +1,21 @@
 package com.splitwisr.ui.main;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.splitwisr.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.splitwisr.databinding.MainFragmentBinding;
 
 public class MainFragment extends Fragment {
 
-    private MainViewModel mViewModel;
+    private MainViewModel mainViewModel;
+    private MainFragmentBinding binding;
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -26,14 +25,24 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.main_fragment, container, false);
+        binding = MainFragmentBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
+        return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        // TODO: Use the ViewModel
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        mainViewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
+            binding.message.setText(users.get(0).firstName);
+        });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }
