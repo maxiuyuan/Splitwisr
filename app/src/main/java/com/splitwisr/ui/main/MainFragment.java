@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.splitwisr.data.Balance;
 import com.splitwisr.data.User;
 import com.splitwisr.databinding.MainFragmentBinding;
 
@@ -35,12 +36,19 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-
         mainViewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
             if (users.size() > 0) {
-                binding.message.setText(users.get(users.size() - 1).firstName);
+                binding.message.setText(users.get(users.size() - 1).firstName + "\n");
             } else {
-                mainViewModel.insert(new User("fake@gmail.com", "Fake"));
+                mainViewModel.insertUser(new User("fake@gmail.com", "Fake"));
+            }
+        });
+        mainViewModel.getAllBalances().observe(getViewLifecycleOwner(), balances -> {
+            if (balances.size() > 0) {
+                Balance balance = balances.get(0);
+                binding.balances.setText(balance.aEmail + " owes " + balance.bEmail + " $" + balance.totalOwing);
+            } else {
+                mainViewModel.insertBalance(new Balance("aEmail", "bEmail", 100));
             }
         });
     }
