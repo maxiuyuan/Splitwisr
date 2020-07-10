@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 public class User {
     @PrimaryKey
     @NonNull
-    public String user_id;
+    public String email;
 
     @ColumnInfo(name = "first_name")
     public String firstName;
@@ -17,17 +17,12 @@ public class User {
     @ColumnInfo(name = "last_name")
     public String lastName;
 
-    @ColumnInfo(name = "phone")
     public String phone;
 
-    @ColumnInfo(name = "email")
-    public String email;
-
-    @ColumnInfo(name = "password")
     public String password;
 
-    public User(@NonNull String user_id, String firstName) {
-        this.user_id = user_id;
+    public User(@NonNull String email, String firstName) {
+        this.email = email;
         this.firstName = firstName;
     }
 }

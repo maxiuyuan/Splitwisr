@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.splitwisr.data.User;
 import com.splitwisr.databinding.MainFragmentBinding;
 
 public class MainFragment extends Fragment {
@@ -36,7 +37,11 @@ public class MainFragment extends Fragment {
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         mainViewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
-            binding.message.setText(users.get(0).firstName);
+            if (users.size() > 0) {
+                binding.message.setText(users.get(users.size() - 1).firstName);
+            } else {
+                mainViewModel.insert(new User("fake@gmail.com", "Fake"));
+            }
         });
     }
 
