@@ -1,4 +1,4 @@
-package com.splitwisr.data;
+package com.splitwisr.data.users;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;

@@ -1,4 +1,4 @@
-package com.splitwisr.data;
+package com.splitwisr.data.balances;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;

@@ -1,8 +1,10 @@
-package com.splitwisr.data;
+package com.splitwisr.data.balances;
 
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+
+import com.splitwisr.data.AppDatabase;
 
 import java.util.List;
 

@@ -6,10 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.splitwisr.data.Balance;
-import com.splitwisr.data.BalanceRepository;
-import com.splitwisr.data.User;
-import com.splitwisr.data.UserRepository;
+import com.splitwisr.data.balances.Balance;
+import com.splitwisr.data.balances.BalanceRepository;
+import com.splitwisr.data.users.User;
+import com.splitwisr.data.users.UserRepository;
 
 import java.util.List;
 

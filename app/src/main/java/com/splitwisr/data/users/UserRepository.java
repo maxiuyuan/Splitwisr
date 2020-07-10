@@ -1,7 +1,10 @@
-package com.splitwisr.data;
+package com.splitwisr.data.users;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
+
+import com.splitwisr.data.AppDatabase;
+
 import java.util.List;
 
 public class UserRepository {

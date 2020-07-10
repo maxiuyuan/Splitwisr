@@ -1,4 +1,4 @@
-package com.splitwisr.data;
+package com.splitwisr.data.balances;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
