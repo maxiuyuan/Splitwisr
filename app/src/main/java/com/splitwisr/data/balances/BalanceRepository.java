@@ -27,4 +27,21 @@ public class BalanceRepository {
             balanceDao.insertAll(balance);
         });
     }
+
+    public void update(final Balance balance) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            balanceDao.update(balance);
+        });
+    }
+
+    public LiveData<List<Balance>> get(final String s1, final String s2) {
+        StringBuilder email_a = new StringBuilder();
+        StringBuilder email_b = new StringBuilder();
+
+        if (s1.compareTo(s2) < 0) {
+            email_a.append(s1);
+            email_b.append(s2);
+        }
+        return balanceDao.get(email_a.toString(), email_b.toString());
+    }
 }
