@@ -17,7 +17,6 @@ const ref = db.ref("Receipt");
 app.get("/read", (req, res) => {
   let payer = req.query.payer
   let payee = req.query.payee
-  // let parserKey = payer.split("@")[0] + "_" + payee.split("@")[0];
   ref.once("value", function(snapshot) {
     let ret = snapshot.val()
     console.log(ret)
