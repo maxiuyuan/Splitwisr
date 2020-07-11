@@ -15,8 +15,12 @@ const db = admin.database();
 const ref = db.ref("Receipt");
 
 app.get("/read", (req, res) => {
+  let payer = req.query.payer
+  let payee = req.query.payee
+  let parserKey = payer.replace("@gmail.com", "") + "_" + payee.replace("@gmail.com", "");
   ref.once("value", function(snapshot) {
-    res.send(snapshot.val(), 200)
+    let ret = snapshot.val()
+    res.send(ret[parserKey], 200)
   }, function (errorObject) {
     res.send("The read failed: " + errorObject.code, 400);
   });
