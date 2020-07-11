@@ -70,12 +70,6 @@ public class ReceiptFragment extends Fragment {
             }
         });
 
-
-
-        // Setup recyclerView
-        binding.recyclerView.setHasFixedSize(true);
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-
         return view;
     }
 }
