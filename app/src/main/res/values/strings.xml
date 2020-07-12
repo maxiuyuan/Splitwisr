@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Splitwisr</string>
+    <string name="add_receipt_screen_label">Add Receipt</string>
+    <string name="contacts_screen_label">Manage Contacts</string>
 </resources>
