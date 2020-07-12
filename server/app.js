@@ -40,8 +40,8 @@ app.get("/read", (req, res) => {
 });
 
 app.post("/write", (req, res) => {
-  let id_A = req.body.userA;
-  let id_B = req.body.userB;
+  let id_A = req.body.payer;
+  let id_B = req.body.payee;
   let blnc = req.body.balance;
 
   // sort lexicographically
