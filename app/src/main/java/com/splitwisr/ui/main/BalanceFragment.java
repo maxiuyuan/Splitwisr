@@ -12,24 +12,24 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.splitwisr.data.balances.Balance;
-import com.splitwisr.databinding.MainFragmentBinding;
+import com.splitwisr.databinding.BalanceFragmentBinding;
 
-public class MainFragment extends Fragment {
+public class BalanceFragment extends Fragment {
 
     private MainViewModel mainViewModel;
-    private MainFragmentBinding binding;
+    private BalanceFragmentBinding binding;
 
     private BalancesAdapter balancesAdapter = new BalancesAdapter();
 
-    public static MainFragment newInstance() {
-        return new MainFragment();
+    public static BalanceFragment newInstance() {
+        return new BalanceFragment();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = MainFragmentBinding.inflate(inflater, container, false);
+        binding = BalanceFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         // Setup recyclerView
