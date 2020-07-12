@@ -13,6 +13,9 @@ public interface UserDao {
     @Query("SELECT * FROM user")
     LiveData<List<User>> getAll();
 
+    @Query("SELECT * FROM user")
+    List<User> getUserList();
+
     @Query("SELECT * FROM user WHERE first_name LIKE :first AND last_name LIKE :last LIMIT 1")
     LiveData<User> findByName(String first, String last);
 

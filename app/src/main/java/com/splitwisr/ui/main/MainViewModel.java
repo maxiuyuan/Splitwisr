@@ -32,8 +32,9 @@ public class MainViewModel extends AndroidViewModel {
     LiveData<List<User>> getAllUsers() {
         return allUsers;
     }
+    List<User> getUserList() { return userRepository.getUserList(); }
     LiveData<List<Balance>> getAllBalances() { return allBalances; }
-    LiveData<List<Balance>> get(final String s1, final String s2) { return balanceRepository.get(s1,s1); }
+    List<Balance> get(final String s1, final String s2) { return balanceRepository.get(s1,s1); }
 
     public void update(Balance balance) { balanceRepository.update(balance);}
     public void insertUser(User user) {

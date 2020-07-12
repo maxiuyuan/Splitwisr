@@ -15,7 +15,7 @@ public interface BalanceDao {
     LiveData<List<Balance>> getAll();
 
     @Query("SELECT * FROM balance WHERE a_email=:a_email AND b_email=:b_email")
-    LiveData<List<Balance>> get(String a_email, String b_email);
+    List<Balance> get(String a_email, String b_email);
 
     @Insert
     void insertAll(Balance... balances);

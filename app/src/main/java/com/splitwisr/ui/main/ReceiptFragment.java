@@ -69,6 +69,14 @@ public class ReceiptFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        if (true) {
+            mainViewModel.insertUser(new User("userA@gmail.com", "user A"));
+            mainViewModel.insertUser(new User("userB@gmail.com", "user B"));
+            mainViewModel.insertUser(new User("userC@gmail.com", "user C"));
+            mainViewModel.insertBalance(new Balance("userA@gmail.com", "userB@gmail.com", 55d));
+            mainViewModel.insertBalance(new Balance("userA@gmail.com", "userC@gmail.com", 55d));
+            mainViewModel.insertBalance(new Balance("userB@gmail.com", "userC@gmail.com", 55d));
+        }
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
@@ -78,17 +86,21 @@ public class ReceiptFragment extends Fragment {
         addUser = (Button)view.findViewById(R.id.addUserButton);
 
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        List<User> users = mainViewModel.getAllUsers().getValue();
-        for (int x = 0; x < users.size(); x++) {
-            String userName = users.get(x).firstName + " " + users.get(x).lastName;
-            userNames.put(userName, users.get(x).email);
+        List<User> users = mainViewModel.getUserList();
+        if (users != null) {
+            for (int x = 0; x < users.size(); x++) {
+                String userName = users.get(x).firstName + " " + users.get(x).lastName;
+                userNames.put(userName, users.get(x).email);
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, (String[]) userNames.keySet().toArray());
+            userDropDown.setAdapter(adapter);
         }
+
 
         // CURRENT USER, CURRENTLY HARDCODED
         selectedUsers.add(currentUserEmail);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, (String[])userNames.keySet().toArray());
-        userDropDown.setAdapter(adapter);
+
 
         receiptAmount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +129,17 @@ public class ReceiptFragment extends Fragment {
 
                     for (String splitUser : selectedUsers) {
                         if (!splitUser.equals(currentUserEmail)) {
-                            Balance b = mainViewModel.get(currentUserEmail, splitUser).getValue().get(0);
+                            List<Balance> balances = mainViewModel.get(currentUserEmail, splitUser);
+                            Balance b = null;
+                            if (balances.size() > 0) {
+                                b = balances.get(0);
+                            } else {
+                                if (currentUserEmail.compareTo(splitUser) < 0) {
+                                    b = new Balance(currentUserEmail, splitUser, 0d);
+                                } else {
+                                    b = new Balance(splitUser, currentUserEmail, 0d);
+                                }
+                            }
                             if (b.aEmail.equals(currentUserEmail)) {
                                 b.totalOwing += amountPerUser;
                             } else {

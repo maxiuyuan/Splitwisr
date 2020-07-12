@@ -23,6 +23,8 @@ public class UserRepository {
         return allUsers;
     }
 
+    public List<User> getUserList() { return userDao.getUserList(); }
+
     public void insert(final User user) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             userDao.insertAll(user);
