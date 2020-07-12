@@ -104,17 +104,11 @@ public class LoginFragment extends Fragment {
         mAuth.signInWithCredential(credential).addOnCompleteListener(requireActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success");
-                    NavHostFragment
-                            .findNavController(fragment)
-                            .navigate(R.id.action_destination_login_fragment_to_destination_balance_fragment);
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.d(TAG, "signInWithCredential:failure", task.getException());
-                    Snackbar.make(fragment.getView(), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                }
+//                if (task.isSuccessful()) {
+//                    NavHostFragment
+//                            .findNavController(fragment)
+//                            .navigate(R.id.action_destination_login_fragment_to_destination_balance_fragment);
+//                }
             }
         });
     }
