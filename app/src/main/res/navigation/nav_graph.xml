@@ -10,4 +10,8 @@
         android:name="com.splitwisr.ui.main.BalanceFragment"
         android:label="balance_fragment"
         tools:layout="@layout/balance_fragment" />
+    <fragment
+        android:id="@+id/destination_contacts_fragment"
+        android:name="com.splitwisr.ui.contacts.ContactsFragment"
+        android:label="ContactsFragment" />
 </navigation>

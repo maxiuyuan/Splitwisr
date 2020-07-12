@@ -32,8 +32,7 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
                 .from(parent.getContext())
                 .inflate(R.layout.balance_view, parent, false);
 
-        BalanceViewHolder viewHolder = new BalanceViewHolder(balanceView);
-        return viewHolder;
+        return new BalanceViewHolder(balanceView);
     }
 
     @Override
