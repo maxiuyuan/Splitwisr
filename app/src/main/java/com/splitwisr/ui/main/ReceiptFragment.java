@@ -183,7 +183,8 @@ public class ReceiptFragment extends Fragment {
 
     private String selectedUser = "";
 
-    private static boolean dummyDataAdded = false;
+    // set this to falsegit this if you want dummy data
+    private static boolean dummyDataAdded = true;
 
     public static ReceiptFragment newInstance() {return new ReceiptFragment();}
 
@@ -228,7 +229,7 @@ public class ReceiptFragment extends Fragment {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, s);
             userDropDown.setAdapter(adapter);
         }
-        
+
         itemCost.setOnClickListener(new ItemCostOnClickListener());
         userDropDown.setOnItemSelectedListener(new UserDropDownActivity());
         addUserToItem.setOnClickListener(new AddUserButtonOnClickListener());
