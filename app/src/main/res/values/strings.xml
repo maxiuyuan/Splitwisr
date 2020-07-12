@@ -2,4 +2,5 @@
     <string name="app_name">Splitwisr</string>
     <string name="add_receipt_screen_label">Add Receipt</string>
     <string name="contacts_screen_label">Manage Contacts</string>
+    <string name="balance_screen_label">Balances</string>
 </resources>
