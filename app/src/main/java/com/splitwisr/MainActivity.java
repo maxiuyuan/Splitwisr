@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import com.splitwisr.data.AppDatabase;
 import com.splitwisr.ui.main.MainFragment;
+import com.splitwisr.ui.main.MainViewModel;
+import com.splitwisr.ui.main.ReceiptFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,10 +16,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        MainViewModel m = new MainViewModel(this.getApplication());
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
+                    .replace(R.id.container, ReceiptFragment.newInstance(m))
                     .commitNow();
         }
     }

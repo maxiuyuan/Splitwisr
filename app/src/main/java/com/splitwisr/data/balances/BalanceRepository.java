@@ -22,15 +22,23 @@ public class BalanceRepository {
 
     public LiveData<List<Balance>> getAllBalances() { return allBalances; }
 
+    public List<Balance> getBalanceList() { return balanceDao.getBalanceList(); }
+
     public void insert(final Balance balance) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             balanceDao.insertAll(balance);
         });
     }
 
-    public void update(final Balance balance) {
+    public void update(final double d, final String a, final String b) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
-            balanceDao.update(balance);
+            balanceDao.update(d, a, b);
+        });
+    }
+
+    public void update (final Balance b) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            balanceDao.update(b);
         });
     }
 
@@ -41,6 +49,9 @@ public class BalanceRepository {
         if (s1.compareTo(s2) < 0) {
             email_a.append(s1);
             email_b.append(s2);
+        } else {
+            email_a.append(s2);
+            email_b.append(s1);
         }
         return balanceDao.get(email_a.toString(), email_b.toString());
     }
