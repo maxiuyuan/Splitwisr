@@ -16,14 +16,14 @@
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
-            android:id="@+id/action_loginFragment_to_destination_balance_fragment"
+            android:id="@+id/action_destination_login_fragment_to_destination_balance_fragment"
             app:destination="@id/destination_balance_fragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_destination_login_fragment"
-        app:destination="@id/destination_login_fragment" />
-<fragment
+    <fragment
         android:id="@+id/destination_contacts_fragment"
         android:name="com.splitwisr.ui.contacts.ContactsFragment"
         android:label="ContactsFragment" />
+    <action
+        android:id="@+id/action_global_destination_login_fragment"
+        app:destination="@id/destination_login_fragment" />
 </navigation>

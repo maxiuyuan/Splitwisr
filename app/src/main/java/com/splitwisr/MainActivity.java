@@ -8,6 +8,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     private void initNav() {
         navController =
                 Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -48,12 +52,10 @@ public class MainActivity extends AppCompatActivity {
                     // User is signed in
                     Log.d(this.toString(), "onAuthStateChanged:signed_in:" + user.getUid());
                     findViewById(R.id.bottom_navigation).setVisibility(View.VISIBLE);
-                    navController.navigate(R.id.destination_balance_fragment);
                 } else {
                     // User is signed out
                     Log.d(this.toString(), "onAuthStateChanged:signed_out");
                     findViewById(R.id.bottom_navigation).setVisibility(View.GONE);
-                    navController.navigate(R.id.action_global_destination_login_fragment);
                 }
             }
         };
@@ -70,5 +72,22 @@ public class MainActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.top_bar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.log_out && mAuth.getCurrentUser()!= null) {
+           mAuth.signOut();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
