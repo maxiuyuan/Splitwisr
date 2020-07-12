@@ -21,11 +21,6 @@ public class User {
 
     public String password;
 
-    public User(@NonNull String email, String firstName) {
-        this.email = email;
-        this.firstName = firstName;
-    }
-
     public User(@NonNull String email, String firstName, String lastName) {
         this.email = email;
         this.firstName = firstName;

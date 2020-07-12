@@ -26,8 +26,10 @@ import org.w3c.dom.Text;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class ReceiptFragment extends Fragment {
@@ -62,13 +64,27 @@ public class ReceiptFragment extends Fragment {
     public class AddUserButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            if (!selectedUser.equals("")) {
-                selectedUsers.add(userNames.get(selectedUser));
-                StringBuilder s = new StringBuilder();
-                for (String str : selectedUsers.toArray(new String[selectedUsers.size()])) {
-                    s.append(str + "\n");
+            if (!selectedUser.equals("") && !usersToSplitItem.contains(selectedUser)) {
+                usersToSplitItem.add(userNames.get(selectedUser));
+                addUsersSplittingItemText(selectedUser);
+            }
+        }
+    }
+
+    public class AddItemToReceiptButtonOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            if (currentItemCost > 0d && usersToSplitItem.size() > 0) {
+                double costPerUser = round(currentItemCost/usersToSplitItem.size());
+                StringBuilder s = new StringBuilder(Double.toString(costPerUser) + ": ");
+                for (String user : usersToSplitItem) {
+                    if (!amountsOwed.containsKey(user)) {
+                        amountsOwed.put(user, 0d);
+                    }
+                    amountsOwed.put(user, amountsOwed.get(user) + costPerUser);
+                    s.append(user + ",");
                 }
-                //testText2.setText(s.toString());
+                receiptContentsText.append("\n" + s.toString());
             }
         }
     }
@@ -107,6 +123,21 @@ public class ReceiptFragment extends Fragment {
         }
     }
 
+    public void resetUsersSplittingItemText() {
+        usersSplittingItemText = new StringBuilder("Users to Split Item:");
+        usersSplittingItem.setText(usersSplittingItemText.toString());
+    }
+
+    public void addUsersSplittingItemText(String user) {
+        usersSplittingItemText.append("\n" + user);
+        usersSplittingItem.setText(usersSplittingItemText.toString());
+    }
+
+    public void resetReceiptContentsText() {
+        receiptContentsText = new StringBuilder("Receipt Contents:");
+        receiptContents.setText(receiptContentsText.toString());
+    }
+
     private MainViewModel mainViewModel;
 
     private EditText itemCost;
@@ -117,14 +148,19 @@ public class ReceiptFragment extends Fragment {
     private TextView usersSplittingItem;
     private TextView receiptContents;
 
+    StringBuilder usersSplittingItemText = new StringBuilder();
+    StringBuilder receiptContentsText = new StringBuilder();
+
     private ReceiptFragmentBinding binding;
 
     private String currentUserEmail = "userA@gmail.com";
 
     private double currentItemCost= 0d;
 
-    private HashSet<String> selectedUsers = new HashSet<>();
+    private List<String> usersToSplitItem = new ArrayList<>();
     private HashMap<String,String> userNames = new HashMap<>();
+    private HashMap<String, Double> amountsOwed = new HashMap<>();
+
     private String selectedUser;
 
 
@@ -172,6 +208,7 @@ public class ReceiptFragment extends Fragment {
         itemCost.setOnClickListener(new ItemCostOnClickListener());
         userDropDown.setOnItemSelectedListener(new UserDropDownActivity());
         addUserToItem.setOnClickListener(new AddUserButtonOnClickListener());
+        addItemToReceipt.setOnClickListener(new AddItemToReceiptButtonOnClickListener());
         submitReceipt.setOnClickListener(new SubmitReceiptButtonOnClickListener());
 
         return view;
