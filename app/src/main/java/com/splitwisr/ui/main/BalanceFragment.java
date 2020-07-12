@@ -4,14 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.splitwisr.data.balances.Balance;
 import com.splitwisr.databinding.BalanceFragmentBinding;
 
 public class BalanceFragment extends Fragment {
@@ -36,22 +37,27 @@ public class BalanceFragment extends Fragment {
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerView.setAdapter(balancesAdapter);
+        binding.recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayout.VERTICAL));
 
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        // TODO: Delete
+//        mainViewModel.insertUser(new User("brian@mail.com", "Brian", "Norman"));
+//        mainViewModel.insertUser(new User("joey@mail.com", "Joey", "Ho"));
+//        mainViewModel.insertUser(new User("aidan@mail.com", "Aidan", "Wood"));
+//        mainViewModel.insertBalance(new Balance("brian@mail.com", "joey@mail.com", 88));
+//        mainViewModel.insertBalance(new Balance("aidan@mail.com", "brian@mail.com", 32));
+
         mainViewModel.getAllBalances().observe(getViewLifecycleOwner(), balances -> {
             if (balances != null || balances.size() > 0) {
                 balancesAdapter.setData(balances);
-            } else {
-                mainViewModel.insertBalance(new Balance("userA@gamil.com", "userB@gmail.com", 55));
-                mainViewModel.insertBalance(new Balance("fake@gamil.com", "faker@gmail.com", 60));
-                mainViewModel.insertBalance(new Balance("bozo@hotmail.com", "coolGuy@gmail.com", 4000));
-                mainViewModel.insertBalance(new Balance("John@gamil.com", "Doe@gmail.com", 30));
             }
         });
     }
