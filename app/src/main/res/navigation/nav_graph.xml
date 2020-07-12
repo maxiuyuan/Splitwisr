@@ -9,7 +9,11 @@
         android:id="@+id/destination_balance_fragment"
         android:name="com.splitwisr.ui.balances.BalanceFragment"
         android:label="balance_fragment"
-        tools:layout="@layout/balance_fragment" />
+        tools:layout="@layout/balance_fragment" >
+        <action
+            android:id="@+id/action_destination_balance_fragment_to_receiptFragment"
+            app:destination="@id/receiptFragment" />
+    </fragment>
     <fragment
         android:id="@+id/destination_login_fragment"
         android:name="com.splitwisr.ui.login.LoginFragment"
@@ -26,4 +30,8 @@
     <action
         android:id="@+id/action_global_destination_login_fragment"
         app:destination="@id/destination_login_fragment" />
+    <fragment
+        android:id="@+id/receiptFragment"
+        android:name="com.splitwisr.ui.main.ReceiptFragment"
+        android:label="ReceiptFragment" />
 </navigation>

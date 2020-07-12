@@ -9,12 +9,12 @@
 
     <EditText
         android:id="@+id/ItemCost"
-        android:layout_width="404dp"
-        android:layout_height="52dp"
+        android:layout_width="181dp"
+        android:layout_height="60dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="316dp"
         android:ems="10"
-        android:hint="enter receipt amount"
+        android:hint="enter item cost"
         android:inputType="numberSigned"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -73,6 +73,18 @@
         android:layout_height="254dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/ItemName"
+        android:layout_width="208dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="189dp"
+        android:layout_marginTop="319dp"
+        android:ems="10"
+        android:hint="enter item name"
+        android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

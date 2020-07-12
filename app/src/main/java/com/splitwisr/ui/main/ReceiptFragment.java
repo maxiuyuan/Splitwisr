@@ -30,10 +30,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 
 public class ReceiptFragment extends Fragment {
 
@@ -66,6 +63,13 @@ public class ReceiptFragment extends Fragment {
         }
     }
 
+    public class ItemNameOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            currentItemName = itemName.getText().toString();
+        }
+    }
+
     public class AddUserButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -82,7 +86,7 @@ public class ReceiptFragment extends Fragment {
         public void onClick(View v) {
             if (currentItemCost > 0d && usersToSplitItem.size() > 0) {
                 double costPerUser = round(currentItemCost/usersToSplitItem.size());
-                StringBuilder s = new StringBuilder("\n" + Double.toString(currentItemCost) + ": ");
+                StringBuilder s = new StringBuilder("\n" + currentItemName + " - " + Double.toString(currentItemCost) + " ");
                 for (int x = 0; x < userNamesToSplitItem.size(); x++) {
                     String user = usersToSplitItem.get(x);
                     String userName = userNamesToSplitItem.get(x);
@@ -124,6 +128,8 @@ public class ReceiptFragment extends Fragment {
                     balanceViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
                 }
             }
+            amountsOwed.clear();
+            resetReceiptContentsText();
         }
     }
 
@@ -151,6 +157,7 @@ public class ReceiptFragment extends Fragment {
     private BalanceViewModel balanceViewModel;
 
     private EditText itemCost;
+    private EditText itemName;
     private Spinner userDropDown;
     private Button submitReceipt;
     private Button addUserToItem;
@@ -166,6 +173,7 @@ public class ReceiptFragment extends Fragment {
     private String currentUserEmail = "userA@gmail.com";
 
     private double currentItemCost= 0d;
+    private String currentItemName = "";
 
     private List<String> usersToSplitItem = new ArrayList<>();
     private List<String> userNamesToSplitItem = new ArrayList<>();
@@ -203,6 +211,7 @@ public class ReceiptFragment extends Fragment {
         addItemToReceipt = (Button)view.findViewById(R.id.AddItemButton);
         usersSplittingItem = (TextView)view.findViewById(R.id.UsersSplittingItem);
         itemCost = (EditText)view.findViewById(R.id.ItemCost);
+        itemName = (EditText)view.findViewById(R.id.ItemName);
         receiptContents = (TextView)view.findViewById(R.id.ReceiptContents);
 
         List<User> users = userViewModel.getUserList();

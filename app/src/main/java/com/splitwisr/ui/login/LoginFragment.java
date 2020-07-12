@@ -78,6 +78,11 @@ public class LoginFragment extends Fragment {
             mGoogleSignInClient.signOut();
             mAuth.signOut();
         });
+        requireActivity().findViewById(R.id.skipButton).setOnClickListener(v -> {
+            NavHostFragment
+                    .findNavController(this)
+                    .navigate(R.id.action_destination_login_fragment_to_destination_balance_fragment);
+        });
 
     }
     @Override
