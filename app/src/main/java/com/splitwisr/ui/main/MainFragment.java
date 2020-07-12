@@ -48,10 +48,10 @@ public class MainFragment extends Fragment {
             if (balances != null || balances.size() > 0) {
                 balancesAdapter.setData(balances);
             } else {
-                mainViewModel.insertBalance(new Balance("userA@gamil.com", "userB@gmail.com", 55));
-                mainViewModel.insertBalance(new Balance("fake@gamil.com", "faker@gmail.com", 60));
-                mainViewModel.insertBalance(new Balance("bozo@hotmail.com", "coolGuy@gmail.com", 4000));
-                mainViewModel.insertBalance(new Balance("John@gamil.com", "Doe@gmail.com", 30));
+                mainViewModel.insertBalance(new Balance("userA@gamil.com", "userB@gmail.com", 55d));
+                mainViewModel.insertBalance(new Balance("fake@gamil.com", "faker@gmail.com", 60d));
+                mainViewModel.insertBalance(new Balance("bozo@hotmail.com", "coolGuy@gmail.com", 4000d));
+                mainViewModel.insertBalance(new Balance("John@gamil.com", "Doe@gmail.com", 30d));
             }
         });
     }

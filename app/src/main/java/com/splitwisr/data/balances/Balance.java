@@ -16,9 +16,9 @@ public class Balance {
 
     @NonNull
     @ColumnInfo(name = "total_owing")
-    public Integer totalOwing;  // Amount that bEmail owes aEmail
+    public Double totalOwing;  // Amount that bEmail owes aEmail
 
-    public Balance(@NonNull String aEmail, @NonNull String bEmail, @NonNull Integer totalOwing) {
+    public Balance(@NonNull String aEmail, @NonNull String bEmail, @NonNull Double totalOwing) {
         this.aEmail = aEmail;
         this.bEmail = bEmail;
         this.totalOwing = totalOwing;

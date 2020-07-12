@@ -22,23 +22,34 @@
         tools:layout_editor_absoluteX="6dp"
         tools:layout_editor_absoluteY="211dp" />
 
-    <EditText
-        android:id="@+id/userList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="enter users splitting"
-        android:inputType="textMultiLine"
-        tools:layout_editor_absoluteX="7dp"
-        tools:layout_editor_absoluteY="261dp" />
-
     <Button
         android:id="@+id/receiptButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="done receipt"
+        tools:layout_editor_absoluteX="6dp"
+        tools:layout_editor_absoluteY="654dp" />
+
+    <Spinner
+        android:id="@+id/userDropDown"
+        android:layout_width="343dp"
+        android:layout_height="36dp"
+        tools:layout_editor_absoluteX="6dp"
+        tools:layout_editor_absoluteY="267dp" />
+
+    <Button
+        android:id="@+id/addUserButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="add user"
+        tools:layout_editor_absoluteX="6dp"
+        tools:layout_editor_absoluteY="317dp" />
+
+    <TextView
+        android:id="@+id/currentUsersText"
+        android:layout_width="131dp"
+        android:layout_height="259dp"
         tools:layout_editor_absoluteX="7dp"
-        tools:layout_editor_absoluteY="315dp" />
+        tools:layout_editor_absoluteY="375dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
