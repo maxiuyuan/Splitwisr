@@ -1,4 +1,4 @@
-package com.splitwisr.ui.main;
+package com.splitwisr.ui.balances;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ContactsFragmentBinding;
 
@@ -37,8 +38,22 @@ public class ContactsFragment extends Fragment {
             String email = binding.email.getText().toString();
             String first = binding.firstName.getText().toString();
             String last = binding.lastName.getText().toString();
+            User newUser =  new User(email, first, last);
+            viewModel.insertUser(newUser);
 
-            viewModel.insertUser(new User(email, first, last));
+            // TODO: can't hardcode this!
+            String myEmail = "brian@mail.com";
+            String aEmail;
+            String bEmail;
+            if (email.compareTo(myEmail) < 0) {
+                aEmail = email;
+                bEmail = myEmail;
+            } else {
+                aEmail = myEmail;
+                bEmail = email;
+            }
+
+            viewModel.newBalance(new Balance(aEmail, bEmail, 0));
         });
 
         return view;
