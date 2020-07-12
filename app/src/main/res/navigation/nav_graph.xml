@@ -8,6 +8,6 @@
     <fragment
         android:id="@+id/destination_balance_fragment"
         android:name="com.splitwisr.ui.main.BalanceFragment"
-        android:label="main_fragment"
+        android:label="balance_fragment"
         tools:layout="@layout/balance_fragment" />
 </navigation>

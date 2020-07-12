@@ -15,8 +15,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-
         setSupportActionBar(findViewById(R.id.toolbar));
+
         NavController navController =
                 Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(
