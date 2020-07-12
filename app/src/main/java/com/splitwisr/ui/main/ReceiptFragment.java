@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 public class ReceiptFragment extends Fragment {
 
@@ -57,7 +58,9 @@ public class ReceiptFragment extends Fragment {
     public class ItemCostOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            currentItemCost = Double.parseDouble(itemCost.getText().toString());
+            if (!itemCost.getText().toString().equals("")) {
+                currentItemCost = Double.parseDouble(itemCost.getText().toString());
+            }
         }
     }
 
@@ -66,6 +69,7 @@ public class ReceiptFragment extends Fragment {
         public void onClick(View v) {
             if (!selectedUser.equals("") && !usersToSplitItem.contains(selectedUser)) {
                 usersToSplitItem.add(userNames.get(selectedUser));
+                userNamesToSplitItem.add(selectedUser);
                 addUsersSplittingItemText(selectedUser);
             }
         }
@@ -76,48 +80,46 @@ public class ReceiptFragment extends Fragment {
         public void onClick(View v) {
             if (currentItemCost > 0d && usersToSplitItem.size() > 0) {
                 double costPerUser = round(currentItemCost/usersToSplitItem.size());
-                StringBuilder s = new StringBuilder(Double.toString(costPerUser) + ": ");
-                for (String user : usersToSplitItem) {
-                    if (!amountsOwed.containsKey(user)) {
-                        amountsOwed.put(user, 0d);
+                StringBuilder s = new StringBuilder("\n" + Double.toString(currentItemCost) + ": ");
+                for (int x = 0; x < userNamesToSplitItem.size(); x++) {
+                    String user = usersToSplitItem.get(x);
+                    String userName = userNamesToSplitItem.get(x);
+                    if (!user.equals(currentUserEmail)) {
+                        if (!amountsOwed.containsKey(user)) {
+                            amountsOwed.put(user, 0d);
+                        }
+                        amountsOwed.put(user, amountsOwed.get(user) + costPerUser);
                     }
-                    amountsOwed.put(user, amountsOwed.get(user) + costPerUser);
-                    s.append(user + ",");
+                    s.append(userName);
+                    if (x != userNamesToSplitItem.size() - 1) s.append(", ");
                 }
-                receiptContentsText.append("\n" + s.toString());
+                addReceiptContentsText(s.toString());
             }
+            usersToSplitItem.clear();
+            userNamesToSplitItem.clear();
+            resetUsersSplittingItemText();
         }
     }
 
     public class SubmitReceiptButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            if (currentItemCost > 0d) {
-                int numUsers = selectedUsers.size();
-                double amountPerUser = round(currentReceiptAmount/numUsers);
-                for (String splitUser : selectedUsers) {
-                    if (!splitUser.equals(currentUserEmail)) {
-                        List<Balance> balances = mainViewModel.get(currentUserEmail, splitUser);
-                        Balance b = null;
-                        if (balances.size() > 0) {
-                            b = balances.get(0);
-//                                testText2.setText(Double.toString(b.totalOwing));
-                        } else {
-//                                testText2.setText("NO ENTRY");
-                            if (currentUserEmail.compareTo(splitUser) < 0) {
-                                b = new Balance(currentUserEmail, splitUser, 0d);
-                            } else {
-                                b = new Balance(splitUser, currentUserEmail, 0d);
-                            }
-                            mainViewModel.insertBalance(b);
-                        }
-                        if (b.aEmail.equals(currentUserEmail)) {
-                            b.totalOwing += amountPerUser;
-                        } else {
-                            b.totalOwing -= amountPerUser;
-                        }
-                        mainViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
+            for (String splitUser : amountsOwed.keySet()) {
+                double amountOwed = amountsOwed.get(splitUser);
+                if (!splitUser.equals(currentUserEmail)) {
+                    List<Balance> balances = mainViewModel.get(currentUserEmail, splitUser);
+                    Balance b = null;
+                    if (balances.size() > 0) {
+                        b = balances.get(0);
+                    } else {
+                        mainViewModel.insertBalance(new Balance(currentUserEmail, splitUser, 0d));
                     }
+                    if (b.aEmail.equals(currentUserEmail)) {
+                        b.totalOwing += amountOwed;
+                    } else {
+                        b.totalOwing -= amountOwed;
+                    }
+                    mainViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
                 }
             }
         }
@@ -128,15 +130,22 @@ public class ReceiptFragment extends Fragment {
         usersSplittingItem.setText(usersSplittingItemText.toString());
     }
 
+    public void resetReceiptContentsText() {
+        receiptContentsText = new StringBuilder("Receipt Contents:");
+        receiptContents.setText(receiptContentsText.toString());
+    }
+
     public void addUsersSplittingItemText(String user) {
         usersSplittingItemText.append("\n" + user);
         usersSplittingItem.setText(usersSplittingItemText.toString());
     }
 
-    public void resetReceiptContentsText() {
-        receiptContentsText = new StringBuilder("Receipt Contents:");
+    public void addReceiptContentsText(String s) {
+        receiptContentsText.append(s);
         receiptContents.setText(receiptContentsText.toString());
     }
+
+
 
     private MainViewModel mainViewModel;
 
@@ -158,10 +167,12 @@ public class ReceiptFragment extends Fragment {
     private double currentItemCost= 0d;
 
     private List<String> usersToSplitItem = new ArrayList<>();
+    private List<String> userNamesToSplitItem = new ArrayList<>();
+
     private HashMap<String,String> userNames = new HashMap<>();
     private HashMap<String, Double> amountsOwed = new HashMap<>();
 
-    private String selectedUser;
+    private String selectedUser = "";
 
 
     public static ReceiptFragment newInstance() {return new ReceiptFragment();}
@@ -210,6 +221,9 @@ public class ReceiptFragment extends Fragment {
         addUserToItem.setOnClickListener(new AddUserButtonOnClickListener());
         addItemToReceipt.setOnClickListener(new AddItemToReceiptButtonOnClickListener());
         submitReceipt.setOnClickListener(new SubmitReceiptButtonOnClickListener());
+
+        resetReceiptContentsText();
+        resetUsersSplittingItemText();
 
         return view;
     }
