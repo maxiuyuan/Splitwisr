@@ -25,7 +25,12 @@ public class BalanceViewModel extends AndroidViewModel {
     }
 
     LiveData<List<Balance>> getAllBalances() { return allBalances; }
+    LiveData<List<Balance>> get(final String s1, final String s2) { return balanceRepository.get(s1,s1); }
 
+    public void update(Balance balance) { balanceRepository.update(balance);}
+    public void insertUser(User user) {
+        userRepository.insert(user);
+    }
     public void insertBalance(Balance balance) {
         balanceRepository.insert(balance);
     }
