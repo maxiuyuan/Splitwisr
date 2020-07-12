@@ -15,10 +15,9 @@ const db = admin.database();
 const ref = db.ref("Receipt");
 
 app.get("/read", (req, res) => {
-  if(req.query.payer.localeCompare(req.query.payee)) {
-    let payer = req.query.payer
-    let payee = req.query.payee
-  } else {
+  let payer = req.query.payer
+  let payee = req.query.payee
+  if(payer.localeCompare(payee)>0) {
     let payee = req.query.payer
     let payer = req.query.payee
   }
@@ -44,20 +43,20 @@ app.post("/write", (req, res) => {
   let id_A = req.body.userA;
   let id_B = req.body.userB;
   let blnc = req.body.balance;
-  
+
   // sort lexicographically
   let entry = {}
   if(id_A.localeCompare(id_B) < 0) {
     entry = {
       payer : id_A,
       payee : id_B,
-      balance : blnc  
+      balance : blnc
     }
   } else {
     entry = {
       payer : id_B,
       payee : id_A,
-      balance : blnc  
+      balance : blnc
     }
   }
 
