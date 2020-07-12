@@ -11,10 +11,10 @@
         android:id="@+id/ItemCost"
         android:layout_width="404dp"
         android:layout_height="52dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="468dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="316dp"
         android:ems="10"
-        android:hint="enter item cost"
+        android:hint="enter receipt amount"
         android:inputType="numberSigned"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,8 +23,8 @@
         android:id="@+id/SubmitReceiptButton"
         android:layout_width="402dp"
         android:layout_height="50dp"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="681dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="536dp"
         android:text="submit receipt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,8 +33,8 @@
         android:id="@+id/UserDropDown"
         android:layout_width="404dp"
         android:layout_height="46dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="422dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="264dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,8 +42,8 @@
         android:id="@+id/AddUserToItemButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="632dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="488dp"
         android:text="add user to item"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -52,8 +52,8 @@
         android:id="@+id/AddItemButton"
         android:layout_width="224dp"
         android:layout_height="49dp"
-        android:layout_marginStart="185dp"
-        android:layout_marginTop="632dp"
+        android:layout_marginStart="184dp"
+        android:layout_marginTop="488dp"
         android:text="Add item to receipt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -62,15 +62,15 @@
         android:id="@+id/UsersSplittingItem"
         android:layout_width="398dp"
         android:layout_height="104dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="526dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="376dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/ReceiptContents"
-        android:layout_width="404dp"
-        android:layout_height="414dp"
+        android:layout_width="405dp"
+        android:layout_height="254dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
