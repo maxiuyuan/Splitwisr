@@ -10,7 +10,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="-62dp"
+        tools:layout_editor_absoluteY="-114dp" />
 
     <EditText
         android:id="@+id/receiptAmount"
@@ -27,7 +29,7 @@
         android:id="@+id/receiptButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="654dp"
+        android:layout_marginTop="364dp"
         android:text="done receipt"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="6dp" />
@@ -50,11 +52,29 @@
         tools:layout_editor_absoluteX="6dp" />
 
     <TextView
-        android:id="@+id/currentUsersText"
-        android:layout_width="131dp"
-        android:layout_height="259dp"
-        android:layout_marginTop="375dp"
+        android:id="@+id/testText"
+        android:layout_width="346dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="473dp"
+        android:text="balances"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="7dp" />
+        tools:layout_editor_absoluteX="2dp" />
+
+    <TextView
+        android:id="@+id/testText2"
+        android:layout_width="384dp"
+        android:layout_height="65dp"
+        android:text="users in receipt"
+        tools:layout_editor_absoluteX="9dp"
+        tools:layout_editor_absoluteY="36dp" />
+
+    <Button
+        android:id="@+id/refreshButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="412dp"
+        android:text="refresh balances"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="6dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

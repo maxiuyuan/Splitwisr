@@ -14,6 +14,9 @@ public interface BalanceDao {
     @Query("SELECT * FROM balance")
     LiveData<List<Balance>> getAll();
 
+    @Query("SELECT * FROM balance")
+    List<Balance> getBalanceList();
+
     @Query("SELECT * FROM balance WHERE a_email=:a_email AND b_email=:b_email")
     List<Balance> get(String a_email, String b_email);
 
@@ -23,6 +26,9 @@ public interface BalanceDao {
     @Delete
     void delete(Balance balance);
 
+    @Query("UPDATE balance SET total_owing=:totalOwing WHERE a_email=:a_email AND b_email=:b_email")
+    void update(double totalOwing, String a_email, String b_email);
+
     @Update
-    void update(Balance balance);
+    void update(Balance b);
 }

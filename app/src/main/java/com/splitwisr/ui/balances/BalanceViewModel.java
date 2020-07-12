@@ -29,10 +29,12 @@ public class BalanceViewModel extends AndroidViewModel {
     }
 
     List<User> getUserList() { return userRepository.getUserList(); }
+    List<Balance> getBalanceList() { return  balanceRepository.getBalanceList(); }
     LiveData<List<Balance>> getAllBalances() { return allBalances; }
-    List<Balance> get(final String s1, final String s2) { return balanceRepository.get(s1,s1); }
+    List<Balance> get(final String s1, final String s2) { return balanceRepository.get(s1,s2); }
 
-    public void update(Balance balance) { balanceRepository.update(balance);}
+    public void update(double d, String a, String b) { balanceRepository.update(d,a,b);}
+    public void update(Balance b) { balanceRepository.update(b); }
     public void insertUser(User user) {
         userRepository.insert(user);
     }
