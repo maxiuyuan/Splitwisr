@@ -39,8 +39,10 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
     @Override
     public void onBindViewHolder(@NonNull BalanceViewHolder holder, int position) {
         Balance balance = balances.get(position);
-        TextView textView = holder.balanceView.findViewById(R.id.textView);
-        textView.setText(balance.bEmail + " owes " + balance.aEmail + " $" + balance.totalOwing);
+        TextView userText = holder.balanceView.findViewById(R.id.user_text);
+        TextView balanceText = holder.balanceView.findViewById(R.id.balance_text);
+        userText.setText(balance.bEmail);
+        balanceText.setText("$" + balance.totalOwing);
     }
 
     @Override
