@@ -100,10 +100,10 @@ public class ReceiptFragment extends Fragment {
                     if (x != userNamesToSplitItem.size() - 1) s.append(", ");
                 }
                 addReceiptContentsText(s.toString());
+                usersToSplitItem.clear();
+                userNamesToSplitItem.clear();
+                resetUsersSplittingItemText();
             }
-            usersToSplitItem.clear();
-            userNamesToSplitItem.clear();
-            resetUsersSplittingItemText();
         }
     }
 
@@ -214,7 +214,7 @@ public class ReceiptFragment extends Fragment {
         itemName = (EditText)view.findViewById(R.id.ItemName);
         receiptContents = (TextView)view.findViewById(R.id.ReceiptContents);
 
-        List<User> users = userViewModel.getUserList();
+        List<User> users = userViewModel.getUserList().sort();
 
         if (users != null) {
             for (int x = 0; x < users.size(); x++) {
@@ -234,6 +234,7 @@ public class ReceiptFragment extends Fragment {
         addUserToItem.setOnClickListener(new AddUserButtonOnClickListener());
         addItemToReceipt.setOnClickListener(new AddItemToReceiptButtonOnClickListener());
         submitReceipt.setOnClickListener(new SubmitReceiptButtonOnClickListener());
+        itemName.setOnClickListener(new ItemNameOnClickListener());
 
         resetReceiptContentsText();
         resetUsersSplittingItemText();
