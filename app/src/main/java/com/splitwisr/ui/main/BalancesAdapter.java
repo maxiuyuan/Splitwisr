@@ -51,5 +51,6 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
 
     public void setData(List<Balance> newBalances) {
         balances = newBalances;
+        notifyDataSetChanged();
     }
 }

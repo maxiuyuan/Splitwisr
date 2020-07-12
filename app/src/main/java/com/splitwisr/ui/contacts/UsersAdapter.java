@@ -48,5 +48,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     public void setData(@NonNull List<User> newUsers) {
         users = newUsers;
+        notifyDataSetChanged();
     }
 }
