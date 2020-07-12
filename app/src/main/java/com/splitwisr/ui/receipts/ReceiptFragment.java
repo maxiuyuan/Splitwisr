@@ -1,4 +1,4 @@
-package com.splitwisr.ui.main;
+package com.splitwisr.ui.receipts;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,24 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.splitwisr.R;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
 import com.splitwisr.ui.balances.BalanceViewModel;
 import com.splitwisr.ui.contacts.ContactsViewModel;
-
-import org.w3c.dom.Text;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -57,8 +50,8 @@ public class ReceiptFragment extends Fragment {
     public class ItemCostOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            if (!itemCost.getText().toString().equals("")) {
-                currentItemCost = Double.parseDouble(itemCost.getText().toString());
+            if (!binding.ItemCost.getText().toString().equals("")) {
+                currentItemCost = Double.parseDouble(binding.ItemCost.getText().toString());
             }
         }
     }
@@ -66,7 +59,7 @@ public class ReceiptFragment extends Fragment {
     public class ItemNameOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            currentItemName = itemName.getText().toString();
+            currentItemName = binding.ItemName.getText().toString();
         }
     }
 
@@ -135,35 +128,26 @@ public class ReceiptFragment extends Fragment {
 
     public void resetUsersSplittingItemText() {
         usersSplittingItemText = new StringBuilder("Users to Split Item:");
-        usersSplittingItem.setText(usersSplittingItemText.toString());
+        binding.UsersSplittingItem.setText(usersSplittingItemText.toString());
     }
 
     public void resetReceiptContentsText() {
         receiptContentsText = new StringBuilder("Receipt Contents:");
-        receiptContents.setText(receiptContentsText.toString());
+        binding.ReceiptContents.setText(receiptContentsText.toString());
     }
 
     public void addUsersSplittingItemText(String user) {
         usersSplittingItemText.append("\n" + user);
-        usersSplittingItem.setText(usersSplittingItemText.toString());
+        binding.UsersSplittingItem.setText(usersSplittingItemText.toString());
     }
 
     public void addReceiptContentsText(String s) {
         receiptContentsText.append(s);
-        receiptContents.setText(receiptContentsText.toString());
+        binding.ReceiptContents.setText(receiptContentsText.toString());
     }
 
     private ContactsViewModel userViewModel;
     private BalanceViewModel balanceViewModel;
-
-    private EditText itemCost;
-    private EditText itemName;
-    private Spinner userDropDown;
-    private Button submitReceipt;
-    private Button addUserToItem;
-    private Button addItemToReceipt;
-    private TextView usersSplittingItem;
-    private TextView receiptContents;
 
     StringBuilder usersSplittingItemText = new StringBuilder();
     StringBuilder receiptContentsText = new StringBuilder();
@@ -184,7 +168,7 @@ public class ReceiptFragment extends Fragment {
     private String selectedUser = "";
 
     // set this to falsegit this if you want dummy data
-    private static boolean dummyDataAdded = true;
+    private static boolean dummyDataAdded = false;
 
     public static ReceiptFragment newInstance() {return new ReceiptFragment();}
 
@@ -206,15 +190,6 @@ public class ReceiptFragment extends Fragment {
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        userDropDown = (Spinner)view.findViewById(R.id.UserDropDown);
-        submitReceipt = (Button)view.findViewById(R.id.SubmitReceiptButton);
-        addUserToItem = (Button)view.findViewById(R.id.AddUserToItemButton);
-        addItemToReceipt = (Button)view.findViewById(R.id.AddItemButton);
-        usersSplittingItem = (TextView)view.findViewById(R.id.UsersSplittingItem);
-        itemCost = (EditText)view.findViewById(R.id.ItemCost);
-        itemName = (EditText)view.findViewById(R.id.ItemName);
-        receiptContents = (TextView)view.findViewById(R.id.ReceiptContents);
-
         List<User> users = userViewModel.getUserList();
 
         if (users != null) {
@@ -223,19 +198,19 @@ public class ReceiptFragment extends Fragment {
                 userNames.put(userName, users.get(x).email);
             }
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, userNames.keySet().toArray(new String[userNames.keySet().size()]));
-            userDropDown.setAdapter(adapter);
+            binding.UserDropDown.setAdapter(adapter);
         } else {
             String[] s = new String[]{"no users"};
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, s);
-            userDropDown.setAdapter(adapter);
+            binding.UserDropDown.setAdapter(adapter);
         }
 
-        itemCost.setOnClickListener(new ItemCostOnClickListener());
-        userDropDown.setOnItemSelectedListener(new UserDropDownActivity());
-        addUserToItem.setOnClickListener(new AddUserButtonOnClickListener());
-        addItemToReceipt.setOnClickListener(new AddItemToReceiptButtonOnClickListener());
-        submitReceipt.setOnClickListener(new SubmitReceiptButtonOnClickListener());
-        itemName.setOnClickListener(new ItemNameOnClickListener());
+        binding.ItemCost.setOnClickListener(new ItemCostOnClickListener());
+        binding.UserDropDown.setOnItemSelectedListener(new UserDropDownActivity());
+        binding.AddUserToItemButton.setOnClickListener(new AddUserButtonOnClickListener());
+        binding.AddItemButton.setOnClickListener(new AddItemToReceiptButtonOnClickListener());
+        binding.SubmitReceiptButton.setOnClickListener(new SubmitReceiptButtonOnClickListener());
+        binding.ItemName.setOnClickListener(new ItemNameOnClickListener());
 
         resetReceiptContentsText();
         resetUsersSplittingItemText();

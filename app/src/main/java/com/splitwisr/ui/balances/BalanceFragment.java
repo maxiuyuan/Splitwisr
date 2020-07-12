@@ -31,7 +31,6 @@ public class BalanceFragment extends Fragment {
 
     private Fragment here = this;
 
-    Button receiptButton;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -45,9 +44,7 @@ public class BalanceFragment extends Fragment {
         binding.recyclerView.setAdapter(balancesAdapter);
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayout.VERTICAL));
 
-        receiptButton = (Button)view.findViewById(R.id.ReceiptButton);
-
-        receiptButton.setOnClickListener(new View.OnClickListener() {
+        binding.ReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavHostFragment

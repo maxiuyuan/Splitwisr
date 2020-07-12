@@ -32,6 +32,6 @@
         app:destination="@id/destination_login_fragment" />
     <fragment
         android:id="@+id/receiptFragment"
-        android:name="com.splitwisr.ui.main.ReceiptFragment"
+        android:name="com.splitwisr.ui.receipts.ReceiptFragment"
         android:label="ReceiptFragment" />
 </navigation>
