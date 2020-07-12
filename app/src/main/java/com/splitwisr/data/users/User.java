@@ -26,4 +26,10 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
     }
+
+    public User(@NonNull String email, String firstName, String lastName) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }
