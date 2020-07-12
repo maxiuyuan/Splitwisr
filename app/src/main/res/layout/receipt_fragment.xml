@@ -7,74 +7,73 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="-62dp"
-        tools:layout_editor_absoluteY="-114dp" />
-
     <EditText
-        android:id="@+id/receiptAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="211dp"
+        android:id="@+id/ItemCost"
+        android:layout_width="404dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="468dp"
         android:ems="10"
-        android:hint="enter receipt amount"
+        android:hint="enter item cost"
         android:inputType="numberSigned"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="6dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/receiptButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="364dp"
-        android:text="done receipt"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="6dp" />
+        android:id="@+id/SubmitReceiptButton"
+        android:layout_width="402dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="681dp"
+        android:text="submit receipt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
-        android:id="@+id/userDropDown"
-        android:layout_width="343dp"
-        android:layout_height="36dp"
-        android:layout_marginTop="267dp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="6dp" />
+        android:id="@+id/UserDropDown"
+        android:layout_width="404dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="422dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/addUserButton"
+        android:id="@+id/AddUserToItemButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="317dp"
-        android:text="add user"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="6dp" />
-
-    <TextView
-        android:id="@+id/testText"
-        android:layout_width="346dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="473dp"
-        android:text="balances"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="2dp" />
-
-    <TextView
-        android:id="@+id/testText2"
-        android:layout_width="384dp"
-        android:layout_height="65dp"
-        android:text="users in receipt"
-        tools:layout_editor_absoluteX="9dp"
-        tools:layout_editor_absoluteY="36dp" />
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="632dp"
+        android:text="add user to item"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/refreshButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="412dp"
-        android:text="refresh balances"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="6dp" />
+        android:id="@+id/AddItemButton"
+        android:layout_width="224dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="185dp"
+        android:layout_marginTop="632dp"
+        android:text="Add item to receipt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/UsersSplittingItem"
+        android:layout_width="398dp"
+        android:layout_height="104dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="526dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ReceiptContents"
+        android:layout_width="404dp"
+        android:layout_height="414dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, ReceiptFragment.newInstance(m))
+                    .replace(R.id.container, ReceiptFragment.newInstance())
                     .commitNow();
         }
     }
