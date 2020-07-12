@@ -19,6 +19,10 @@ public class UserRepository {
         allUsers = userDao.getAll();
     }
 
+    public LiveData<User> getUser(String email) {
+        return userDao.getUser(email);
+    }
+
     public LiveData<List<User>> getAllUsers() {
         return allUsers;
     }

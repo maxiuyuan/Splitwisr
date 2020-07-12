@@ -1,4 +1,4 @@
-package com.splitwisr.ui.main;
+package com.splitwisr.ui.login;
 
 import android.content.Intent;
 import android.os.Bundle;

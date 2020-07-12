@@ -1,4 +1,4 @@
-package com.splitwisr.ui.main;
+package com.splitwisr.ui.balances;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,7 +17,7 @@ import com.splitwisr.databinding.BalanceFragmentBinding;
 
 public class BalanceFragment extends Fragment {
 
-    private MainViewModel mainViewModel;
+    private BalanceViewModel viewModel;
     private BalanceFragmentBinding binding;
 
     private BalancesAdapter balancesAdapter = new BalancesAdapter();
@@ -46,16 +46,16 @@ public class BalanceFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(BalanceViewModel.class);
 
         // TODO: Delete
-//        mainViewModel.insertUser(new User("brian@mail.com", "Brian", "Norman"));
-//        mainViewModel.insertUser(new User("joey@mail.com", "Joey", "Ho"));
-//        mainViewModel.insertUser(new User("aidan@mail.com", "Aidan", "Wood"));
-//        mainViewModel.insertBalance(new Balance("brian@mail.com", "joey@mail.com", 88));
-//        mainViewModel.insertBalance(new Balance("aidan@mail.com", "brian@mail.com", 32));
+//        viewModel.insertUser(new User("brian@mail.com", "Brian", "Norman"));
+//        viewModel.insertUser(new User("joey@mail.com", "Joey", "Ho"));
+//        viewModel.insertUser(new User("aidan@mail.com", "Aidan", "Wood"));
+//        viewModel.insertBalance(new Balance("brian@mail.com", "joey@mail.com", 88));
+//        viewModel.insertBalance(new Balance("aidan@mail.com", "brian@mail.com", 32));
 
-        mainViewModel.getAllBalances().observe(getViewLifecycleOwner(), balances -> {
+        viewModel.getAllBalances().observe(getViewLifecycleOwner(), balances -> {
             if (balances != null || balances.size() > 0) {
                 balancesAdapter.setData(balances);
             }

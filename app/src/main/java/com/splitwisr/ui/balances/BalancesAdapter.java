@@ -1,4 +1,4 @@
-package com.splitwisr.ui.main;
+package com.splitwisr.ui.balances;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -32,8 +32,7 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
                 .from(parent.getContext())
                 .inflate(R.layout.balance_view, parent, false);
 
-        BalanceViewHolder viewHolder = new BalanceViewHolder(balanceView);
-        return viewHolder;
+        return new BalanceViewHolder(balanceView);
     }
 
     @Override
@@ -52,5 +51,6 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
 
     public void setData(List<Balance> newBalances) {
         balances = newBalances;
+        notifyDataSetChanged();
     }
 }
