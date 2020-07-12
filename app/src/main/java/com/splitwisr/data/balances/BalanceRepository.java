@@ -34,7 +34,7 @@ public class BalanceRepository {
         });
     }
 
-    public LiveData<List<Balance>> get(final String s1, final String s2) {
+    public List<Balance> get(final String s1, final String s2) {
         StringBuilder email_a = new StringBuilder();
         StringBuilder email_b = new StringBuilder();
 

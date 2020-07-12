@@ -16,40 +16,45 @@
         android:id="@+id/receiptAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="211dp"
         android:ems="10"
         android:hint="enter receipt amount"
         android:inputType="numberSigned"
-        tools:layout_editor_absoluteX="6dp"
-        tools:layout_editor_absoluteY="211dp" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="6dp" />
 
     <Button
         android:id="@+id/receiptButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="654dp"
         android:text="done receipt"
-        tools:layout_editor_absoluteX="6dp"
-        tools:layout_editor_absoluteY="654dp" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="6dp" />
 
     <Spinner
         android:id="@+id/userDropDown"
         android:layout_width="343dp"
         android:layout_height="36dp"
-        tools:layout_editor_absoluteX="6dp"
-        tools:layout_editor_absoluteY="267dp" />
+        android:layout_marginTop="267dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="6dp" />
 
     <Button
         android:id="@+id/addUserButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="317dp"
         android:text="add user"
-        tools:layout_editor_absoluteX="6dp"
-        tools:layout_editor_absoluteY="317dp" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="6dp" />
 
     <TextView
         android:id="@+id/currentUsersText"
         android:layout_width="131dp"
         android:layout_height="259dp"
-        tools:layout_editor_absoluteX="7dp"
-        tools:layout_editor_absoluteY="375dp" />
+        android:layout_marginTop="375dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="7dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
