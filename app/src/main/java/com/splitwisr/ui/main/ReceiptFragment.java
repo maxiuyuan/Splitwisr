@@ -214,7 +214,7 @@ public class ReceiptFragment extends Fragment {
         itemName = (EditText)view.findViewById(R.id.ItemName);
         receiptContents = (TextView)view.findViewById(R.id.ReceiptContents);
 
-        List<User> users = userViewModel.getUserList().sort();
+        List<User> users = userViewModel.getUserList();
 
         if (users != null) {
             for (int x = 0; x < users.size(); x++) {
@@ -228,7 +228,7 @@ public class ReceiptFragment extends Fragment {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, s);
             userDropDown.setAdapter(adapter);
         }
-
+        
         itemCost.setOnClickListener(new ItemCostOnClickListener());
         userDropDown.setOnItemSelectedListener(new UserDropDownActivity());
         addUserToItem.setOnClickListener(new AddUserButtonOnClickListener());
