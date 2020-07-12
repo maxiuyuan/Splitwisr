@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ContactsFragmentBinding;
+import com.splitwisr.ui.balances.BalanceViewModel;
 
 public class ContactsFragment extends Fragment {
     private ContactsFragmentBinding binding;
+    private BalanceViewModel balanceViewModel;
     private ContactsViewModel viewModel;
     private UsersAdapter usersAdapter = new UsersAdapter();
 
@@ -53,7 +55,7 @@ public class ContactsFragment extends Fragment {
                 bEmail = email;
             }
 
-            viewModel.newBalance(new Balance(aEmail, bEmail, 0));
+            balanceViewModel.insertBalance(new Balance(aEmail, bEmail, 0d));
         });
 
         return view;

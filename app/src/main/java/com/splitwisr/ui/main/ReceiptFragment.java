@@ -21,6 +21,8 @@ import com.splitwisr.R;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
+import com.splitwisr.ui.balances.BalanceViewModel;
+import com.splitwisr.ui.contacts.ContactsViewModel;
 
 import org.w3c.dom.Text;
 
@@ -107,19 +109,19 @@ public class ReceiptFragment extends Fragment {
             for (String splitUser : amountsOwed.keySet()) {
                 double amountOwed = amountsOwed.get(splitUser);
                 if (!splitUser.equals(currentUserEmail)) {
-                    List<Balance> balances = mainViewModel.get(currentUserEmail, splitUser);
+                    List<Balance> balances = balanceViewModel.get(currentUserEmail, splitUser);
                     Balance b = null;
                     if (balances.size() > 0) {
                         b = balances.get(0);
                     } else {
-                        mainViewModel.insertBalance(new Balance(currentUserEmail, splitUser, 0d));
+                        balanceViewModel.insertBalance(new Balance(currentUserEmail, splitUser, 0d));
                     }
                     if (b.aEmail.equals(currentUserEmail)) {
                         b.totalOwing += amountOwed;
                     } else {
                         b.totalOwing -= amountOwed;
                     }
-                    mainViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
+                    balanceViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
                 }
             }
         }
@@ -145,9 +147,8 @@ public class ReceiptFragment extends Fragment {
         receiptContents.setText(receiptContentsText.toString());
     }
 
-
-
-    private MainViewModel mainViewModel;
+    private ContactsViewModel userViewModel;
+    private BalanceViewModel balanceViewModel;
 
     private EditText itemCost;
     private Spinner userDropDown;
@@ -174,6 +175,7 @@ public class ReceiptFragment extends Fragment {
 
     private String selectedUser = "";
 
+    private static boolean dummyDataAdded = false;
 
     public static ReceiptFragment newInstance() {return new ReceiptFragment();}
 
@@ -181,14 +183,16 @@ public class ReceiptFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        if (true) {
-            mainViewModel.insertUser(new User("userA@gmail.com", "user", "A"));
-            mainViewModel.insertUser(new User("userB@gmail.com", "user", "B"));
-            mainViewModel.insertUser(new User("userC@gmail.com", "user", "C"));
-            mainViewModel.insertBalance(new Balance("userA@gmail.com", "userB@gmail.com", 55d));
-            mainViewModel.insertBalance(new Balance("userA@gmail.com", "userC@gmail.com", 55d));
-            mainViewModel.insertBalance(new Balance("userB@gmail.com", "userC@gmail.com", 55d));
+        userViewModel = new ViewModelProvider(requireActivity()).get(ContactsViewModel.class);
+        balanceViewModel = new ViewModelProvider(requireActivity()).get(BalanceViewModel.class);
+        if (!dummyDataAdded) {
+            userViewModel.insertUser(new User("userA@gmail.com", "user", "A"));
+            userViewModel.insertUser(new User("userB@gmail.com", "user", "B"));
+            userViewModel.insertUser(new User("userC@gmail.com", "user", "C"));
+            balanceViewModel.insertBalance(new Balance("userA@gmail.com", "userB@gmail.com", 55d));
+            balanceViewModel.insertBalance(new Balance("userA@gmail.com", "userC@gmail.com", 55d));
+            balanceViewModel.insertBalance(new Balance("userB@gmail.com", "userC@gmail.com", 55d));
+            dummyDataAdded = true;
         }
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -201,7 +205,7 @@ public class ReceiptFragment extends Fragment {
         itemCost = (EditText)view.findViewById(R.id.ItemCost);
         receiptContents = (TextView)view.findViewById(R.id.ReceiptContents);
 
-        List<User> users = mainViewModel.getUserList();
+        List<User> users = userViewModel.getUserList();
 
         if (users != null) {
             for (int x = 0; x < users.size(); x++) {
