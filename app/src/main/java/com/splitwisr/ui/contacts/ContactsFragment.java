@@ -42,7 +42,7 @@ public class ContactsFragment extends Fragment {
             viewModel.insertUser(newUser);
 
             // TODO: can't hardcode this!
-            String myEmail = "brian@mail.com";
+            String myEmail = viewModel.getCurrentUserEmail();
             String aEmail;
             String bEmail;
             if (email.compareTo(myEmail) < 0) {

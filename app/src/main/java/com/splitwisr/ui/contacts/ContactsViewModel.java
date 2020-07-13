@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.balances.BalanceRepository;
 import com.splitwisr.data.users.User;
@@ -37,5 +38,10 @@ public class ContactsViewModel extends AndroidViewModel {
 
     public void insertUser(User user) {
         userRepository.insert(user);
+    }
+
+    public String getCurrentUserEmail(){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        return mAuth.getCurrentUser().getEmail();
     }
 }
