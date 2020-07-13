@@ -40,9 +40,9 @@ app.get("/read", (req, res) => {
 });
 
 app.post("/write", (req, res) => {
-  let id_A = req.body.payer;
-  let id_B = req.body.payee;
-  let blnc = req.body.balance;
+  let id_A = req.query.payer;
+  let id_B = req.query.payee;
+  let blnc = req.query.balance;
 
   // sort lexicographically
   let entry = {}
