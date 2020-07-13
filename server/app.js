@@ -20,7 +20,6 @@ app.get("/read", (req, res) => {
   
   ref.once("value", function(snapshot) {
     let ret = snapshot.val()
-    let temp = ''
     for (let transaction in ret){
       if(ret[transaction]['payer'] === payer || ret[transaction]['payee'] === payer){
         userToBalance.push(ret[transaction])
