@@ -1,23 +1,16 @@
 package com.splitwisr.ui.balances;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-
-import com.splitwisr.R;
 import com.splitwisr.databinding.BalanceFragmentBinding;
 
 public class BalanceFragment extends Fragment {
@@ -31,7 +24,6 @@ public class BalanceFragment extends Fragment {
         return new BalanceFragment();
     }
 
-    private Fragment here = this;
 
     @Nullable
     @Override
@@ -54,7 +46,6 @@ public class BalanceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = ViewModelProviders.of(this).get(BalanceViewModel.class);
-        Fragment fragment = this;
 
         // TODO: Delete
 //        viewModel.insertUser(new User("brian@mail.com", "Brian", "Norman"));
