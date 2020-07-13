@@ -46,16 +46,6 @@ public class BalanceFragment extends Fragment {
         binding.recyclerView.setAdapter(balancesAdapter);
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayout.VERTICAL));
 
-        binding.ReceiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavHostFragment
-                        .findNavController(here)
-                        .navigate(R.id.destination_receipt_fragment);
-            }
-        });
-
-
         return view;
     }
 
