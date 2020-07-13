@@ -15,13 +15,13 @@ const db = admin.database();
 const ref = db.ref("Receipt");
 
 app.get("/read", (req, res) => {
-  let payer = req.query.payer
+  let current_user = req.query.current_user;
   let userToBalance = []
   
   ref.once("value", function(snapshot) {
     let ret = snapshot.val()
     for (let transaction in ret){
-      if(ret[transaction]['payer'] === payer || ret[transaction]['payee'] === payer){
+      if(ret[transaction]['payer'] === current_user || ret[transaction]['payee'] === current_user){
         userToBalance.push(ret[transaction])
       }
     }
