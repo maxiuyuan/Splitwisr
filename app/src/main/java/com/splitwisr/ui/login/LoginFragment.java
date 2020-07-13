@@ -69,12 +69,12 @@ public class LoginFragment extends Fragment {
 
         super.onViewCreated(view, savedInstanceState);
         Log.d(this.toString(), "bhaiiii");
-        requireActivity().findViewById(R.id.google_sign_in_button).setOnClickListener(v -> {
+        getView().findViewById(R.id.google_sign_in_button).setOnClickListener(v -> {
             Log.d(this.toString(), "bhaiiii");
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
-        requireActivity().findViewById(R.id.sign_out_button).setOnClickListener(v -> {
+        getView().findViewById(R.id.sign_out_button).setOnClickListener(v -> {
             mGoogleSignInClient.signOut();
             mAuth.signOut();
         });
