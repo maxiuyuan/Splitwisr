@@ -61,27 +61,33 @@ app.post("/write", (req, res) => {
   }
 
   // search if already exists
-  let keyPrev = "";
-  ref.once("value", function(snapshot) {
+  ref.on("value", function(snapshot) {
+    let keyPrev = "";
+
     for(let temp in snapshot.val()) {
       let curr = snapshot.val()[temp];
+      console.log(curr["payer"],id_A,curr["payee"],id_B)
       if(curr["payer"] === id_A && curr["payee"] === id_B) {
+        console.log("A");
         keyPrev = temp;
+        break;
       } else if(curr["payer"] === id_B && curr["payee"] === id_A) {
+        console.log("B");
         keyPrev = temp;
+        break;
       }
     }
+
+    // replace or add new entry
+    if(keyPrev != "") {
+      ref.child(keyPrev).set(entry);
+    } else {
+      ref.push(entry);
+    }
+    res.send("Balance Updated for ", id_A, " and ", id_B, 200)
   }, function (errorObject) {
     res.send("The read failed: " + errorObject.code, 400);
   });
-
-  // replace or add new entry
-  if(keyPrev != "") {
-    ref.child(keyPrev).set(entry);
-  } else {
-    ref.push(entry);
-  }
-  res.send("Balance Updated for ", id_A, " and ", id_B, 200)
 })
 
 module.exports = app;
