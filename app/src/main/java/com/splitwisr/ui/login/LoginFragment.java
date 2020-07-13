@@ -16,10 +16,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.splitwisr.R;
@@ -51,18 +49,14 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(this.toString(), "onCreateView");
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.d(this.toString(), "bhaiiii");
 
         super.onViewCreated(view, savedInstanceState);
-        Log.d(this.toString(), "bhaiiii");
         getView().findViewById(R.id.google_sign_in_button).setOnClickListener(v -> {
-            Log.d(this.toString(), "bhaiiii");
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
@@ -79,25 +73,15 @@ public class LoginFragment extends Fragment {
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken(), this);
+                firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
-                Log.d(TAG, "Google sign in failed", e);
+                Log.e(TAG, "Google sign in failed", e);
             }
         }
     }
 
-    private void firebaseAuthWithGoogle(String idToken, Fragment fragment) {
+    private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(requireActivity(), new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-//                if (task.isSuccessful()) {
-//                    NavHostFragment
-//                            .findNavController(fragment)
-//                            .navigate(R.id.action_destination_login_fragment_to_destination_balance_fragment);
-//                }
-            }
-        });
+        mAuth.signInWithCredential(credential).addOnCompleteListener(requireActivity(), task -> { });
     }
-
 }
