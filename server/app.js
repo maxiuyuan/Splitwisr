@@ -59,7 +59,7 @@ app.post("/write", (req, res) => {
   }
 
   // search if already exists
-  ref.on("value", function(snapshot) {
+  ref.once("value", function(snapshot) {
     let keyPrev = "";
 
     for(let temp in snapshot.val()) {
