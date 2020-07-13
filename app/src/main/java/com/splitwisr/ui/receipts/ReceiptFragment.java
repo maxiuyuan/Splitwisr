@@ -120,10 +120,10 @@ public class ReceiptFragment extends Fragment {
             for (String splitUser : amountsOwed.keySet()) {
                 double amountOwed = amountsOwed.get(splitUser);
                 if (!splitUser.equals(receiptsViewModel.getCurrentUserEmail())) {
-                    List<Balance> balances = receiptsViewModel.get(receiptsViewModel.getCurrentUserEmail(), splitUser);
+                    Balance balance = receiptsViewModel.get(receiptsViewModel.getCurrentUserEmail(), splitUser);
                     Balance b = null;
-                    if (balances.size() > 0) {
-                        b = balances.get(0);
+                    if (balance != null) {
+                        b = balance;
                     } else {
                         receiptsViewModel.insertBalance(new Balance(receiptsViewModel.getCurrentUserEmail(), splitUser, 0d));
                     }

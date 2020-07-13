@@ -21,7 +21,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
     public ReceiptsViewModel(@NonNull Application application) {
         super(application);
         userRepository = new UserRepository(application);
-        balanceRepository = new BalanceRepository(application);
+        balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
     }
 
     public List<User> getUserList() { return userRepository.getUserList(); }
@@ -30,7 +30,9 @@ public class ReceiptsViewModel extends AndroidViewModel {
         balanceRepository.update(totalOwing, aEmail, bEmail);
     }
 
-    public List<Balance> get(final String s1, final String s2) { return balanceRepository.get(s1, s2); }
+    public Balance get(final String s1, final String s2) {
+        return balanceRepository.get(s1, s2);
+    }
 
     public void insertBalance(Balance balance) {
         balanceRepository.insert(balance);

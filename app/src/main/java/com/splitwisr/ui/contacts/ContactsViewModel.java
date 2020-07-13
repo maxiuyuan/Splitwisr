@@ -21,7 +21,7 @@ public class ContactsViewModel extends AndroidViewModel {
     public ContactsViewModel(@NonNull Application application) {
         super(application);
         userRepository = new UserRepository(application);
-        balanceRepository = new BalanceRepository(application);
+        balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
     }
 
     LiveData<List<User>> getAllUsers() {

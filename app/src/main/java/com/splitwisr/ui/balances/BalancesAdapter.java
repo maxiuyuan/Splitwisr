@@ -1,5 +1,6 @@
 package com.splitwisr.ui.balances;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -9,13 +10,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.splitwisr.R;
-import com.splitwisr.data.balances.Balance;
 
 import java.util.Collections;
 import java.util.List;
 
 public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.BalanceViewHolder> {
-    private List<Balance> balances = Collections.emptyList();
+    private List<BalanceViewObject> balances = Collections.emptyList();
 
     public static class BalanceViewHolder extends RecyclerView.ViewHolder {
         public ConstraintLayout balanceView;
@@ -37,11 +37,18 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
 
     @Override
     public void onBindViewHolder(@NonNull BalanceViewHolder holder, int position) {
-        Balance balance = balances.get(position);
+        BalanceViewObject balanceViewObject = balances.get(position);
         TextView userText = holder.balanceView.findViewById(R.id.user_text);
         TextView balanceText = holder.balanceView.findViewById(R.id.balance_text);
-        userText.setText(balance.bEmail);
-        balanceText.setText("$" + balance.totalOwing);
+        userText.setText(balanceViewObject.otherUser);
+        balanceText.setText("$" + balanceViewObject.balance);
+        if (balanceViewObject.balance == 0d) {
+            // pass
+        } else if (balanceViewObject.owesOtherUser && balanceViewObject.balance > 0) {
+            balanceText.setTextColor(Color.GREEN);
+        } else {
+            balanceText.setTextColor(Color.RED);
+        }
     }
 
     @Override
@@ -49,7 +56,7 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
         return balances.size();
     }
 
-    public void setData(List<Balance> newBalances) {
+    public void setData(List<BalanceViewObject> newBalances) {
         balances = newBalances;
         notifyDataSetChanged();
     }

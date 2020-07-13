@@ -5,6 +5,8 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.splitwisr.data.ApiService;
 import com.splitwisr.data.AppDatabase;
@@ -22,12 +24,14 @@ public class BalanceRepository {
     private BalanceDao balanceDao;
     private LiveData<List<Balance>> allBalances;
     private final ApiService apiService;
+    private String currentUserEmail;
 
     // TODO: Not good practice to be coupled to application like this
-    public BalanceRepository(Application application) {
+    public BalanceRepository(Application application, String currentUserEmail) {
         AppDatabase db = AppDatabase.getDatabase(application);
         balanceDao = db.balanceDao();
         allBalances = balanceDao.getAll();
+        this.currentUserEmail = currentUserEmail;
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://ece452project.herokuapp.com")
@@ -74,7 +78,7 @@ public class BalanceRepository {
         sendBalance(email_a.toString(), email_b.toString(), totalOwing);
     }
 
-    public List<Balance> get(final String s1, final String s2) {
+    public Balance get(final String s1, final String s2) {
         StringBuilder email_a = new StringBuilder();
         StringBuilder email_b = new StringBuilder();
 
@@ -91,22 +95,27 @@ public class BalanceRepository {
     private void getLatestBalances() {
         List<Balance> balances = balanceDao.getAllBlocking();
         if (balances != null) {
-            for (Balance balance: balances) {
-                apiService.readBalance(balance.aEmail, balance.bEmail).enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        Double serverBalance = response.body().get(("balance")).getAsDouble();
-                        if (serverBalance != balance.totalOwing) {
-                            update(serverBalance, balance.aEmail, balance.bEmail);
+            apiService.readBalance(currentUserEmail).enqueue(new Callback<JsonArray>() {
+                @Override
+                public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                    for (JsonElement obj: response.body()) {
+                        String aEmail = ((JsonObject) obj).get("payer").getAsString();
+                        String bEmail = ((JsonObject) obj).get("payee").getAsString();
+                        Double totalOwing = ((JsonObject) obj).get("balance").getAsDouble();
+                        if (balanceDao.get(aEmail, bEmail) == null) {
+                            balanceDao.insertAll(new Balance(aEmail, bEmail, totalOwing));
+                        } else {
+                            balanceDao.update(totalOwing, aEmail, bEmail);
                         }
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-                        Log.e("ApiService", t.toString());
-                    }
-                });
-            }
+                @Override
+                public void onFailure(Call<JsonArray> call, Throwable t) {
+                    Log.e("ApiService", t.toString());
+                }
+            });
+
         }
     }
 

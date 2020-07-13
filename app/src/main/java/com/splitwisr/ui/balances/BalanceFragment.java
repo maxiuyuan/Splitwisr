@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.splitwisr.databinding.BalanceFragmentBinding;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class BalanceFragment extends Fragment {
     private BalanceViewModel viewModel;
     private BalanceFragmentBinding binding;
@@ -42,7 +45,19 @@ public class BalanceFragment extends Fragment {
 
         viewModel.getAllBalances().observe(getViewLifecycleOwner(), balances -> {
             if (balances != null && balances.size() > 0) {
-                balancesAdapter.setData(balances);
+                List<BalanceViewObject> balanceViewObjects = balances.stream().map(balance -> {
+                    String otherUserEmail;
+                    boolean owesOtherUser;
+                    if (viewModel.getCurrentUserEmail().equals(balance.aEmail)) {
+                        otherUserEmail = balance.bEmail;
+                        owesOtherUser = false;
+                    } else {
+                        otherUserEmail = balance.aEmail;
+                        owesOtherUser = true;
+                    }
+                    return new BalanceViewObject(otherUserEmail, balance.totalOwing, owesOtherUser);
+                }).collect(Collectors.toList());
+                balancesAdapter.setData(balanceViewObjects);
             }
         });
     }
