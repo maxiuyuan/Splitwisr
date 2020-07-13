@@ -5,87 +5,90 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.MainFragment">
+    tools:context=".ui.receipts.ReceiptFragment$UserDropDownActivity">
 
-    <EditText
-        android:id="@+id/ItemCost"
-        android:layout_width="181dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="316dp"
-        android:ems="10"
-        android:hint="enter item cost"
-        android:inputType="numberSigned"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/SubmitReceiptButton"
-        android:layout_width="402dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="536dp"
-        android:text="submit receipt"
+
+    <TextView
+        android:id="@+id/ReceiptContents"
+        android:layout_width="match_parent"
+        android:layout_height="254dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/UserDropDown"
-        android:layout_width="404dp"
-        android:layout_height="46dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="264dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/AddUserToItemButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="488dp"
-        android:text="add user to item"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/ReceiptContents" />
 
-    <Button
-        android:id="@+id/AddItemButton"
-        android:layout_width="224dp"
-        android:layout_height="49dp"
-        android:layout_marginStart="184dp"
-        android:layout_marginTop="488dp"
-        android:text="Add item to receipt"
+    <LinearLayout
+        android:id="@+id/editTextLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/UserDropDown"
+        app:layout_constraintBottom_toTopOf="@id/UsersSplittingItem"
+
+        >
+        <EditText
+            android:id="@+id/ItemCost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Item cost"
+            android:inputType="numberSigned"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/ItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Item name"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"  />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/UsersSplittingItem"
-        android:layout_width="398dp"
-        android:layout_height="104dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="376dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/editTextLayout" />
 
-    <TextView
-        android:id="@+id/ReceiptContents"
-        android:layout_width="405dp"
-        android:layout_height="254dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="4dp"
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/UsersSplittingItem">
 
-    <EditText
-        android:id="@+id/ItemName"
-        android:layout_width="208dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="189dp"
-        android:layout_marginTop="319dp"
-        android:ems="10"
-        android:hint="enter item name"
-        android:inputType="textPersonName"
+        <Button
+            android:id="@+id/AddUserToItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="add user to item"
+            android:paddingHorizontal="5dp"/>
+
+        <Button
+            android:id="@+id/AddItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add item to receipt" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/SubmitReceiptButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="submit receipt"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonLayout"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
