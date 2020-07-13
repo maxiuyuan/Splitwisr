@@ -92,6 +92,7 @@ public class BalanceRepository {
         return balanceDao.get(email_a.toString(), email_b.toString());
     }
 
+    /** API CALLS **/
     private void getLatestBalances() {
         List<Balance> balances = balanceDao.getAllBlocking();
         if (balances != null) {

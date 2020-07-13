@@ -44,7 +44,7 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
         balanceText.setText("$" + balanceViewObject.balance);
         if (balanceViewObject.balance == 0d) {
             // pass
-        } else if (balanceViewObject.owesOtherUser && balanceViewObject.balance > 0) {
+        } else if (balanceViewObject.owesOtherUser && balanceViewObject.balance < 0) {
             balanceText.setTextColor(Color.GREEN);
         } else {
             balanceText.setTextColor(Color.RED);
