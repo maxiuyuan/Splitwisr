@@ -126,6 +126,7 @@ public class ReceiptFragment extends Fragment {
                         b = balance;
                     } else {
                         receiptsViewModel.insertBalance(new Balance(receiptsViewModel.getCurrentUserEmail(), splitUser, 0d));
+                        b = receiptsViewModel.get(receiptsViewModel.getCurrentUserEmail(), splitUser);
                     }
                     if (b.aEmail.equals(receiptsViewModel.getCurrentUserEmail())) {
                         b.totalOwing += amountOwed;
