@@ -74,12 +74,10 @@ public class LoginFragment extends Fragment {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
-        getView().findViewById(R.id.skipButton).setOnClickListener(v -> {
-            NavHostFragment
-                    .findNavController(this)
-                    .navigate(R.id.action_destination_login_fragment_to_destination_balance_fragment);
+        getView().findViewById(R.id.sign_out_button).setOnClickListener(v -> {
+            mGoogleSignInClient.signOut();
+            mAuth.signOut();
         });
-
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
