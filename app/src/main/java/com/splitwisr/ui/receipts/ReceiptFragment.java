@@ -6,15 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.codepath.asynchttpclient.AsyncHttpClient;
-import com.codepath.asynchttpclient.RequestParams;
-import com.codepath.asynchttpclient.callback.TextHttpResponseHandler;
+import com.splitwisr.data.ApiService;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
@@ -25,7 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import okhttp3.Headers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class ReceiptFragment extends Fragment {
     private ReceiptsViewModel receiptsViewModel;
@@ -39,9 +41,6 @@ public class ReceiptFragment extends Fragment {
     private HashMap<String,String> userNames = new HashMap<>();
     private HashMap<String, Double> amountsOwed = new HashMap<>();
     private String selectedUser = "";
-
-    private static AsyncHttpClient asyncClient;
-    private static String basePath = "https://ece452project.herokuapp.com/write";
 
     @Nullable
     @Override
@@ -142,22 +141,24 @@ public class ReceiptFragment extends Fragment {
                     }
                     receiptsViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
 
-                    RequestParams params = new RequestParams();
-                    params.put("payer", b.aEmail);
-                    params.put("payee", b.bEmail);
-                    params.put("balance", b.totalOwing.toString());
-                    asyncClient.post(basePath, params, "", new TextHttpResponseHandler() {
-                                @Override
-                                public void onSuccess(int statusCode, Headers headers, String response) {
-                                    // Do nothing
-                                }
+                    // TODO: Move into BalanceRepository
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl("https://ece452project.herokuapp.com")
+                            .build();
 
-                                @Override
-                                public void onFailure(int statusCode, Headers headers, String errorResponse, Throwable t) {
-                                    // Do nothing
-                                }
-                            }
-                    );
+                    ApiService service = retrofit.create(ApiService.class);
+
+                    service.writeBalance(b.aEmail, b.bEmail, b.totalOwing.toString()).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Toast.makeText(requireContext(), "Submit Successful", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Toast.makeText(requireContext(), "Submit Unsuccessful", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
             amountsOwed.clear();
@@ -166,8 +167,6 @@ public class ReceiptFragment extends Fragment {
 
         resetReceiptContentsText();
         resetUsersSplittingItemText();
-
-        asyncClient = new AsyncHttpClient();
 
         return view;
     }
