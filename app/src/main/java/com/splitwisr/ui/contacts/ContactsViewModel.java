@@ -28,8 +28,18 @@ public class ContactsViewModel extends AndroidViewModel {
         return userRepository.getAllUsers();
     }
 
-    void newBalance(Balance balance) {
-        balanceRepository.insert(balance);
+    void newBalance(String newEmail) {
+        String aEmail;
+        String bEmail;
+        if (newEmail.compareTo(getCurrentUserEmail()) < 0) {
+            aEmail = newEmail;
+            bEmail = getCurrentUserEmail();
+        } else {
+            aEmail = getCurrentUserEmail();
+            bEmail = newEmail;
+        }
+
+        balanceRepository.insert(new Balance(aEmail, bEmail, 0d));
     }
 
     public void insertUser(User user) {

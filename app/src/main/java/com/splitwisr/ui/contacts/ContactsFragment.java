@@ -5,13 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.splitwisr.data.balances.Balance;
+
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ContactsFragmentBinding;
 
@@ -31,26 +32,15 @@ public class ContactsFragment extends Fragment {
         binding.userRecycler.setAdapter(usersAdapter);
         binding.userRecycler.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayout.VERTICAL));
 
+        // TODO: Data validation
         binding.submit.setOnClickListener(v -> {
-            // TODO: Data validation
-            String email = binding.email.getText().toString();
-            String first = binding.firstName.getText().toString();
-            String last = binding.lastName.getText().toString();
-            User newUser =  new User(email, first, last);
+            String newEmail = binding.email.getText().toString();
+            String newFirstName = binding.firstName.getText().toString();
+            String newLastName = binding.lastName.getText().toString();
+            User newUser = new User(newEmail, newFirstName, newLastName);
+
             viewModel.insertUser(newUser);
-
-            String myEmail = viewModel.getCurrentUserEmail();
-            String aEmail;
-            String bEmail;
-            if (email.compareTo(myEmail) < 0) {
-                aEmail = email;
-                bEmail = myEmail;
-            } else {
-                aEmail = myEmail;
-                bEmail = email;
-            }
-
-            viewModel.newBalance(new Balance(aEmail, bEmail, 0d));
+            viewModel.newBalance(newEmail);
         });
 
         return view;
