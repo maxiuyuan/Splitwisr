@@ -16,26 +16,22 @@ const ref = db.ref("Receipt");
 
 app.get("/read", (req, res) => {
   let payer = req.query.payer
-  let payee = req.query.payee
-  if(payer.localeCompare(payee)>0) {
-    payee = req.query.payer
-    payer = req.query.payee
-  }
-
+  let userToBalance = []
+  
   ref.once("value", function(snapshot) {
     let ret = snapshot.val()
     let temp = ''
     for (let transaction in ret){
-      if(ret[transaction]['payer'] === payer && ret[transaction]['payee'] === payee){
-        temp = transaction
-        break;
+      if(ret[transaction]['payer'] === payer || ret[transaction]['payee'] === payer){
+        userToBalance.push(ret[transaction])
       }
     }
-    res.send(ret[temp], 200)
+    res.send(userToBalance, 200)
   }, function (errorObject) {
     res.send("The read failed: " + errorObject.code, 400);
   });
 });
+
 
 app.post("/write", (req, res) => {
   let id_A = req.query.payer;
