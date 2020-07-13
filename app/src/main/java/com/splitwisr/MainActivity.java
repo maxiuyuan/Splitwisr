@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
@@ -52,10 +53,18 @@ public class MainActivity extends AppCompatActivity {
                     // User is signed in
                     Log.d(this.toString(), "onAuthStateChanged:signed_in:" + user.getUid());
                     findViewById(R.id.bottom_navigation).setVisibility(View.VISIBLE);
+                    NavHostFragment
+                            .findNavController(
+                                    getSupportFragmentManager().getPrimaryNavigationFragment())
+                            .navigate(R.id.destination_balance_fragment);
                 } else {
                     // User is signed out
                     Log.d(this.toString(), "onAuthStateChanged:signed_out");
                     findViewById(R.id.bottom_navigation).setVisibility(View.GONE);
+                    NavHostFragment
+                            .findNavController(
+                                    getSupportFragmentManager().getPrimaryNavigationFragment())
+                            .navigate(R.id.destination_login_fragment);
                 }
             }
         };
