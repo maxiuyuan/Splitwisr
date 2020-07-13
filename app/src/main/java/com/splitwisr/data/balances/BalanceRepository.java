@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.google.gson.JsonObject;
 import com.splitwisr.data.ApiService;
 import com.splitwisr.data.AppDatabase;
 
@@ -14,6 +15,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BalanceRepository {
 
@@ -29,11 +31,15 @@ public class BalanceRepository {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://ece452project.herokuapp.com")
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
     }
 
-    public LiveData<List<Balance>> getAllBalances() { return allBalances; }
+    public LiveData<List<Balance>> getAllBalances() {
+        getLatestBalances();
+        return allBalances;
+    }
 
     public void insert(Balance balance) {
         StringBuilder email_a = new StringBuilder();
@@ -80,6 +86,28 @@ public class BalanceRepository {
             email_b.append(s1);
         }
         return balanceDao.get(email_a.toString(), email_b.toString());
+    }
+
+    private void getLatestBalances() {
+        List<Balance> balances = balanceDao.getAllBlocking();
+        if (balances != null) {
+            for (Balance balance: balances) {
+                apiService.readBalance(balance.aEmail, balance.bEmail).enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        Double serverBalance = response.body().get(("balance")).getAsDouble();
+                        if (serverBalance != balance.totalOwing) {
+                            update(serverBalance, balance.aEmail, balance.bEmail);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                        Log.e("ApiService", t.toString());
+                    }
+                });
+            }
+        }
     }
 
     private void sendBalance(String aEmail, String bEmail, Double totalOwing) {

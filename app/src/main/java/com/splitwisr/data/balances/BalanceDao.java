@@ -12,6 +12,9 @@ public interface BalanceDao {
     @Query("SELECT * FROM balance")
     LiveData<List<Balance>> getAll();
 
+    @Query("SELECT * FROM balance")
+    List<Balance> getAllBlocking();
+
     @Query("SELECT * FROM balance WHERE a_email=:a_email AND b_email=:b_email")
     List<Balance> get(String a_email, String b_email);
 
