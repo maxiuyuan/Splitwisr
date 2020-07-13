@@ -45,22 +45,6 @@ public class ReceiptFragment extends Fragment {
         }
     }
 
-    public class ItemCostOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            if (!binding.ItemCost.getText().toString().equals("")) {
-                currentItemCost = Double.parseDouble(binding.ItemCost.getText().toString());
-            }
-        }
-    }
-
-    public class ItemNameOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            currentItemName = binding.ItemName.getText().toString();
-        }
-    }
-
     public class AddUserButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -75,9 +59,15 @@ public class ReceiptFragment extends Fragment {
     public class AddItemToReceiptButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            if (currentItemCost > 0d && usersToSplitItem.size() > 0) {
-                double costPerUser = round(currentItemCost/usersToSplitItem.size());
-                StringBuilder s = new StringBuilder("\n" + currentItemName + " - " + Double.toString(currentItemCost) + " ");
+            double tempItemCost = 0d;
+            String tempItemName = "";
+
+            if (!binding.ItemCost.getText().toString().equals("")) tempItemCost = Double.parseDouble(binding.ItemCost.getText().toString());
+            tempItemName = binding.ItemName.getText().toString();
+
+            if (tempItemCost > 0d && usersToSplitItem.size() > 0) {
+                double costPerUser = round(tempItemCost/usersToSplitItem.size());
+                StringBuilder s = new StringBuilder("\n" + tempItemName + " - " + Double.toString(tempItemCost) + " ");
                 for (int x = 0; x < userNamesToSplitItem.size(); x++) {
                     String user = usersToSplitItem.get(x);
                     String userName = userNamesToSplitItem.get(x);
@@ -153,9 +143,6 @@ public class ReceiptFragment extends Fragment {
 
     private String currentUserEmail = "userA@gmail.com";
 
-    private double currentItemCost= 0d;
-    private String currentItemName = "";
-
     private List<String> usersToSplitItem = new ArrayList<>();
     private List<String> userNamesToSplitItem = new ArrayList<>();
 
@@ -164,7 +151,7 @@ public class ReceiptFragment extends Fragment {
 
     private String selectedUser = "";
 
-    // set this to falsegit this if you want dummy data
+    // set this to false if you want dummy data
     private static boolean dummyDataAdded = false;
 
     public static ReceiptFragment newInstance() {return new ReceiptFragment();}
@@ -201,12 +188,10 @@ public class ReceiptFragment extends Fragment {
             binding.UserDropDown.setAdapter(adapter);
         }
 
-        binding.ItemCost.setOnClickListener(new ItemCostOnClickListener());
         binding.UserDropDown.setOnItemSelectedListener(new UserDropDownActivity());
         binding.AddUserToItemButton.setOnClickListener(new AddUserButtonOnClickListener());
         binding.AddItemButton.setOnClickListener(new AddItemToReceiptButtonOnClickListener());
         binding.SubmitReceiptButton.setOnClickListener(new SubmitReceiptButtonOnClickListener());
-        binding.ItemName.setOnClickListener(new ItemNameOnClickListener());
 
         resetReceiptContentsText();
         resetUsersSplittingItemText();
