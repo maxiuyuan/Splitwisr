@@ -74,10 +74,6 @@ public class LoginFragment extends Fragment {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
-        getView().findViewById(R.id.sign_out_button).setOnClickListener(v -> {
-            mGoogleSignInClient.signOut();
-            mAuth.signOut();
-        });
         getView().findViewById(R.id.skipButton).setOnClickListener(v -> {
             NavHostFragment
                     .findNavController(this)
