@@ -41,13 +41,16 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
         TextView userText = holder.balanceView.findViewById(R.id.user_text);
         TextView balanceText = holder.balanceView.findViewById(R.id.balance_text);
         userText.setText(balanceViewObject.otherUser);
-        balanceText.setText("$" + balanceViewObject.balance);
+        balanceText.setText("$" + Math.abs(balanceViewObject.balance));
         if (balanceViewObject.balance == 0d) {
             // pass
-        } else if (balanceViewObject.owesOtherUser && balanceViewObject.balance < 0) {
-            balanceText.setTextColor(Color.GREEN);
-        } else {
+        } else if (
+                (balanceViewObject.owesOtherUser && balanceViewObject.balance > 0) ||
+                        (!balanceViewObject.owesOtherUser && balanceViewObject.balance < 0)
+        ) {
             balanceText.setTextColor(Color.RED);
+        } else {
+            balanceText.setTextColor(Color.GREEN);
         }
     }
 
