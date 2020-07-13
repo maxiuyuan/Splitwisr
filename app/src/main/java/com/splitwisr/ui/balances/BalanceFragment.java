@@ -49,7 +49,7 @@ public class BalanceFragment extends Fragment {
             public void onClick(View v) {
                 NavHostFragment
                         .findNavController(here)
-                        .navigate(R.id.action_destination_balance_fragment_to_receiptFragment);
+                        .navigate(R.id.destination_receipt_fragment);
             }
         });
 
