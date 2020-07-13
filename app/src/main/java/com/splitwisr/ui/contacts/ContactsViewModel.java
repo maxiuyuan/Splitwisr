@@ -28,10 +28,6 @@ public class ContactsViewModel extends AndroidViewModel {
         return userRepository.getAllUsers();
     }
 
-    User getUser(String email) {
-        return userRepository.getUser(email).getValue();
-    }
-
     void newBalance(Balance balance) {
         balanceRepository.insert(balance);
     }

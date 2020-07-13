@@ -39,7 +39,6 @@ public class ContactsFragment extends Fragment {
             User newUser =  new User(email, first, last);
             viewModel.insertUser(newUser);
 
-            // TODO: can't hardcode this!
             String myEmail = viewModel.getCurrentUserEmail();
             String aEmail;
             String bEmail;
@@ -62,7 +61,6 @@ public class ContactsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
 
-        // TODO: Why do these only show up when I click the editText ...
         viewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
             if (users != null && users.size() > 0) {
                 usersAdapter.setData(users);

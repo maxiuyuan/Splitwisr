@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.codepath.asynchttpclient.RequestHeaders;
+import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.RequestParams;
 import com.codepath.asynchttpclient.callback.TextHttpResponseHandler;
 import com.splitwisr.data.balances.Balance;
@@ -25,12 +25,10 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import com.codepath.asynchttpclient.AsyncHttpClient;
 
 import okhttp3.Headers;
 
 public class ReceiptFragment extends Fragment {
-
 
     // Rounding function for rounding to 2 decimal places
     public static double round(double value) {
@@ -66,7 +64,7 @@ public class ReceiptFragment extends Fragment {
         @Override
         public void onClick(View v) {
             double tempItemCost = 0d;
-            String tempItemName = "";
+            String tempItemName;
 
             if (!binding.ItemCost.getText().toString().equals("")) tempItemCost = Double.parseDouble(binding.ItemCost.getText().toString());
             tempItemName = binding.ItemName.getText().toString();
@@ -148,7 +146,7 @@ public class ReceiptFragment extends Fragment {
     }
 
     public void addUsersSplittingItemText(String user) {
-        usersSplittingItemText.append("\n" + user);
+        usersSplittingItemText.append("\n").append(user);
         binding.UsersSplittingItem.setText(usersSplittingItemText.toString());
     }
 
@@ -164,7 +162,7 @@ public class ReceiptFragment extends Fragment {
 
     private ReceiptFragmentBinding binding;
 
-    private String currentUserEmail = "userA@gmail.com";
+    private String currentUserEmail;
 
     private List<String> usersToSplitItem = new ArrayList<>();
     private List<String> userNamesToSplitItem = new ArrayList<>();
@@ -174,10 +172,6 @@ public class ReceiptFragment extends Fragment {
 
     private String selectedUser = "";
 
-    // set this to false if you want dummy data
-    private static boolean dummyDataAdded = false;
-
-    public static ReceiptFragment newInstance() {return new ReceiptFragment();}
     private static AsyncHttpClient asyncClient;
     private static String basePath = "https://ece452project.herokuapp.com/write";
 
@@ -186,15 +180,8 @@ public class ReceiptFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         receiptsViewModel = new ViewModelProvider(requireActivity()).get(ReceiptsViewModel.class);
-        if (!dummyDataAdded) {
-            receiptsViewModel.insertUser(new User("userA@gmail.com", "user", "A"));
-            receiptsViewModel.insertUser(new User("userB@gmail.com", "user", "B"));
-            receiptsViewModel.insertUser(new User("userC@gmail.com", "user", "C"));
-            receiptsViewModel.insertBalance(new Balance("userA@gmail.com", "userB@gmail.com", 55d));
-            receiptsViewModel.insertBalance(new Balance("userA@gmail.com", "userC@gmail.com", 55d));
-            receiptsViewModel.insertBalance(new Balance("userB@gmail.com", "userC@gmail.com", 55d));
-            dummyDataAdded = true;
-        }
+        currentUserEmail = receiptsViewModel.getCurrentUserEmail();
+
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
@@ -205,11 +192,11 @@ public class ReceiptFragment extends Fragment {
                 String userName = users.get(x).firstName + " " + users.get(x).lastName;
                 userNames.put(userName, users.get(x).email);
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, userNames.keySet().toArray(new String[userNames.keySet().size()]));
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, userNames.keySet().toArray(new String[0]));
             binding.UserDropDown.setAdapter(adapter);
         } else {
             String[] s = new String[]{"no users"};
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, s);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, s);
             binding.UserDropDown.setAdapter(adapter);
         }
 
