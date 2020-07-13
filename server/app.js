@@ -39,18 +39,15 @@ app.post("/write", (req, res) => {
 
   // sort lexicographically
   let entry = {}
-  if(id_A.localeCompare(id_B) < 0) {
-    entry = {
-      payer : id_A,
-      payee : id_B,
-      balance : blnc
-    }
-  } else {
-    entry = {
-      payer : id_B,
-      payee : id_A,
-      balance : blnc
-    }
+  if(!(id_A.localeCompare(id_B) < 0)) {
+    res.send("Not lexicographically sorted!", 400);
+
+  }
+
+  entry = {
+    payer : id_A,
+    payee : id_B,
+    balance : blnc
   }
 
   // search if already exists
