@@ -5,23 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ContactsFragmentBinding;
-import com.splitwisr.ui.balances.BalanceViewModel;
 
 public class ContactsFragment extends Fragment {
     private ContactsFragmentBinding binding;
-    private BalanceViewModel balanceViewModel;
     private ContactsViewModel viewModel;
     private UsersAdapter usersAdapter = new UsersAdapter();
 
@@ -56,7 +51,7 @@ public class ContactsFragment extends Fragment {
                 bEmail = email;
             }
 
-            balanceViewModel.insertBalance(new Balance(aEmail, bEmail, 0d));
+            viewModel.newBalance(new Balance(aEmail, bEmail, 0d));
         });
 
         return view;
@@ -66,7 +61,6 @@ public class ContactsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
-        balanceViewModel = ViewModelProviders.of(this).get(BalanceViewModel.class);
 
         // TODO: Why do these only show up when I click the editText ...
         viewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
