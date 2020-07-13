@@ -26,7 +26,9 @@ public class ReceiptsViewModel extends AndroidViewModel {
 
     public List<User> getUserList() { return userRepository.getUserList(); }
 
-    public void update(double d, String a, String b) { balanceRepository.update(d, a, b); }
+    public void update(double totalOwing, String aEmail, String bEmail) {
+        balanceRepository.update(totalOwing, aEmail, bEmail);
+    }
 
     public List<Balance> get(final String s1, final String s2) { return balanceRepository.get(s1, s2); }
 

@@ -6,14 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.splitwisr.data.ApiService;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
@@ -23,11 +21,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class ReceiptFragment extends Fragment {
     private ReceiptsViewModel receiptsViewModel;
@@ -140,25 +133,6 @@ public class ReceiptFragment extends Fragment {
                         b.totalOwing -= amountOwed;
                     }
                     receiptsViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
-
-                    // TODO: Move into BalanceRepository
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl("https://ece452project.herokuapp.com")
-                            .build();
-
-                    ApiService service = retrofit.create(ApiService.class);
-
-                    service.writeBalance(b.aEmail, b.bEmail, b.totalOwing.toString()).enqueue(new Callback<Void>() {
-                        @Override
-                        public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(requireContext(), "Submit Successful", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(requireContext(), "Submit Unsuccessful", Toast.LENGTH_LONG).show();
-                        }
-                    });
                 }
             }
             amountsOwed.clear();
