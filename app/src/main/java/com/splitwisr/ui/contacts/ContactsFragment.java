@@ -40,7 +40,6 @@ public class ContactsFragment extends Fragment {
             User newUser = new User(newEmail, newFirstName, newLastName);
 
             viewModel.insertUser(newUser);
-            viewModel.newBalance(newEmail);
         });
 
         return view;
