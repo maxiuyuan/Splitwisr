@@ -18,16 +18,14 @@ app.get("/read", (req, res) => {
   let payer = req.query.payer
   let payee = req.query.payee
   if(payer.localeCompare(payee)>0) {
-    let payee = req.query.payer
-    let payer = req.query.payee
+    payee = req.query.payer
+    payer = req.query.payee
   }
 
   ref.once("value", function(snapshot) {
     let ret = snapshot.val()
-    console.log(ret)
     let temp = ''
     for (let transaction in ret){
-      console.log(ret[transaction])
       if(ret[transaction]['payer'] === payer && ret[transaction]['payee'] === payee){
         temp = transaction
         break;
@@ -66,13 +64,10 @@ app.post("/write", (req, res) => {
 
     for(let temp in snapshot.val()) {
       let curr = snapshot.val()[temp];
-      console.log(curr["payer"],id_A,curr["payee"],id_B)
       if(curr["payer"] === id_A && curr["payee"] === id_B) {
-        console.log("A");
         keyPrev = temp;
         break;
       } else if(curr["payer"] === id_B && curr["payee"] === id_A) {
-        console.log("B");
         keyPrev = temp;
         break;
       }
