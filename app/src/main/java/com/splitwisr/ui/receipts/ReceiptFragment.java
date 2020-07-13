@@ -16,8 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
-import com.splitwisr.ui.balances.BalanceViewModel;
-import com.splitwisr.ui.contacts.ContactsViewModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -106,19 +104,19 @@ public class ReceiptFragment extends Fragment {
             for (String splitUser : amountsOwed.keySet()) {
                 double amountOwed = amountsOwed.get(splitUser);
                 if (!splitUser.equals(currentUserEmail)) {
-                    List<Balance> balances = balanceViewModel.get(currentUserEmail, splitUser);
+                    List<Balance> balances = receiptsViewModel.get(currentUserEmail, splitUser);
                     Balance b = null;
                     if (balances.size() > 0) {
                         b = balances.get(0);
                     } else {
-                        balanceViewModel.insertBalance(new Balance(currentUserEmail, splitUser, 0d));
+                        receiptsViewModel.insertBalance(new Balance(currentUserEmail, splitUser, 0d));
                     }
                     if (b.aEmail.equals(currentUserEmail)) {
                         b.totalOwing += amountOwed;
                     } else {
                         b.totalOwing -= amountOwed;
                     }
-                    balanceViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
+                    receiptsViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
                 }
             }
             amountsOwed.clear();
@@ -146,8 +144,7 @@ public class ReceiptFragment extends Fragment {
         binding.ReceiptContents.setText(receiptContentsText.toString());
     }
 
-    private ContactsViewModel userViewModel;
-    private BalanceViewModel balanceViewModel;
+    private ReceiptsViewModel receiptsViewModel;
 
     StringBuilder usersSplittingItemText = new StringBuilder();
     StringBuilder receiptContentsText = new StringBuilder();
@@ -176,21 +173,20 @@ public class ReceiptFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        userViewModel = new ViewModelProvider(requireActivity()).get(ContactsViewModel.class);
-        balanceViewModel = new ViewModelProvider(requireActivity()).get(BalanceViewModel.class);
+        receiptsViewModel = new ViewModelProvider(requireActivity()).get(ReceiptsViewModel.class);
         if (!dummyDataAdded) {
-            userViewModel.insertUser(new User("userA@gmail.com", "user", "A"));
-            userViewModel.insertUser(new User("userB@gmail.com", "user", "B"));
-            userViewModel.insertUser(new User("userC@gmail.com", "user", "C"));
-            balanceViewModel.insertBalance(new Balance("userA@gmail.com", "userB@gmail.com", 55d));
-            balanceViewModel.insertBalance(new Balance("userA@gmail.com", "userC@gmail.com", 55d));
-            balanceViewModel.insertBalance(new Balance("userB@gmail.com", "userC@gmail.com", 55d));
+            receiptsViewModel.insertUser(new User("userA@gmail.com", "user", "A"));
+            receiptsViewModel.insertUser(new User("userB@gmail.com", "user", "B"));
+            receiptsViewModel.insertUser(new User("userC@gmail.com", "user", "C"));
+            receiptsViewModel.insertBalance(new Balance("userA@gmail.com", "userB@gmail.com", 55d));
+            receiptsViewModel.insertBalance(new Balance("userA@gmail.com", "userC@gmail.com", 55d));
+            receiptsViewModel.insertBalance(new Balance("userB@gmail.com", "userC@gmail.com", 55d));
             dummyDataAdded = true;
         }
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        List<User> users = userViewModel.getUserList();
+        List<User> users = receiptsViewModel.getUserList();
 
         if (users != null) {
             for (int x = 0; x < users.size(); x++) {
