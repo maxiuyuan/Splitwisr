@@ -5,14 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ContactsFragmentBinding;
@@ -53,7 +51,7 @@ public class ContactsFragment extends Fragment {
                 bEmail = email;
             }
 
-            viewModel.newBalance(new Balance(aEmail, bEmail, 0));
+            viewModel.newBalance(new Balance(aEmail, bEmail, 0d));
         });
 
         return view;

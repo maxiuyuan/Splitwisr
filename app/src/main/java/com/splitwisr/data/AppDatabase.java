@@ -31,7 +31,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             .databaseBuilder(
                                     context.getApplicationContext(),
                                     AppDatabase.class,
-                                    "splitwisr_db")
+                                    "splitwisr_db").allowMainThreadQueries()
                             .build();
                 }
             }

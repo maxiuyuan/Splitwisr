@@ -78,7 +78,6 @@ public class LoginFragment extends Fragment {
             mGoogleSignInClient.signOut();
             mAuth.signOut();
         });
-
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

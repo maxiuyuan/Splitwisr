@@ -3,7 +3,7 @@
 
 
     <item
-        android:id="@+id/destination_add_receipt_screen"
+        android:id="@+id/destination_receipt_fragment"
         android:icon="@drawable/ic_baseline_add_24"
         android:title="@string/add_receipt_screen_label" />
     <item

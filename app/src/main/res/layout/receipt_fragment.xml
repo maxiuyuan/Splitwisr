@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.receipts.ReceiptFragment$UserDropDownActivity">
+
+
+
+    <TextView
+        android:id="@+id/ReceiptContents"
+        android:layout_width="match_parent"
+        android:layout_height="254dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/UserDropDown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ReceiptContents" />
+
+    <LinearLayout
+        android:id="@+id/editTextLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/UserDropDown"
+        app:layout_constraintBottom_toTopOf="@id/UsersSplittingItem"
+
+        >
+        <EditText
+            android:id="@+id/ItemCost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Item cost"
+            android:inputType="numberSigned"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/ItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Item name"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"  />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/UsersSplittingItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editTextLayout" />
+
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/UsersSplittingItem">
+
+        <Button
+            android:id="@+id/AddUserToItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="add user to item"
+            android:paddingHorizontal="5dp"/>
+
+        <Button
+            android:id="@+id/AddItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add item to receipt" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/SubmitReceiptButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="submit receipt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonLayout"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
