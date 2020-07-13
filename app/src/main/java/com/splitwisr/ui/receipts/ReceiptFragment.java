@@ -13,6 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.codepath.asynchttpclient.RequestHeaders;
+import com.codepath.asynchttpclient.RequestParams;
+import com.codepath.asynchttpclient.callback.TextHttpResponseHandler;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
@@ -22,6 +25,9 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import com.codepath.asynchttpclient.AsyncHttpClient;
+
+import okhttp3.Headers;
 
 public class ReceiptFragment extends Fragment {
 
@@ -107,6 +113,23 @@ public class ReceiptFragment extends Fragment {
                         b.totalOwing -= amountOwed;
                     }
                     receiptsViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
+
+                    RequestParams params = new RequestParams();
+                    params.put("payer", b.aEmail);
+                    params.put("payee", b.bEmail);
+                    params.put("balance", b.totalOwing.toString());
+                    asyncClient.post(basePath, params, "", new TextHttpResponseHandler() {
+                                @Override
+                                public void onSuccess(int statusCode, Headers headers, String response) {
+                                    // Do nothing
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Headers headers, String errorResponse, Throwable t) {
+                                    // Do nothing
+                                }
+                            }
+                    );
                 }
             }
             amountsOwed.clear();
@@ -155,6 +178,8 @@ public class ReceiptFragment extends Fragment {
     private static boolean dummyDataAdded = false;
 
     public static ReceiptFragment newInstance() {return new ReceiptFragment();}
+    private static AsyncHttpClient asyncClient;
+    private static String basePath = "https://ece452project.herokuapp.com/write";
 
     @Nullable
     @Override
@@ -195,6 +220,8 @@ public class ReceiptFragment extends Fragment {
 
         resetReceiptContentsText();
         resetUsersSplittingItemText();
+
+        asyncClient = new AsyncHttpClient();
 
         return view;
     }
