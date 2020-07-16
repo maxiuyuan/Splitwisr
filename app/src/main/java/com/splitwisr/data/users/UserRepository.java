@@ -34,4 +34,11 @@ public class UserRepository {
             userDao.insertAll(user);
         });
     }
+
+    public void upsert(final User user) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            userDao.upsert(user);
+            System.out.println("Upserted User");
+        });
+    }
 }

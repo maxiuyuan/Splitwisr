@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -21,6 +22,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.splitwisr.R;
+import com.splitwisr.ui.balances.BalanceViewModel;
 
 import static android.content.ContentValues.TAG;
 
@@ -34,6 +36,7 @@ public class LoginFragment extends Fragment {
     private static final int RC_SIGN_IN = 1;
     private FirebaseAuth mAuth;
     GoogleSignInClient mGoogleSignInClient;
+    LoginViewModel viewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,8 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         super.onViewCreated(view, savedInstanceState);
+        viewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+
         getView().findViewById(R.id.google_sign_in_button).setOnClickListener(v -> {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -73,6 +78,7 @@ public class LoginFragment extends Fragment {
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                viewModel.upsertUser(account.getEmail());
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 Log.e(TAG, "Google sign in failed", e);
