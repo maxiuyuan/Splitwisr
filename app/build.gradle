@@ -60,6 +60,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.3.2'
     implementation 'com.google.firebase:firebase-messaging:20.2.3'
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
+    implementation 'com.google.firebase:firebase-ml-vision:24.0.3'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
