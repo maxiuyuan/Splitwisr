@@ -8,7 +8,7 @@
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
-        android:layout_height="400dp" />
+        android:layout_height="500dp" />
 
     <TextView
         android:id="@+id/text_view"
@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/image_view"
         android:textSize="20dp"
-        android:text="Detected Text"
+        android:text=""
         android:layout_margin="10dp"/>
     
     <Button
@@ -26,6 +26,11 @@
         android:layout_alignParentBottom="true"
         android:text="Capture Image" />
 
-
+    <Button
+        android:id="@+id/detect_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/capture_image"
+        android:text="Detect Text" />
 
 </RelativeLayout>
