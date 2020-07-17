@@ -11,17 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="400dp" />
 
-    <!--
-    <TextView
-        android:id="@+id/text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/image_view"
-        android:textSize="20dp"
-        android:text=""
-        android:layout_margin="10dp"/>
-        -->
-
     <ListView
         android:id="@+id/receipt_list_view"
         android:layout_width="match_parent"
@@ -49,6 +38,7 @@
             android:id="@+id/detect_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
             android:text="Detect Text" />
 
     </LinearLayout>
