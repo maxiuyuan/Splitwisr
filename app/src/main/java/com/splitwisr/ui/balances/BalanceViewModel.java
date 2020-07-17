@@ -10,6 +10,8 @@ import androidx.lifecycle.Transformations;
 import com.google.firebase.auth.FirebaseAuth;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.balances.BalanceRepository;
+import com.splitwisr.data.users.User;
+import com.splitwisr.data.users.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,11 +19,13 @@ import java.util.stream.Collectors;
 public class BalanceViewModel extends AndroidViewModel {
     private LiveData<List<Balance>> allBalances;
     private final BalanceRepository balanceRepository;
+    private final UserRepository userRepository;
 
     public BalanceViewModel(@NonNull Application application) {
         super(application);
         balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
         allBalances = balanceRepository.getAllBalances();
+        userRepository = new UserRepository(application);
     }
 
     LiveData<List<Balance>> getAllBalances() {
@@ -39,5 +43,14 @@ public class BalanceViewModel extends AndroidViewModel {
 
     public void refreshBalances() {
         balanceRepository.getLatestBalances();
+    }
+
+    public String getNameForEmailOrEmailIfNull(String otherUserEmail) {
+        User user = userRepository.getUserBlocking(otherUserEmail);
+        if (user != null) {
+            return user.firstName + " " + user.lastName;
+        } else {
+            return otherUserEmail;
+        }
     }
 }

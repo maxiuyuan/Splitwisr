@@ -18,6 +18,9 @@ public abstract class UserDao {
     @Query("SELECT * FROM user WHERE email LIKE :email")
     abstract LiveData<User> getUser(String email);
 
+    @Query("SELECT * FROM USER WHERE email LIKE :email")
+    abstract User getUserBlocking(String email);
+
     @Query("SELECT * FROM user")
     abstract List<User> getUserList();
 
