@@ -93,7 +93,7 @@ public class BalanceRepository {
     }
 
     /** API CALLS **/
-    private void getLatestBalances() {
+    public void getLatestBalances() {
         List<Balance> balances = balanceDao.getAllBlocking();
         if (balances != null) {
             apiService.readBalance(currentUserEmail).enqueue(new Callback<JsonArray>() {

@@ -16,10 +16,11 @@ import java.util.stream.Collectors;
 
 public class BalanceViewModel extends AndroidViewModel {
     private LiveData<List<Balance>> allBalances;
+    private final BalanceRepository balanceRepository;
 
     public BalanceViewModel(@NonNull Application application) {
         super(application);
-        BalanceRepository balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
+        balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
         allBalances = balanceRepository.getAllBalances();
     }
 
@@ -34,5 +35,9 @@ public class BalanceViewModel extends AndroidViewModel {
     public String getCurrentUserEmail(){
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         return mAuth.getCurrentUser().getEmail();
+    }
+
+    public void refreshBalances() {
+        balanceRepository.getLatestBalances();
     }
 }

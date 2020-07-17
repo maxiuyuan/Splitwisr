@@ -1,6 +1,7 @@
 package com.splitwisr.ui.balances;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,14 @@ public class BalanceFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = BalanceFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+        viewModel = ViewModelProviders.of(this).get(BalanceViewModel.class);
+
+        binding.refreshView.setOnRefreshListener(() -> {
+            viewModel.refreshBalances();
+            if (binding.refreshView.isRefreshing()) {
+                (new Handler()).postDelayed(this::removeRefresh, 1000);
+            }
+        });
 
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -41,7 +50,6 @@ public class BalanceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = ViewModelProviders.of(this).get(BalanceViewModel.class);
 
         viewModel.getAllBalances().observe(getViewLifecycleOwner(), balances -> {
             if (balances != null && balances.size() > 0) {
@@ -60,6 +68,10 @@ public class BalanceFragment extends Fragment {
                 balancesAdapter.setData(balanceViewObjects);
             }
         });
+    }
+
+    void removeRefresh() {
+        binding.refreshView.setRefreshing(false);
     }
 
     @Override
