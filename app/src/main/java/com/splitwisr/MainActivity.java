@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
                 showLogout = true;
                 invalidateOptionsMenu();
                 findViewById(R.id.bottom_navigation).setVisibility(View.VISIBLE);
+                while (NavHostFragment
+                        .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
+                        .popBackStack()){ }
                 NavHostFragment
                         .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
                         .navigate(R.id.destination_balance_fragment);

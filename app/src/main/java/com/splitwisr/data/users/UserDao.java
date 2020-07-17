@@ -36,12 +36,15 @@ public abstract class UserDao {
     @Update
     abstract void update(User user);
 
+    @Query("SELECT EXISTS(SELECT * FROM user WHERE user.email = :email)")
+    abstract Boolean userExists(String email);
+
     @Transaction
     public void upsert(User user) {
-        long result = insert(user);
-        if ((int) result < 0) {
+        if (userExists(user.email)) {
             update(user);
+        } else {
+            long result = insert(user);
         }
     }
-
 }
