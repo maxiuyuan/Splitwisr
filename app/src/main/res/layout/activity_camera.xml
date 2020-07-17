@@ -9,8 +9,9 @@
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
-        android:layout_height="500dp" />
+        android:layout_height="400dp" />
 
+    <!--
     <TextView
         android:id="@+id/text_view"
         android:layout_width="match_parent"
@@ -19,18 +20,37 @@
         android:textSize="20dp"
         android:text=""
         android:layout_margin="10dp"/>
+        -->
 
-    <Button
-        android:id="@+id/capture_image"
+    <ListView
+        android:id="@+id/receipt_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="Capture Image" />
+        android:layout_below="@id/image_view"
+        android:layout_above="@id/buttonLayout"
+        android:textSize="20dp"
+        android:text=""
+        android:layout_margin="10dp"/>
 
-    <Button
-        android:id="@+id/detect_text"
+    <LinearLayout
+        android:id="@+id/buttonLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/capture_image"
-        android:text="Detect Text" />
+        android:gravity="center"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/capture_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capture Image" />
+
+        <Button
+            android:id="@+id/detect_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Detect Text" />
+
+    </LinearLayout>
+
 </RelativeLayout>

@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,8 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.splitwisr.R;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -35,8 +39,11 @@ public class CameraActivity extends AppCompatActivity {
     private Button captureImageButton;
     private Button detectTextButton;
     private ImageView imageView;
-    private TextView textView;
+    private ListView receiptListView;
+
     private Bitmap imageBitmap;
+    private List<String> receiptItems = new ArrayList<>();
+
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
@@ -47,7 +54,7 @@ public class CameraActivity extends AppCompatActivity {
         captureImageButton = findViewById(R.id.capture_image);
         detectTextButton = findViewById(R.id.detect_text);
         imageView = findViewById(R.id.image_view);
-        textView = findViewById(R.id.text_view);
+        receiptListView = findViewById(R.id.receipt_list_view);
 
         captureImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,9 +116,14 @@ public class CameraActivity extends AppCompatActivity {
         }
         else {
             for (FirebaseVisionText.TextBlock block : firebaseVisionText.getTextBlocks()) {
-                String curText = block.getText();
-                textView.setText(curText);
+                receiptItems.add(block.getText());
             }
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_list_item_1,
+                    receiptItems
+            );
+            receiptListView.setAdapter(adapter);
         }
     }
 
