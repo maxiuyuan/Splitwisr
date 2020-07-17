@@ -23,6 +23,10 @@ public class UserRepository {
         return userDao.getUser(email);
     }
 
+    public User getUserBlocking(String email) {
+        return userDao.getUserBlocking(email);
+    }
+
     public LiveData<List<User>> getAllUsers() {
         return allUsers;
     }

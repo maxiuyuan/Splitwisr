@@ -63,7 +63,8 @@ public class BalanceFragment extends Fragment {
                         otherUserEmail = balance.aEmail;
                         owesOtherUser = true;
                     }
-                    return new BalanceViewObject(otherUserEmail, balance.totalOwing, owesOtherUser);
+                    String otherUserName = viewModel.getNameForEmailOrEmailIfNull(otherUserEmail);
+                    return new BalanceViewObject(otherUserName, balance.totalOwing, owesOtherUser);
                 }).collect(Collectors.toList());
                 balancesAdapter.setData(balanceViewObjects);
             }
