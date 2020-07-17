@@ -11,7 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
+import com.splitwisr.R;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
@@ -136,8 +139,12 @@ public class ReceiptFragment extends Fragment {
                     receiptsViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
                 }
             }
-            amountsOwed.clear();
-            resetReceiptContentsText();
+            if (!amountsOwed.isEmpty()){
+                amountsOwed.clear();
+                resetReceiptContentsText();
+                NavController navController = NavHostFragment.findNavController(this);
+                navController.navigate(R.id.destination_balance_fragment);
+            }
         });
 
         resetReceiptContentsText();
