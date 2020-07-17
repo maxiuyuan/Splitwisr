@@ -1,5 +1,6 @@
 package com.splitwisr.ui.receipts;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.abdeveloper.library.MultiSelectDialog;
 import com.abdeveloper.library.MultiSelectModel;
 import com.splitwisr.R;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
+import com.splitwisr.ui.camera.CameraActivity;
 
 import java.util.ArrayList;
 import java.util.List;
