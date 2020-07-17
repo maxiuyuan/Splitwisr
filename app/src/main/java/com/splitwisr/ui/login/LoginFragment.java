@@ -78,7 +78,7 @@ public class LoginFragment extends Fragment {
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                viewModel.upsertUser(account.getEmail());
+                viewModel.upsertUser(account.getEmail(), account.getGivenName(), account.getFamilyName());
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 Log.e(TAG, "Google sign in failed", e);

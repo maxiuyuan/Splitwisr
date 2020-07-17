@@ -29,9 +29,6 @@ public class LoginViewModel extends AndroidViewModel {
         upsertUser(new User(email,firstName, lastName));
     }
 
-    public void upsertUser(String email){
-        upsertUser(new User(email,null,null));
-    }
 
     private void upsertUser(User user){
         userRepository.upsert(user);
