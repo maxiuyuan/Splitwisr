@@ -1,11 +1,11 @@
 const express = require('express');
 const parser = require('body-parser');
-
 const admin = require("firebase-admin");
+const gcm = require("node-gcm");
 const key = require("./ece452-297ff-firebase-adminsdk-o4qg7-41afcae2be.json");
 
 const server = express();
-server.use(parser.json())
+server.use(parser.json());
 
 admin.initializeApp({
   credential: admin.credential.cert(key),
@@ -13,6 +13,7 @@ admin.initializeApp({
 });
 
 const db = admin.database();
+const baseRef = db.ref();
 const tokenRef = db.ref("Token");
 const receiptRef = db.ref("Receipt");
 
@@ -56,12 +57,14 @@ server.get("/send", (req, res) => {
   let current_user = req.query.current_user;
   let target_user = req.query.target_user;
 
-  receiptRef.once("value", function(snapshot) {
+  baseRef.once("value", function(snapshot) {
     let owing = 0;
+    let target_device = "";
 
     // aggregate balances between two users
-    for(let temp in snapshot.val()) {
-      let curr = snapshot.val()[temp];
+    let receipt = snapshot.val().Receipt;
+    for(let temp in receipt) {
+      let curr = receipt[temp];
       if(curr["payer"] === current_user && curr["payee"] === target_user) {
         owing -= parseFloat(curr["balance"]);
       } else if(curr["payer"] === target_user && curr["payee"] === current_user) {
@@ -69,13 +72,34 @@ server.get("/send", (req, res) => {
       }
     }
 
-    // TODO: send notification to GCM
-    
+    // retreive target device
+    let token = snapshot.val().Token;
+    for(let temp in token) {
+      let curr = token[temp];
+      if(curr["user"] === target_user) {
+        target_device = curr["device"];
+      }
+    }
+
+    // send GCM to notify
+    sendAndroid(current_user, target_device, owing);
     res.status(200).send("Owing notified " + owing + " to " + target_user);
   }, function (errorObject) {
     res.status(400).send("The notify failed: " + errorObject.code);
   });
 });
+
+// helper function to deliver GCM notification
+function sendAndroid(current_user, target_device, owing) {
+  let message = new gcm.Message({
+    notification : {
+        title : current_user + " reminds you that you owe " + owing
+    }
+  });
+
+  let sender = new gcm.sender(key);
+  sender.send(message, target_device);
+}
 
 // ########## Balances ##########
 
