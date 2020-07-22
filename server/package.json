@@ -8,7 +8,8 @@
     "express": "^4.17.1",
     "firebase": "^7.16.0",
     "firebase-admin": "^8.13.0",
-    "node-gcm": "^1.0.3"
+    "node-gcm": "^1.0.3",
+    "nodemailer": "^6.4.10"
   },
   "engines": {
     "node": "14.3.0"

@@ -2,6 +2,7 @@ const express = require('express');
 const parser = require('body-parser');
 const admin = require("firebase-admin");
 const gcm = require("node-gcm");
+const mailer = require("nodemailer");
 const key = require("./ece452-297ff-firebase-adminsdk-o4qg7-41afcae2be.json");
 
 const server = express();
@@ -81,15 +82,21 @@ server.get("/send", (req, res) => {
       }
     }
 
-    // send GCM to notify
-    sendAndroid(current_user, target_device, owing);
+    if(target_device != "") {
+      // send GCM notify when device is registered
+      sendAndroid(current_user, target_device, owing);
+    } else {
+      // send email when device is not registered
+      sendEMail(current_user, target_user, owing);
+    }
+
     res.status(200).send("Owing notified " + owing + " to " + target_user);
   }, function (errorObject) {
     res.status(400).send("The notify failed: " + errorObject.code);
   });
 });
 
-// helper function to deliver GCM notification
+// helper function to deliver GCM notification (registered users)
 function sendAndroid(current_user, target_device, owing) {
   let message = new gcm.Message({
     notification : {
@@ -99,6 +106,35 @@ function sendAndroid(current_user, target_device, owing) {
 
   let sender = new gcm.sender(key);
   sender.send(message, target_device);
+}
+
+// helper function to deliver email notification (non-registered users)
+function sendEMail(current_user, target_user, owing) {
+  
+  let transporter = mailer.createTransport({
+    service: "service",
+    port: 1234,
+    auth: {
+      user: "abcde",
+      pass: "abcde"
+    }
+  });
+  
+  let mailOptions = {
+    from: '"Splitwisr Team <noreply@splitwisr.com>"',
+    to: target_user,
+    subject: 'Splitwisr Balance Reminder',
+    text: 'Your friend ' + current_user + ' reminds you that you owe ' + owing,
+    html: '<b> Hi there! </b> <br> This is an automated mail from Splitwisr!'
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if(error) {
+      return "Message delivery has failed " + error;
+    } else {
+      return "Message delivered: " + info.message;
+    }
+  });
 }
 
 // ########## Balances ##########
