@@ -1,6 +1,10 @@
 package com.splitwisr;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +18,8 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.splitwisr.data.MessagingService;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -27,8 +33,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         setSupportActionBar(findViewById(R.id.toolbar));
 
-        this.initNav();
-        this.initFirebase();
+        initNav();
+        initFirebase();
+        createNotificationChannel();
     }
 
     private void initNav() {
@@ -44,10 +51,21 @@ public class MainActivity extends AppCompatActivity {
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
-                // User is signed in
                 showLogout = true;
                 invalidateOptionsMenu();
+
                 findViewById(R.id.bottom_navigation).setVisibility(View.VISIBLE);
+
+                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.e("Firebase", "getInstanceId failed", task.getException());
+                    }
+
+                    String token = task.getResult().getToken();
+                    Log.d("Firebase", "token: " + token);
+                    (new MessagingService()).onNewToken(token);
+                });
+
                 while (NavHostFragment
                         .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
                         .popBackStack()){ }
@@ -64,6 +82,20 @@ public class MainActivity extends AppCompatActivity {
                         .navigate(R.id.destination_login_fragment);
             }
         };
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String name = getString(R.string.channel_name);
+            String descriptionText = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("splitwisr", name, importance);
+            channel.setDescription(descriptionText);
+            NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(channel);
+        }
     }
 
     // Add Auth state listener in onStart method.
