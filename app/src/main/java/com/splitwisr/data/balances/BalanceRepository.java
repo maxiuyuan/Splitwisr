@@ -99,14 +99,16 @@ public class BalanceRepository {
             apiService.readBalance(currentUserEmail).enqueue(new Callback<JsonArray>() {
                 @Override
                 public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
-                    for (JsonElement obj: response.body()) {
-                        String aEmail = ((JsonObject) obj).get("payer").getAsString();
-                        String bEmail = ((JsonObject) obj).get("payee").getAsString();
-                        Double totalOwing = ((JsonObject) obj).get("balance").getAsDouble();
-                        if (balanceDao.get(aEmail, bEmail) == null) {
-                            balanceDao.insertAll(new Balance(aEmail, bEmail, totalOwing));
-                        } else {
-                            balanceDao.update(totalOwing, aEmail, bEmail);
+                    if (response.isSuccessful()) {
+                        for (JsonElement obj : response.body()) {
+                            String aEmail = ((JsonObject) obj).get("payer").getAsString();
+                            String bEmail = ((JsonObject) obj).get("payee").getAsString();
+                            Double totalOwing = ((JsonObject) obj).get("balance").getAsDouble();
+                            if (balanceDao.get(aEmail, bEmail) == null) {
+                                balanceDao.insertAll(new Balance(aEmail, bEmail, totalOwing));
+                            } else {
+                                balanceDao.update(totalOwing, aEmail, bEmail);
+                            }
                         }
                     }
                 }
