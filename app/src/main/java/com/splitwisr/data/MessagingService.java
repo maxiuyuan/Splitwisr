@@ -34,7 +34,7 @@ public class MessagingService extends FirebaseMessagingService {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-            Notification notification = new NotificationCompat.Builder(getApplicationContext(), "splitwisr")
+            Notification notification = new NotificationCompat.Builder(getApplicationContext(), getString(R.string.channel_id))
                     .setContentTitle(remoteMessage.getNotification().getTitle())
                     .setContentText(remoteMessage.getNotification().getBody())
                     .setSmallIcon(R.mipmap.ic_launcher)

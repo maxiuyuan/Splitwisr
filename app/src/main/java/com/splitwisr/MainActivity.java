@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             String name = getString(R.string.channel_name);
             String descriptionText = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("splitwisr", name, importance);
+            NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
             channel.setDescription(descriptionText);
             NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
