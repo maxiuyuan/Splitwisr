@@ -12,7 +12,6 @@ admin.initializeApp({
   credential: admin.credential.cert(key),
   databaseURL: "https://ece452-297ff.firebaseio.com"
 });
-
 const db = admin.database();
 const baseRef = db.ref();
 const tokenRef = db.ref("Token");
@@ -73,7 +72,7 @@ server.get("/send", (req, res) => {
       }
     }
 
-    // retreive target device
+    // retreive target device for user
     let token = snapshot.val().Token;
     for(let temp in token) {
       let curr = token[temp];
@@ -83,11 +82,9 @@ server.get("/send", (req, res) => {
     }
 
     if(target_device != "") {
-      // send GCM notify when device is registered
-      sendAndroid(current_user, target_device, owing);
+      sendAndroid(current_user, target_device, owing); // push notification for registered device
     } else {
-      // send email when device is not registered
-      sendEMail(current_user, target_user, owing);
+      sendEMail(current_user, target_user, owing); // email notification for not-registered users
     }
 
     res.status(200).send("Owing notified " + owing + " to " + target_user);
@@ -100,12 +97,18 @@ server.get("/send", (req, res) => {
 function sendAndroid(current_user, target_device, owing) {
   let message = new gcm.Message({
     notification : {
-        title : current_user + " reminds you that you owe " + owing
+        title : "Your friend " + current_user + " reminds you that you owe " + owing
     }
   });
-
-  let sender = new gcm.sender(key);
-  sender.send(message, target_device);
+  console.log("### --> sending to android...");
+  let sender = new gcm.Sender(key);
+  sender.send(message, {tokens : target_device}, function (error, res) {
+    if(error) {
+      console.log("Push notification delivery has failed " + error);
+    } else {
+      console.log("Push notification delivered: " + res);
+    }
+  });
 }
 
 // helper function to deliver email notification (non-registered users)
@@ -125,14 +128,14 @@ function sendEMail(current_user, target_user, owing) {
     to: target_user,
     subject: 'Splitwisr Balance Reminder',
     text: 'Your friend ' + current_user + ' reminds you that you owe ' + owing,
-    html: '<b> Hi there! </b> <br> This is an automated mail from Splitwisr!'
+    html: '<b> Hi there! </b> <br> This is an automated mail from Splitwisr.'
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
     if(error) {
-      return "Message delivery has failed " + error;
+      console.log("Email notification delivery has failed " + error);
     } else {
-      return "Message delivered: " + info.message;
+      console.log("Email notification delivered: " + info.response);
     }
   });
 }
@@ -184,6 +187,8 @@ server.post("/write", (req, res) => {
         break;
       }
     }
+
+    // TODO: send email for balance update if user is not registered
 
     // replace or add new entry
     if(keyPrev != "") {
