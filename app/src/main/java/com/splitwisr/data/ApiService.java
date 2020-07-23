@@ -13,4 +13,7 @@ public interface ApiService {
 
     @GET("/read")
     Call<JsonArray> readBalance(@Query("current_user") String payer);
+
+    @POST("/register")
+    Call<Void> registerUser(@Query("current_user") String user, @Query("device_id") String token);
 }
