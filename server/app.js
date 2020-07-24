@@ -110,23 +110,22 @@ function sendAndroid(current_user, target_device, owing) {
   });
 }
 
-// helper function to deliver email notification (non-registered users)
+// TODO: helper function to deliver email notification (non-registered users)
 function sendEMail(current_user, target_user, owing) {
   let transporter = mailer.createTransport({
-    service: "service",
-    port: 1234,
+    service: "gmail",
     auth: {
-      user: "abcde",
-      pass: "abcde"
+      user: "<some-service-account>@gmail.com",
+      pass: "<some-password>"
     }
   });
   
   let mailOptions = {
-    from: '"Splitwisr Team <noreply@splitwisr.com>"',
+    from: 'Splitwisr Team',
     to: target_user,
-    subject: 'Splitwisr Balance Reminder',
+    subject: 'Splitwisr Balance Update',
     text: 'Your friend ' + current_user + ' reminds you that you owe ' + owing,
-    html: '<b> Hi there! </b> <br> This is an automated mail from Splitwisr.'
+    html: '<b> Hey there! </b> <br> Your friend ' + current_user + ' reminds you that you owe ' + owing + '<br> This is an automated email, please do not reply.'
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
