@@ -1,7 +1,6 @@
 const express = require('express');
 const parser = require('body-parser');
 const admin = require("firebase-admin");
-const gcm = require("node-gcm");
 const mailer = require("nodemailer");
 const key = require("./ece452-297ff-firebase-adminsdk-o4qg7-41afcae2be.json");
 
@@ -95,25 +94,24 @@ server.get("/send", (req, res) => {
 
 // helper function to deliver GCM notification (registered users)
 function sendAndroid(current_user, target_device, owing) {
-  let message = new gcm.Message({
+  let message = {
     notification : {
-        title : "Your friend " + current_user + " reminds you that you owe " + owing
-    }
-  });
-  console.log("### --> sending to android...");
-  let sender = new gcm.Sender(key);
-  sender.send(message, {tokens : target_device}, function (error, res) {
-    if(error) {
-      console.log("Push notification delivery has failed " + error);
-    } else {
-      console.log("Push notification delivered: " + res);
-    }
+        title : current_user + " reminds you that you owe " + owing
+    },
+    token: target_device
+  };
+  
+  admin.messaging().send(message)
+  .then((response) => {
+    console.log('Successfully sent message:', response);
+  })
+  .catch((error) => {
+    console.log('Error sending message:', error);
   });
 }
 
 // helper function to deliver email notification (non-registered users)
 function sendEMail(current_user, target_user, owing) {
-  
   let transporter = mailer.createTransport({
     service: "service",
     port: 1234,
@@ -133,9 +131,9 @@ function sendEMail(current_user, target_user, owing) {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if(error) {
-      console.log("Email notification delivery has failed " + error);
+      console.log("Error sending email:", error);
     } else {
-      console.log("Email notification delivered: " + info.response);
+      console.log("Successfully sent email:", info.response);
     }
   });
 }
