@@ -1,7 +1,6 @@
 const express = require('express');
 const parser = require('body-parser');
 const admin = require("firebase-admin");
-const gcm = require("node-gcm");
 const mailer = require("nodemailer");
 const key = require("./ece452-297ff-firebase-adminsdk-o4qg7-41afcae2be.json");
 
@@ -12,7 +11,6 @@ admin.initializeApp({
   credential: admin.credential.cert(key),
   databaseURL: "https://ece452-297ff.firebaseio.com"
 });
-
 const db = admin.database();
 const baseRef = db.ref();
 const tokenRef = db.ref("Token");
@@ -32,7 +30,7 @@ server.post("/register", (req, res) => {
       device : device_id
     }
 
-    // search if already exists
+    // add or update device token
     for(let temp in snapshot.val()) {
       let curr = snapshot.val()[temp];
       if(curr["user"] === current_user) {
@@ -40,13 +38,12 @@ server.post("/register", (req, res) => {
         break;
       };
     }
-
-    // replace or add new entry
     if(keyPrev != "") {
       tokenRef.child(keyPrev).set(entry);
     } else {
       tokenRef.push(entry);
     }
+
     res.status(200).send("Device registered for " + current_user)
   }, function (errorObject) {
     res.status(400).send("The register failed: " + errorObject.code);
@@ -73,7 +70,7 @@ server.get("/send", (req, res) => {
       }
     }
 
-    // retreive target device
+    // retreive target device for user
     let token = snapshot.val().Token;
     for(let temp in token) {
       let curr = token[temp];
@@ -82,12 +79,11 @@ server.get("/send", (req, res) => {
       }
     }
 
+    let message = current_user+" reminds you that you owe $"+owing;
     if(target_device != "") {
-      // send GCM notify when device is registered
-      sendAndroid(current_user, target_device, owing);
+      sendAndroid(target_device, message); // push notification for registered device
     } else {
-      // send email when device is not registered
-      sendEMail(current_user, target_user, owing);
+      sendEMail(target_user, message); // email notification for not-registered users
     }
 
     res.status(200).send("Owing notified " + owing + " to " + target_user);
@@ -96,43 +92,42 @@ server.get("/send", (req, res) => {
   });
 });
 
-// helper function to deliver GCM notification (registered users)
-function sendAndroid(current_user, target_device, owing) {
-  let message = new gcm.Message({
-    notification : {
-        title : current_user + " reminds you that you owe " + owing
-    }
+// deliver GCM notification (registered users)
+function sendAndroid(target_device, plaintext) {
+  let message = {notification : {title : plaintext}, token: target_device};
+  
+  admin.messaging().send(message)
+  .then((response) => {
+    console.log('Successfully sent message:', response);
+  })
+  .catch((error) => {
+    console.log('Error sending message:', error);
   });
-
-  let sender = new gcm.sender(key);
-  sender.send(message, target_device);
 }
 
-// helper function to deliver email notification (non-registered users)
-function sendEMail(current_user, target_user, owing) {
-  
+// deliver email notification (non-registered users)
+function sendEMail(target_user, plaintext) {
   let transporter = mailer.createTransport({
-    service: "service",
-    port: 1234,
+    service: "gmail",
     auth: {
-      user: "abcde",
-      pass: "abcde"
+      // user: "<some-service-account>@gmail.com",
+      // pass: "<some-password>"
     }
   });
   
   let mailOptions = {
-    from: '"Splitwisr Team <noreply@splitwisr.com>"',
+    from: 'noreply@splitwisr.com',
     to: target_user,
-    subject: 'Splitwisr Balance Reminder',
-    text: 'Your friend ' + current_user + ' reminds you that you owe ' + owing,
-    html: '<b> Hi there! </b> <br> This is an automated mail from Splitwisr!'
+    subject: 'Splitwisr Balance Update',
+    // text: plaintext,
+    html: '<b> Hey there! </b> <br>' + plaintext + '<br> This is an automated email, please do not reply.'
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
     if(error) {
-      return "Message delivery has failed " + error;
+      console.log("Error sending email:", error);
     } else {
-      return "Message delivered: " + info.message;
+      console.log("Successfully sent email:", info.response);
     }
   });
 }
@@ -168,29 +163,54 @@ server.post("/write", (req, res) => {
     res.status(400).send("Not lexicographically sorted!");
   }
 
-  receiptRef.once("value", function(snapshot) {
+  baseRef.once("value", function(snapshot) {
     let keyPrev = "";
+    let target_device_A = "";
+    let target_device_B = "";
     let entry = {
       payer : id_A,
       payee : id_B,
       balance : blnc
     }
 
-    // search if already exists
-    for(let temp in snapshot.val()) {
-      let curr = snapshot.val()[temp];
+    // add or update balance
+    let receipt = snapshot.val().Receipt;
+    for(let temp in receipt) {
+      let curr = receipt[temp];
       if(curr["payer"] === id_A && curr["payee"] === id_B) {
         keyPrev = temp;
         break;
       }
     }
-
-    // replace or add new entry
     if(keyPrev != "") {
       receiptRef.child(keyPrev).set(entry);
     } else {
       receiptRef.push(entry);
     }
+
+    // balance update notification
+    let token = snapshot.val().Token;
+    for(let temp in token) {
+      let curr = token[temp];
+      if(curr["user"] === id_A) {
+        target_device_A = curr["device"];
+      } else if(curr["user"] === id_B) {
+        target_device_B = curr["device"];
+      }
+    }
+
+    let message = (blnc < 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
+    if(target_device_A != "") {
+      sendAndroid(target_device_A, message);
+    } else {
+      sendEMail(id_A, message);
+    }
+    if(target_device_B != "") {
+      sendAndroid(target_device_B, message);
+    } else {
+      sendEMail(id_B, message);
+    }
+
     res.status(200).send("Balance Updated for " + id_A + " and " + id_B);
   }, function (errorObject) {
     res.status(400).send("The write failed: " + errorObject.code);
