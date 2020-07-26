@@ -5,8 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.icu.text.DateFormat;
+import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Bundle;
 
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,8 +33,13 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.splitwisr.R;
 
+import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -40,8 +50,9 @@ public class CameraActivity extends AppCompatActivity {
     private Button detectTextButton;
     private ImageView imageView;
     private ListView receiptListView;
-
-    private Bitmap imageBitmap;
+    private File outFile;
+    private Uri imageUri;
+    private String mCameraFileName;
     private List<String> receiptItems = new ArrayList<>();
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -72,7 +83,21 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void dispatchTakePictureIntent() {
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        Date date = new Date();
+        DateFormat df = new SimpleDateFormat("-mm-ss");
+
+        String newPicFile = df.format(date) + ".jpg";
+        String outPath = "/sdcard/splitwisr/" + newPicFile;
+        outFile = new File(outPath);
+        mCameraFileName = outFile.toString();
+        imageUri = Uri.fromFile(outFile);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outFile));
+
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
@@ -82,31 +107,69 @@ public class CameraActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
-            imageView.setImageBitmap(imageBitmap);
+            if (data != null) {
+                //imageView.setImageURI(null);
+                //imageView.setImageURI(imageUri);
+                try {
+                    System.out.println(imageUri.toString());
+                    Bitmap bitmap = android.provider.MediaStore.Images.Media
+                            .getBitmap(this.getContentResolver(), imageUri);
+                    imageView.setImageBitmap(bitmap);
+                }
+                catch (Exception e) {
+                    Toast.makeText(CameraActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
+                }
+
+                imageView.setVisibility(View.VISIBLE);
+            }
+            if (imageUri == null && mCameraFileName != null) {
+                imageUri = Uri.fromFile(new File(mCameraFileName));
+                imageView.setImageURI(null);
+                imageView.setImageURI(imageUri);
+                imageView.setVisibility(View.VISIBLE);
+            }
+            File file = new File(mCameraFileName);
+            if (!file.exists()) {
+                file.mkdir();
+            }
+        }
+    }
+
+    private void deleteImageUri() {
+        if (outFile.exists()) {
+            if (outFile.delete()) {
+                System.out.println("file Deleted :" + imageUri.toString());
+            } else {
+                System.out.println("file not Deleted :" + imageUri.toString());
+            }
         }
     }
 
     private void detectTextFromReceipt() {
-        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(imageBitmap);
-        FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
-        Task<FirebaseVisionText> result =
-                detector.processImage(image)
-                        .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
-                            @Override
-                            public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                                displayTextFromImage(firebaseVisionText);
-                            }
-                        })
-                        .addOnFailureListener(
-                                new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(CameraActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
-                                        Log.d("Error ", e.getMessage());
-                                    }
-                                });
+        try {
+            FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(getApplication().getApplicationContext(), imageUri);
+            FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+            Task<FirebaseVisionText> result =
+                    detector.processImage(image)
+                            .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                                @Override
+                                public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                                    displayTextFromImage(firebaseVisionText);
+                                }
+                            })
+                            .addOnFailureListener(
+                                    new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(CameraActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
+                                            Log.d("Error ", e.getMessage());
+                                        }
+                                    });
+        }
+        catch (Exception e){
+            Toast.makeText(CameraActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
+        }
+        deleteImageUri();
     }
 
     private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
