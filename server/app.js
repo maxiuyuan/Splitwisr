@@ -30,7 +30,7 @@ server.post("/register", (req, res) => {
       device : device_id
     }
 
-    // search if already exists
+    // add or update device token
     for(let temp in snapshot.val()) {
       let curr = snapshot.val()[temp];
       if(curr["user"] === current_user) {
@@ -38,13 +38,12 @@ server.post("/register", (req, res) => {
         break;
       };
     }
-
-    // replace or add new entry
     if(keyPrev != "") {
       tokenRef.child(keyPrev).set(entry);
     } else {
       tokenRef.push(entry);
     }
+
     res.status(200).send("Device registered for " + current_user)
   }, function (errorObject) {
     res.status(400).send("The register failed: " + errorObject.code);
@@ -80,10 +79,11 @@ server.get("/send", (req, res) => {
       }
     }
 
+    let message = current_user+" reminds you that you owe $"+owing;
     if(target_device != "") {
-      sendAndroid(current_user, target_device, owing); // push notification for registered device
+      sendAndroid(target_device, message); // push notification for registered device
     } else {
-      sendEMail(current_user, target_user, owing); // email notification for not-registered users
+      sendEMail(target_user, message); // email notification for not-registered users
     }
 
     res.status(200).send("Owing notified " + owing + " to " + target_user);
@@ -92,14 +92,9 @@ server.get("/send", (req, res) => {
   });
 });
 
-// helper function to deliver GCM notification (registered users)
-function sendAndroid(current_user, target_device, owing) {
-  let message = {
-    notification : {
-        title : current_user + " reminds you that you owe " + owing
-    },
-    token: target_device
-  };
+// deliver GCM notification (registered users)
+function sendAndroid(target_device, plaintext) {
+  let message = {notification : {title : plaintext}, token: target_device};
   
   admin.messaging().send(message)
   .then((response) => {
@@ -110,22 +105,22 @@ function sendAndroid(current_user, target_device, owing) {
   });
 }
 
-// TODO: helper function to deliver email notification (non-registered users)
-function sendEMail(current_user, target_user, owing) {
+// deliver email notification (non-registered users)
+function sendEMail(target_user, plaintext) {
   let transporter = mailer.createTransport({
     service: "gmail",
     auth: {
-      user: "<some-service-account>@gmail.com",
-      pass: "<some-password>"
+      // user: "<some-service-account>@gmail.com",
+      // pass: "<some-password>"
     }
   });
   
   let mailOptions = {
-    from: 'Splitwisr Team',
+    from: 'noreply@splitwisr.com',
     to: target_user,
     subject: 'Splitwisr Balance Update',
-    text: 'Your friend ' + current_user + ' reminds you that you owe ' + owing,
-    html: '<b> Hey there! </b> <br> Your friend ' + current_user + ' reminds you that you owe ' + owing + '<br> This is an automated email, please do not reply.'
+    // text: plaintext,
+    html: '<b> Hey there! </b> <br>' + plaintext + '<br> This is an automated email, please do not reply.'
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -168,31 +163,54 @@ server.post("/write", (req, res) => {
     res.status(400).send("Not lexicographically sorted!");
   }
 
-  receiptRef.once("value", function(snapshot) {
+  baseRef.once("value", function(snapshot) {
     let keyPrev = "";
+    let target_device_A = "";
+    let target_device_B = "";
     let entry = {
       payer : id_A,
       payee : id_B,
       balance : blnc
     }
 
-    // search if already exists
-    for(let temp in snapshot.val()) {
-      let curr = snapshot.val()[temp];
+    // add or update balance
+    let receipt = snapshot.val().Receipt;
+    for(let temp in receipt) {
+      let curr = receipt[temp];
       if(curr["payer"] === id_A && curr["payee"] === id_B) {
         keyPrev = temp;
         break;
       }
     }
-
-    // TODO: send email for balance update if user is not registered
-
-    // replace or add new entry
     if(keyPrev != "") {
       receiptRef.child(keyPrev).set(entry);
     } else {
       receiptRef.push(entry);
     }
+
+    // balance update notification
+    let token = snapshot.val().Token;
+    for(let temp in token) {
+      let curr = token[temp];
+      if(curr["user"] === id_A) {
+        target_device_A = curr["device"];
+      } else if(curr["user"] === id_B) {
+        target_device_B = curr["device"];
+      }
+    }
+
+    let message = (blnc < 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
+    if(target_device_A != "") {
+      sendAndroid(target_device_A, message);
+    } else {
+      sendEMail(id_A, message);
+    }
+    if(target_device_B != "") {
+      sendAndroid(target_device_B, message);
+    } else {
+      sendEMail(id_B, message);
+    }
+
     res.status(200).send("Balance Updated for " + id_A + " and " + id_B);
   }, function (errorObject) {
     res.status(400).send("The write failed: " + errorObject.code);
