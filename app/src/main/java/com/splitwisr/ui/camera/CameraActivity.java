@@ -92,8 +92,7 @@ public class CameraActivity extends AppCompatActivity {
         DateFormat df = new SimpleDateFormat("-mm-ss");
 
         String newPicFile = df.format(date) + ".jpg";
-        String outPath = "/sdcard/splitwisr/" + newPicFile;
-        outFile = new File(outPath);
+        outFile = new File(getApplication().getApplicationContext().getFilesDir(), newPicFile);
         mCameraFileName = outFile.toString();
         imageUri = Uri.fromFile(outFile);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outFile));
