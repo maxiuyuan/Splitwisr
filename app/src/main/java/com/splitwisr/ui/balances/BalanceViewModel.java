@@ -20,6 +20,7 @@ public class BalanceViewModel extends AndroidViewModel {
     private LiveData<List<Balance>> allBalances;
     private final BalanceRepository balanceRepository;
     private final UserRepository userRepository;
+    public String searchQuery = "";
 
     public BalanceViewModel(@NonNull Application application) {
         super(application);
@@ -28,12 +29,26 @@ public class BalanceViewModel extends AndroidViewModel {
         userRepository = new UserRepository(application);
     }
 
-    LiveData<List<Balance>> getAllBalances() {
-        // This is a just-in-case security feature for extraneous situations :)
-        return Transformations.map(allBalances, balances -> balances
-                .stream()
-                .filter(balance -> getCurrentUserEmail().equals(balance.aEmail) || getCurrentUserEmail().equals(balance.bEmail))
-                .collect(Collectors.toList()));
+    LiveData<List<BalanceViewObject>> getAllBalances() {
+        return Transformations.map(allBalances, balances ->
+            balances
+            .stream()
+            .filter(balance -> getCurrentUserEmail().equals(balance.aEmail) || getCurrentUserEmail().equals(balance.bEmail))
+            .map(balance -> {
+                String otherUserEmail;
+                boolean owesOtherUser;
+                if (getCurrentUserEmail().equals(balance.aEmail)) {
+                    otherUserEmail = balance.bEmail;
+                    owesOtherUser = false;
+                } else {
+                    otherUserEmail = balance.aEmail;
+                    owesOtherUser = true;
+                }
+                String otherUserName = getNameForEmailOrEmailIfNull(otherUserEmail);
+                return new BalanceViewObject(otherUserName, balance.totalOwing, owesOtherUser);
+            })
+            .filter(balanceViewObject -> balanceViewObject.otherUser.toLowerCase().contains(searchQuery.toLowerCase()))
+            .collect(Collectors.toList()));
     }
 
     public String getCurrentUserEmail(){
@@ -52,5 +67,11 @@ public class BalanceViewModel extends AndroidViewModel {
         } else {
             return otherUserEmail;
         }
+    }
+
+    public void setSearchFilter(String query) {
+        searchQuery = query;
+        // Hacky way to restart the getAllBalances() call and filter again
+        allBalances = balanceRepository.getAllBalances();
     }
 }

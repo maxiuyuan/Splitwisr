@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,9 +16,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.splitwisr.databinding.BalanceFragmentBinding;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class BalanceFragment extends Fragment {
     private BalanceViewModel viewModel;
@@ -44,6 +42,20 @@ public class BalanceFragment extends Fragment {
         binding.recyclerView.setAdapter(balancesAdapter);
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayout.VERTICAL));
 
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                viewModel.setSearchFilter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                viewModel.setSearchFilter(newText);
+                return false;
+            }
+        });
+
         return view;
     }
 
@@ -51,23 +63,8 @@ public class BalanceFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel.getAllBalances().observe(getViewLifecycleOwner(), balances -> {
-            if (balances != null && balances.size() > 0) {
-                List<BalanceViewObject> balanceViewObjects = balances.stream().map(balance -> {
-                    String otherUserEmail;
-                    boolean owesOtherUser;
-                    if (viewModel.getCurrentUserEmail().equals(balance.aEmail)) {
-                        otherUserEmail = balance.bEmail;
-                        owesOtherUser = false;
-                    } else {
-                        otherUserEmail = balance.aEmail;
-                        owesOtherUser = true;
-                    }
-                    String otherUserName = viewModel.getNameForEmailOrEmailIfNull(otherUserEmail);
-                    return new BalanceViewObject(otherUserName, balance.totalOwing, owesOtherUser);
-                }).collect(Collectors.toList());
-                balancesAdapter.setData(balanceViewObjects);
-            }
+        viewModel.getAllBalances().observe(getViewLifecycleOwner(), balanceViewObjects -> {
+            balancesAdapter.setData(balanceViewObjects);
         });
     }
 
