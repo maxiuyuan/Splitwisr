@@ -11,6 +11,7 @@ import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -52,7 +53,6 @@ public class CameraActivity extends AppCompatActivity {
     private ListView receiptListView;
     private File outFile;
     private Uri imageUri;
-    private String mCameraFileName;
     private List<String> receiptItems = new ArrayList<>();
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -88,13 +88,22 @@ public class CameraActivity extends AppCompatActivity {
         StrictMode.setVmPolicy(builder.build());
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        Date date = new Date();
-        DateFormat df = new SimpleDateFormat("-mm-ss");
+        Long tsLong = System.currentTimeMillis()/1000;
+        String ts = tsLong.toString() + ".jpg";
 
-        String newPicFile = df.format(date) + ".jpg";
-        outFile = new File(getApplication().getApplicationContext().getFilesDir(), newPicFile);
-        mCameraFileName = outFile.toString();
-        imageUri = Uri.fromFile(outFile);
+        //String newPicFile = df.format(date) + ".jpg";
+
+        outFile = new File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), ts);
+        if (!outFile.exists()) {
+            System.out.println("UWUUUUUUUUUUUUUUUUUU FILE DIDNT EXIST");
+            try {
+                outFile.createNewFile();
+            } catch (Exception e) {
+                System.out.println("UUUUUUUUUUUUUWUUUUUUUUUUUUUUUUu cant create file" + e.getMessage());
+            }
+        }
+         imageUri = Uri.fromFile(outFile);
+        System.out.println("HELLO I AM A FILE 8======================================================D " + imageUri.toString());
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outFile));
 
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -106,31 +115,20 @@ public class CameraActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            if (data != null) {
-                //imageView.setImageURI(null);
-                //imageView.setImageURI(imageUri);
-                try {
-                    System.out.println(imageUri.toString());
-                    Bitmap bitmap = android.provider.MediaStore.Images.Media
-                            .getBitmap(this.getContentResolver(), imageUri);
-                    imageView.setImageBitmap(bitmap);
-                }
-                catch (Exception e) {
-                    Toast.makeText(CameraActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
-                }
+            try {
+                System.out.println(imageUri.toString());
+                Bitmap bitmap = android.provider.MediaStore.Images.Media
+                        .getBitmap(this.getContentResolver(), imageUri);
+                imageView.setImageBitmap(bitmap);
+            }
+            catch (Exception e) {
+                System.out.print("UWUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU EXCEPTION DID A BADEE " + e.getMessage());
+                Toast.makeText(CameraActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
+            }
 
-                imageView.setVisibility(View.VISIBLE);
-            }
-            if (imageUri == null && mCameraFileName != null) {
-                imageUri = Uri.fromFile(new File(mCameraFileName));
-                imageView.setImageURI(null);
-                imageView.setImageURI(imageUri);
-                imageView.setVisibility(View.VISIBLE);
-            }
-            File file = new File(mCameraFileName);
-            if (!file.exists()) {
-                file.mkdir();
-            }
+            imageView.setVisibility(View.VISIBLE);
+        } else {
+            System.out.println("UWUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU result isnt okay");
         }
     }
 
@@ -146,7 +144,7 @@ public class CameraActivity extends AppCompatActivity {
 
     private void detectTextFromReceipt() {
         try {
-            FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(getApplication().getApplicationContext(), imageUri);
+            FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(this, imageUri);
             FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
             Task<FirebaseVisionText> result =
                     detector.processImage(image)
@@ -168,7 +166,7 @@ public class CameraActivity extends AppCompatActivity {
         catch (Exception e){
             Toast.makeText(CameraActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
         }
-        deleteImageUri();
+        //deleteImageUri();
     }
 
     private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
