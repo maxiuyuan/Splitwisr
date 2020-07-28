@@ -6,4 +6,5 @@
     <string name="channel_name">Splitwisr</string>
     <string name="channel_description">Update from Splitwisr</string>
     <string name="channel_id">splitwisr</string>
+    <string name="search">Search</string>
 </resources>
