@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
@@ -41,7 +42,10 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -162,22 +166,53 @@ public class CameraActivity extends AppCompatActivity {
                                             Log.d("Error ", e.getMessage());
                                         }
                                     });
+            deleteImageUri();
         }
         catch (Exception e){
             Toast.makeText(CameraActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
         }
-        //deleteImageUri();
+    }
+
+    // filter receiptItems
+    private void cleanItemsList() {
+        Iterator<String> iter = receiptItems.iterator();
+        while(iter.hasNext()) {
+            String line = iter.next();
+            if (!line.matches("(.*)\\$([0-9]*[.])?[0-9]+[ ]+.")) {
+                iter.remove();
+            }
+        }
     }
 
     private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
         List<FirebaseVisionText.TextBlock> textBlockList = firebaseVisionText.getTextBlocks();
+
         if (textBlockList.isEmpty()) {
             Toast.makeText(CameraActivity.this, "No text was detected", Toast.LENGTH_SHORT);
         }
         else {
-            for (FirebaseVisionText.TextBlock block : firebaseVisionText.getTextBlocks()) {
-                receiptItems.add(block.getText());
+            // match preliminary item to price
+            LinkedHashMap<Integer, StringBuilder> itemsMap = new LinkedHashMap<Integer, StringBuilder>();
+            for (FirebaseVisionText.TextBlock block : textBlockList) {
+                for (FirebaseVisionText.Line line: block.getLines()) {
+                    Point[] lineCornerPoints = line.getCornerPoints();
+                    int rounded = (lineCornerPoints[0].y / 100 ) * 100;
+                    if (itemsMap.containsKey(rounded)) {
+                        itemsMap.get(rounded).append(" ").append(line.getText());
+                    }
+                    else {
+                        itemsMap.put(rounded, new StringBuilder(line.getText()));
+                    }
+                }
             }
+
+            for (int i : itemsMap.keySet()) {
+                receiptItems.add(itemsMap.get(i).toString());
+            }
+
+            // do further filtering on detected items
+            cleanItemsList();
+
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
                     this,
                     android.R.layout.simple_list_item_1,
