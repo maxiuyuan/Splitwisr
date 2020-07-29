@@ -25,8 +25,8 @@ public class BalanceViewModel extends AndroidViewModel {
     public BalanceViewModel(@NonNull Application application) {
         super(application);
         balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
-        allBalances = balanceRepository.getAllBalances();
         userRepository = new UserRepository(application);
+        allBalances = balanceRepository.getAllBalances();
     }
 
     LiveData<List<BalanceViewObject>> getAllBalances() {
