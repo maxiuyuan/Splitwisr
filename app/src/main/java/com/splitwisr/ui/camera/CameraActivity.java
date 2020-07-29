@@ -180,12 +180,6 @@ public class CameraActivity extends AppCompatActivity {
         if (line.matches("(.*)\\$([0-9Oo]*[.])?[0-9Oo]+[ ]+.")) {
             receiptItems.add(line);
         }
-        /*
-        else {
-            receiptItems.add(line + " FILTERED");
-        }
-
-         */
     }
 
     private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
@@ -195,11 +189,9 @@ public class CameraActivity extends AppCompatActivity {
             Toast.makeText(CameraActivity.this, "No text was detected", Toast.LENGTH_SHORT);
         }
         else {
-            ArrayList<FirebaseVisionText.Line> receiptLines = new ArrayList<>();
 
-            // TODO remove failed attempt
-            // match preliminary item to price
-            //LinkedHashMap<Integer, StringBuilder> itemsMap = new LinkedHashMap<Integer, StringBuilder>();
+            // intermediate list to sort lines by coordinate
+            ArrayList<FirebaseVisionText.Line> receiptLines = new ArrayList<>();
 
             // for calculate scaling factor from min/max points, since receipt
             //    width is standard
@@ -243,33 +235,6 @@ public class CameraActivity extends AppCompatActivity {
                     c =  line.getCornerPoints()[0].x < (t1.getCornerPoints()[0].x) ? -1 : 1;
                 return c;
             });
-
-            // TODO REMOVE OLD STUFF
-            /*
-                for (FirebaseVisionText.Line line: block.getLines()) {
-                    Point[] lineCornerPoints = line.getCornerPoints();
-
-
-                    // round to nearest line
-                    int rounded = (lineCornerPoints[0].y / lineHeight ) * lineHeight;
-
-                    if (itemsMap.containsKey(rounded)) {
-                        itemsMap.get(rounded).append(" ").append(line.getText()).append(lineCornerPoints[0].y);
-                    }
-                    else {
-                        itemsMap.put(rounded, new StringBuilder(line.getText() + lineCornerPoints[0].y));
-                    }
-
-
-                }
-            }
-
-
-            for (int i : itemsMap.keySet()) {
-                receiptItems.add(itemsMap.get(i).toString());
-            }
-
-             */
 
             // build each line and append to receiptItems
             StringBuilder curLine = new StringBuilder();
