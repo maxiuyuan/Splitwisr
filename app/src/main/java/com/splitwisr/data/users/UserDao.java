@@ -47,7 +47,7 @@ public abstract class UserDao {
         if (userExists(user.email)) {
             update(user);
         } else {
-            long result = insert(user);
+            insert(user);
         }
     }
 }
