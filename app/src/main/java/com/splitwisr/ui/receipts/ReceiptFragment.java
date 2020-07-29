@@ -1,5 +1,6 @@
 package com.splitwisr.ui.receipts;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,6 +31,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ReceiptFragment extends Fragment {
     // Receipt is now broken down into map of ID to item, item class is below
@@ -55,7 +58,9 @@ public class ReceiptFragment extends Fragment {
 
     // List of textviews that follow the "ADD USER" buttons per item in the UI
     // When a new set of users is selected for an item, this text view updates
-    private List<TextView> usersSplittingItemViews = new ArrayList<>();
+
+    private Map<Integer, TextView> usersSplittingItemViews = new HashMap<>();
+    private Map<Integer, LinearLayout> itemLinearLayouts = new HashMap<>();
 
     // Maps item ID to item object
     private HashMap<Integer, ReceiptItem> receiptItems = new HashMap<>();
@@ -64,10 +69,6 @@ public class ReceiptFragment extends Fragment {
     // Currently is the entire user DB but should eventually become a subset
     // This array is used in the ADD USERS pop-up per item
     private String[] selectableUsers;
-
-    // Params for the buttons in the horizontal linear layout per item
-    private final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
     // Current item ID, will increment every time a new item is added
     private int itemId = 0;
@@ -100,6 +101,9 @@ public class ReceiptFragment extends Fragment {
             }
             tempItemName = binding.itemNameText.getText().toString();
 
+            binding.itemCostText.getText().clear();
+            binding.itemNameText.getText().clear();
+
             if (tempItemCost > 0d) {
                 // Create new receipt item and add to the map
                 receiptItems.put(itemId, new ReceiptItem(tempItemName, tempItemCost));
@@ -107,17 +111,46 @@ public class ReceiptFragment extends Fragment {
                 // Create new horizontal linear layout for this item
                 LinearLayout ll = new LinearLayout(this.getContext());
                 ll.setOrientation(LinearLayout.HORIZONTAL);
+                ll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                ll.setWeightSum(10.0f);
+
+                Button removeItem = new Button(this.getContext());
+                removeItem.setId(itemId);
+                removeItem.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
+                removeItem.setText("X");
+                removeItem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        receiptItems.remove(v.getId());
+                        binding.receiptLinearLayout.removeView(itemLinearLayouts.get(v.getId()));
+                    }
+                });
+                ll.addView(removeItem);
 
                 // Add item name + item cost textview to linear layout
                 TextView itemView = new TextView(this.getContext());
-                itemView.setText(tempItemName + " " + tempItemCost);
+                itemView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2.0f));
+                itemView.setText(tempItemName);
                 ll.addView(itemView);
+
+                TextView priceView = new TextView(this.getContext());
+                priceView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.5f));
+                priceView.setText("$" + Double.toString(tempItemCost));
+                ll.addView(priceView);
+
+                // Create textview that will show the users currently selected for the item
+                TextView userView = new TextView(this.getContext());
+                userView.setText("All");
+                userView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 3.8f));
+                usersSplittingItemViews.put(itemId, userView);
+                ll.addView(userView);
+
 
                 // Create add users button and add to linear layout
                 Button addUsers = new Button(this.getContext());
                 addUsers.setId(itemId);
-                addUsers.setLayoutParams(params);
-                addUsers.setText("add users");
+                addUsers.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.7f));
+                addUsers.setText("split");
                 addUsers.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -126,13 +159,8 @@ public class ReceiptFragment extends Fragment {
                 });
                 ll.addView(addUsers);
 
-                // Create textview that will show the users currently selected for the item
-                TextView userView = new TextView(this.getContext());
-                userView.setText("All");
-                usersSplittingItemViews.add(userView);
-                ll.addView(userView);
-
                 // Add horizontal linearlayout to the vertical linearlayout
+                itemLinearLayouts.put(itemId, ll);
                 binding.receiptLinearLayout.addView(ll);
                 itemId++;
             }
@@ -237,7 +265,11 @@ public class ReceiptFragment extends Fragment {
                     names.append(selectableUsers[x].split(" ")[0]);
                 }
             }
-            usersSplittingItemViews.get(id).setText(names.toString());
+            if (first) {
+                usersSplittingItemViews.get(id).setText("All");
+            } else {
+                usersSplittingItemViews.get(id).setText(names.toString());
+            }
         }
     }
 
