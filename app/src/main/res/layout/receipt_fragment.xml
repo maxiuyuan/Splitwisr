@@ -10,10 +10,10 @@
         android:id="@+id/editTextLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="512dp"
+        android:layout_marginTop="324dp"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -40,7 +40,7 @@
         android:id="@+id/buttonLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="576dp"
+        android:layout_marginTop="368dp"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -52,22 +52,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add item to receipt" />
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/submitButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="12dp"
-        android:text="SUBMIT"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SUBMIT" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/receiptLinearLayout"
-        android:layout_width="407dp"
-        android:layout_height="499dp"
+        android:layout_width="406dp"
+        android:layout_height="317dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:orientation="vertical"

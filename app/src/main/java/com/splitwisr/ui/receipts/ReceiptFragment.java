@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ReceiptFragment extends Fragment {
+    // Receipt is now broken down into map of ID to item, item class is below
+    // ID is just an integer that identifies that item, starts at 0 for the first item
     class ReceiptItem {
         public String name;
         public Double cost;
@@ -45,27 +47,29 @@ public class ReceiptFragment extends Fragment {
     private ReceiptsViewModel receiptsViewModel;
     private ReceiptFragmentBinding binding;
 
-    StringBuilder usersSplittingItemText = new StringBuilder();
-    StringBuilder receiptContentsText = new StringBuilder();
-
-    private List<String> usersToSplitItem = new ArrayList<>();
-    private List<String> userNamesToSplitItem = new ArrayList<>();
+    // Maps full name to email
     private HashMap<String,String> userNames = new HashMap<>();
-    private HashMap<String, Double> amountsOwed = new HashMap<>();
-    private String selectedUser = "";
 
+    // Maps email to amount owed to currentUser for this receipt, is only used at submit stage
+    private HashMap<String, Double> amountsOwed = new HashMap<>();
+
+    // List of textviews that follow the "ADD USER" buttons per item in the UI
+    // When a new set of users is selected for an item, this text view updates
     private List<TextView> usersSplittingItemViews = new ArrayList<>();
 
+    // Maps item ID to item object
     private HashMap<Integer, ReceiptItem> receiptItems = new HashMap<>();
 
+    // Array of strings that denotes the users "in the receipt"
+    // Currently is the entire user DB but should eventually become a subset
+    // This array is used in the ADD USERS pop-up per item
     private String[] selectableUsers;
 
-    private final String itemTextBaseId = "ItemText";
-    private final String itemButtonBaseId = "ItemButton";
-
+    // Params for the buttons in the horizontal linear layout per item
     private final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
+    // Current item ID, will increment every time a new item is added
     private int itemId = 0;
 
     @Nullable
@@ -78,6 +82,8 @@ public class ReceiptFragment extends Fragment {
         receiptsViewModel = new ViewModelProvider(requireActivity()).get(ReceiptsViewModel.class);
         List<User> users = receiptsViewModel.getUserList();
 
+        // TODO -> make only a subset of users "in the receipt"
+        // Generate the userNames map and selectable users array
         for (int x = 0; x < users.size(); x++) {
             String userName = users.get(x).firstName + " " + users.get(x).lastName;
             userNames.put(userName, users.get(x).email);
@@ -88,36 +94,26 @@ public class ReceiptFragment extends Fragment {
             double tempItemCost = 0d;
             String tempItemName;
 
+            // Check if the itemcost field is currently filled out, if its empty do nothing
             if (!binding.itemCostText.getText().toString().equals("")) {
                 tempItemCost = Double.parseDouble(binding.itemCostText.getText().toString());
             }
             tempItemName = binding.itemNameText.getText().toString();
 
             if (tempItemCost > 0d) {
+                // Create new receipt item and add to the map
                 receiptItems.put(itemId, new ReceiptItem(tempItemName, tempItemCost));
-//                double costPerUser = round(tempItemCost/usersToSplitItem.size());
-//                StringBuilder s = new StringBuilder("\n" + tempItemName + " - " + tempItemCost + " ");
-//                for (int x = 0; x < userNamesToSplitItem.size(); x++) {
-//                    String user = usersToSplitItem.get(x);
-//                    String userName = userNamesToSplitItem.get(x);
-//                    if (!user.equals(receiptsViewModel.getCurrentUserEmail())) {
-//                        if (!amountsOwed.containsKey(user)) {
-//                            amountsOwed.put(user, 0d);
-//                        }
-//                        amountsOwed.put(user, amountsOwed.get(user) + costPerUser);
-//                    }
-//                    s.append(userName);
-//                    if (x != userNamesToSplitItem.size() - 1) s.append(", ");
-//                }
-//                addReceiptContentsText(s.toString());
-//                usersToSplitItem.clear();
-//                userNamesToSplitItem.clear();
-//                resetUsersSplittingItemText();
+
+                // Create new horizontal linear layout for this item
                 LinearLayout ll = new LinearLayout(this.getContext());
                 ll.setOrientation(LinearLayout.HORIZONTAL);
+
+                // Add item name + item cost textview to linear layout
                 TextView itemView = new TextView(this.getContext());
                 itemView.setText(tempItemName + " " + tempItemCost);
                 ll.addView(itemView);
+
+                // Create add users button and add to linear layout
                 Button addUsers = new Button(this.getContext());
                 addUsers.setId(itemId);
                 addUsers.setLayoutParams(params);
@@ -129,21 +125,42 @@ public class ReceiptFragment extends Fragment {
                     }
                 });
                 ll.addView(addUsers);
+
+                // Create textview that will show the users currently selected for the item
                 TextView userView = new TextView(this.getContext());
-                userView.setText("");
+                userView.setText("All");
                 usersSplittingItemViews.add(userView);
                 ll.addView(userView);
+
+                // Add horizontal linearlayout to the vertical linearlayout
                 binding.receiptLinearLayout.addView(ll);
                 itemId++;
             }
         });
 
         binding.submitButton.setOnClickListener(v -> {
+            // Iterate through all the receipt items
             for (ReceiptItem item : receiptItems.values()) {
-                
+                // If the item has no assigned users, then split among all users
+                if(item.usersSplitting.size() == 0) {
+                    item.usersSplitting = new ArrayList<>(userNames.values());
+                }
+
                 double costPerUser = round(item.cost/item.usersSplitting.size());
+                // For each user for this item, update the amount they owe to the user
+                // in the amountsOwed map (local to just this receipt)
+                for (String user : item.usersSplitting) {
+                    if (!user.equals(receiptsViewModel.getCurrentUserEmail())) {
+                        if (!amountsOwed.containsKey(user)) {
+                            amountsOwed.put(user, 0d);
+                        }
+                        amountsOwed.put(user, amountsOwed.get(user) + costPerUser);
+                    }
+                }
 
             }
+            // This is same as before, use the values from the amountsOwed list
+            // To update the balances in the balances db and hit the endpoint
             for (String splitUser : amountsOwed.keySet()) {
                 double amountOwed = amountsOwed.get(splitUser);
                 if (!splitUser.equals(receiptsViewModel.getCurrentUserEmail())) {
@@ -174,6 +191,9 @@ public class ReceiptFragment extends Fragment {
     }
 
     void selectUsers (int id) {
+        // Construct a new popup dialogue that will prompt the user to select the users
+        // with which they want to split this item
+
         boolean[] selectedUsers = new boolean[selectableUsers.length];
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
         builder.setTitle("users splitting").setMultiChoiceItems(selectableUsers, selectedUsers, new DialogInterface.OnMultiChoiceClickListener() {
@@ -199,6 +219,8 @@ public class ReceiptFragment extends Fragment {
     }
 
     void addUsersToItem(int id, boolean[] selectedUsers) {
+        // Based on what the user chose in the popup, update the ReceiptItem object
+        // and update the textview that displays the users splitting for this item
         if (receiptItems.containsKey(id)) {
             ReceiptItem item = receiptItems.get(id);
             StringBuilder names = new StringBuilder();
