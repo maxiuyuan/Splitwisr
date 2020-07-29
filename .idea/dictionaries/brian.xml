@@ -2,6 +2,7 @@
   <dictionary name="brian">
     <words>
       <w>splitwisr</w>
+      <w>upsert</w>
     </words>
   </dictionary>
 </component>
