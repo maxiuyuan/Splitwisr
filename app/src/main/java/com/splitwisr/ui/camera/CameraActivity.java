@@ -41,6 +41,8 @@ import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -58,7 +60,7 @@ public class CameraActivity extends AppCompatActivity {
     private File outFile;
     private Uri imageUri;
     private List<String> receiptItems = new ArrayList<>();
-
+    static final float SCALING_FACTOR = 70f / 3f;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
@@ -173,15 +175,17 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    // filter receiptItems
-    private void cleanItemsList() {
-        Iterator<String> iter = receiptItems.iterator();
-        while(iter.hasNext()) {
-            String line = iter.next();
-            if (!line.matches("(.*)\\$([0-9]*[.])?[0-9]+[ ]+.")) {
-                iter.remove();
-            }
+    // used to filter unwanted lines
+    private void addLineToReceiptItems(String line) {
+        if (line.matches("(.*)\\$([0-9Oo]*[.])?[0-9Oo]+[ ]+.")) {
+            receiptItems.add(line);
         }
+        /*
+        else {
+            receiptItems.add(line + " FILTERED");
+        }
+
+         */
     }
 
     private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
@@ -191,27 +195,101 @@ public class CameraActivity extends AppCompatActivity {
             Toast.makeText(CameraActivity.this, "No text was detected", Toast.LENGTH_SHORT);
         }
         else {
+            ArrayList<FirebaseVisionText.Line> receiptLines = new ArrayList<>();
+
+            // TODO remove failed attempt
             // match preliminary item to price
-            LinkedHashMap<Integer, StringBuilder> itemsMap = new LinkedHashMap<Integer, StringBuilder>();
+            //LinkedHashMap<Integer, StringBuilder> itemsMap = new LinkedHashMap<Integer, StringBuilder>();
+
+            // for calculate scaling factor from min/max points, since receipt
+            //    width is standard
+            int leftBound = Integer.MAX_VALUE;
+            int rightBound = Integer.MIN_VALUE;
+
+            // find min and max x-values
             for (FirebaseVisionText.TextBlock block : textBlockList) {
-                for (FirebaseVisionText.Line line: block.getLines()) {
+                for (FirebaseVisionText.Line line : block.getLines()) {
                     Point[] lineCornerPoints = line.getCornerPoints();
-                    int rounded = (lineCornerPoints[0].y / 100 ) * 100;
-                    if (itemsMap.containsKey(rounded)) {
-                        itemsMap.get(rounded).append(" ").append(line.getText());
+                    if (leftBound > lineCornerPoints[0].x) {
+                        leftBound = lineCornerPoints[0].x;
                     }
-                    else {
-                        itemsMap.put(rounded, new StringBuilder(line.getText()));
+                    if (rightBound < lineCornerPoints[1].x) {
+                        rightBound = lineCornerPoints[1].x;
                     }
+
+                    // add receipt lines for sorting while we are at it
+                    receiptLines.add(line);
                 }
             }
+
+            // calculate line height from width and scaling factor
+            int lineHeight = (int) ((rightBound - leftBound) / SCALING_FACTOR);
+
+            // sort by y-value then x-value
+            Collections.sort(receiptLines, (line, t1) -> {
+                int c;
+                // allow for +/- 20% line height error
+                int acceptableError = (int) (lineHeight * 0.2);
+
+                // if y-values do not match
+                if (line.getCornerPoints()[0].y - acceptableError > t1.getCornerPoints()[0].y ||
+                        t1.getCornerPoints()[0].y > line.getCornerPoints()[0].y + acceptableError)
+                    c =  line.getCornerPoints()[0].y < (t1.getCornerPoints()[0].y) ? -1 : 1;
+                else
+                    c = 0;
+
+                // if y values did match, then sort by x-value
+                if (c == 0)
+                    c =  line.getCornerPoints()[0].x < (t1.getCornerPoints()[0].x) ? -1 : 1;
+                return c;
+            });
+
+            // TODO REMOVE OLD STUFF
+            /*
+                for (FirebaseVisionText.Line line: block.getLines()) {
+                    Point[] lineCornerPoints = line.getCornerPoints();
+
+
+                    // round to nearest line
+                    int rounded = (lineCornerPoints[0].y / lineHeight ) * lineHeight;
+
+                    if (itemsMap.containsKey(rounded)) {
+                        itemsMap.get(rounded).append(" ").append(line.getText()).append(lineCornerPoints[0].y);
+                    }
+                    else {
+                        itemsMap.put(rounded, new StringBuilder(line.getText() + lineCornerPoints[0].y));
+                    }
+
+
+                }
+            }
+
 
             for (int i : itemsMap.keySet()) {
                 receiptItems.add(itemsMap.get(i).toString());
             }
 
-            // do further filtering on detected items
-            cleanItemsList();
+             */
+
+            // build each line and append to receiptItems
+            StringBuilder curLine = new StringBuilder();
+            int prevY = 0;
+            for (FirebaseVisionText.Line line: receiptLines) {
+                int curY = line.getCornerPoints()[0].y;
+                int acceptableError = (int) (lineHeight * 0.5);
+
+                // if we see a new line, add prev line and clear string builder
+                if (curY > prevY + acceptableError) {
+                    String prevLine = curLine.toString();
+                    curLine.setLength(0);
+                    curLine.append(line.getText());
+                    addLineToReceiptItems(prevLine);
+                }
+                else {
+                    curLine.append(" ").append(line.getText());
+                }
+                prevY = curY;
+            }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
                     this,
