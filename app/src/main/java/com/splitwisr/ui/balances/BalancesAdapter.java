@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.splitwisr.R;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 
 public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.BalanceViewHolder> {
     private List<BalanceViewObject> balances = Collections.emptyList();
     SettleBalanceCallBack callBack;
+    private static DecimalFormat df = new DecimalFormat("0.00");
 
     public BalancesAdapter(SettleBalanceCallBack callBack) {
         this.callBack = callBack;
@@ -47,7 +49,7 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
         TextView userText = holder.balanceView.findViewById(R.id.user_text);
         TextView balanceText = holder.balanceView.findViewById(R.id.balance_text);
         userText.setText(balanceViewObject.otherUser);
-        balanceText.setText("$" + Math.abs(balanceViewObject.balance));
+        balanceText.setText("$" + df.format(Math.abs(balanceViewObject.balance)));
         if (balanceViewObject.balance == 0d) {
             // pass
         } else if (
