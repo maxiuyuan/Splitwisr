@@ -29,7 +29,7 @@
          />
     </LinearLayout>
     <TextView
-        android:drawableLeft="@drawable/ic_baseline_notifications_active_24"
+        android:drawableEnd="@drawable/ic_baseline_notifications_active_24"
         android:drawableTint="@color/colorPrimary"
         android:drawablePadding="8dp"
         android:id="@+id/balance_text"
