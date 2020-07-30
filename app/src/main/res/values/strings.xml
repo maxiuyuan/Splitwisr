@@ -8,4 +8,5 @@
     <string name="channel_id">splitwisr</string>
     <string name="search">Search</string>
     <string name="google_sign_in">Google Sign In</string>
+    <string name="settle_up">Settle Up</string>
 </resources>
