@@ -8,4 +8,9 @@
     <string name="channel_id">splitwisr</string>
     <string name="search">Search</string>
     <string name="google_sign_in">Google Sign In</string>
+    <string name="import_contacts">Import</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="first_name">First name</string>
+    <string name="enter_an_email">Enter an email</string>
+    <string name="last_name">Last name</string>
 </resources>
