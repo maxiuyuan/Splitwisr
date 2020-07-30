@@ -32,4 +32,8 @@ public class UserRepository {
     public void upsert(final User user) {
         AppDatabase.databaseWriteExecutor.execute(() -> userDao.upsert(user));
     }
+
+    public void insertAll(List<User> users) {
+        AppDatabase.databaseWriteExecutor.execute(() -> userDao.insert(users));
+    }
 }

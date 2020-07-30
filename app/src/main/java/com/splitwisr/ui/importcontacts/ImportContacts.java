@@ -1,21 +1,29 @@
 package com.splitwisr.ui.importcontacts;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProviders;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.splitwisr.R;
 import com.splitwisr.databinding.ImportContactsFragmentBinding;
 import java.util.ArrayList;
 
@@ -39,18 +47,30 @@ public class ImportContacts extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        mViewModel = ViewModelProviders.of(this).get(ImportContactsViewModel.class);
         binding = ImportContactsFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerView.addItemDecoration(new BottomMarginDecoration());
         binding.recyclerView.setAdapter(importContactsAdapter);
+        binding.saveFab.setOnClickListener(v->{
+            mViewModel.submit();
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.destination_contacts_fragment);
+        });
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(ImportContactsViewModel.class);
+
         if (getContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, CONTACTS_READ_RESULT);
         }
@@ -120,5 +140,16 @@ public class ImportContacts extends Fragment {
         cur.close();
         mViewModel.contacts = contacts;
         importContactsAdapter.setData(contacts);
+    }
+}
+
+class BottomMarginDecoration extends RecyclerView.ItemDecoration {
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        // only for the last one
+        if (parent.getChildAdapterPosition(view) == parent.getAdapter().getItemCount() - 1) {
+            outRect.bottom = 100;
+        }
     }
 }
