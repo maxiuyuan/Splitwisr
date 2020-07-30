@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFirebase() {
         mAuth = FirebaseAuth.getInstance();
+        // TODO: Use a loading spinner
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
