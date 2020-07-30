@@ -17,8 +17,6 @@
         app:layout_constraintTop_toTopOf="parent"
         android:weightSum="6">
 
-
-
         <RelativeLayout
             android:id="@+id/editTextLayout"
             android:layout_width="match_parent"
@@ -84,24 +82,36 @@
                 app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
         </ScrollView>
-        <LinearLayout
-            android:id="@+id/buttonLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+<!--        <LinearLayout-->
+<!--            android:id="@+id/buttonLayout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:gravity="center"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="1.0"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
 
-            <Button
-                android:id="@+id/submitButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SUBMIT" />
-        </LinearLayout>
+<!--            <Button-->
+<!--                android:id="@+id/submitButton"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="SUBMIT" />-->
+<!--        </LinearLayout>-->
 
     </LinearLayout>
-
+<FrameLayout
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_baseline_save_24"
+        app:tint="@android:color/white"
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
