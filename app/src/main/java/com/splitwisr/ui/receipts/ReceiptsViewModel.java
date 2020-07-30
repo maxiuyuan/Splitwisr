@@ -1,128 +1,125 @@
 package com.splitwisr.ui.receipts;
 
-
 import android.app.Application;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-
+import com.abdeveloper.library.MultiSelectModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.splitwisr.data.ReceiptItem;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.balances.BalanceRepository;
 import com.splitwisr.data.users.User;
 import com.splitwisr.data.users.UserRepository;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ReceiptsViewModel extends AndroidViewModel {
     private UserRepository userRepository;
     private BalanceRepository balanceRepository;
 
-    // Maps full name to email
-    private HashMap<String,String> userNames;
-
-    public void setUserNames(HashMap<String,String> h) {
-        userNames = h;
-    }
-
-    public String getUserName(String k) {
-        if (userNames != null) {
-            return userNames.get(k);
-        } else {
-            return "";
-        }
-    }
-
-    public Collection<String> getUserNamesValueSet() {
-        if (userNames != null) {
-            return userNames.values();
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    // Maps item ID to item object
-    private HashMap<Integer, ReceiptItem> receiptItems = new HashMap<>();
-
-    public void addReceiptItem(Integer id, ReceiptItem r) {
-        receiptItems.put(id, r);
-    }
-
-    public void removeReceiptItem(Integer id) {
-        if (receiptItems.containsKey(id)) {
-            receiptItems.remove(id);
-        }
-    }
-
-    public boolean checkReceiptItemExists(Integer id) {
-        return receiptItems.containsKey(id);
-    }
-
-    public ReceiptItem getReceiptItem(Integer id) {
-        return receiptItems.get(id);
-    }
-
-    public Collection<ReceiptItem> getReceiptItemValueSet() {
-        return receiptItems.values();
-    }
-
-    // Array of strings that denotes the users "in the receipt"
-    // Currently is the entire user DB but should eventually become a subset
-    // This array is used in the ADD USERS pop-up per item
-    private String[] selectableUsers;
-
-    public void setSelectableUsers(String[] s) {
-        selectableUsers = s;
-    }
-
-    public String getSelectableUser(int index) {
-        if (selectableUsers != null && index < selectableUsers.length) {
-            return selectableUsers[index];
-        } else {
-            return "";
-        }
-    }
-
-    public String[] getSelectableUsers() {
-        return selectableUsers;
-    }
-
-    public int getSelectableUserSize() {
-        if (selectableUsers != null) {
-            return selectableUsers.length;
-        } else {
-            return 0;
-        }
-    }
+    private List<User> users;
+    private ArrayList<ReceiptsViewObject> receiptItems = new ArrayList<>();
 
     public ReceiptsViewModel(@NonNull Application application) {
         super(application);
         userRepository = new UserRepository(application);
         balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
+        updateUserList();
     }
 
-    public List<User> getUserList() { return userRepository.getUserList(); }
-
-    public void update(double totalOwing, String aEmail, String bEmail) {
-        balanceRepository.update(totalOwing, aEmail, bEmail);
+    public void addReceiptItem(Double itemCost, String itemName) {
+        receiptItems.add(new ReceiptsViewObject(itemName, itemCost.toString()));
     }
 
-    public Balance get(final String s1, final String s2) {
-        return balanceRepository.get(s1, s2);
+    public void addUserToReceipt(int receiptIndex, ArrayList<Integer> indexes){
+        receiptItems.get(receiptIndex).splitWith = indexes
+                .stream()
+                .map(i-> users.get(i))
+                .collect(Collectors.toList());
     }
 
-    public void insertBalance(Balance balance) {
-        balanceRepository.insert(balance);
+    public void removeReceiptItem(int index) {
+        receiptItems.remove(index);
     }
 
     public String getCurrentUserEmail(){
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         return mAuth.getCurrentUser().getEmail();
+    }
+
+    public List<String> getUserNames() {
+        return users
+                .stream()
+                .map(user -> user.firstName)
+                .collect(Collectors.toList());
+    }
+
+    public void updateSelectedUsers(ArrayList<Integer> selectedNameIndexes) {
+        users = IntStream
+                .range(0, selectedNameIndexes.size())
+                .filter(selectedNameIndexes::contains)
+                .mapToObj(i->users.get(i))
+                .collect(Collectors.toList());
+
+    }
+
+    public void updateUserList(){
+        users = userRepository.getUserList();
+    }
+
+    public boolean submit() {
+        if (receiptItems.size() == 0){
+            return false;
+        }
+        new Thread(() -> {
+            for (ReceiptsViewObject receiptsViewObject: receiptItems){
+                int divider = receiptsViewObject.splitWith.size();
+                double remainingBill = Double.parseDouble(receiptsViewObject.itemCost);
+
+                // If empty split with everyone
+                if (receiptsViewObject.splitWith == null
+                        || receiptsViewObject.splitWith.size() == 0){
+                    receiptsViewObject.splitWith = users;
+                }
+
+                while (divider > 0){
+                    String payer = getCurrentUserEmail();
+                    String split_payee = receiptsViewObject.splitWith.get(divider-1).email;
+
+                    double amount = Math.round((remainingBill/divider)*100.0)/100.0;
+                    remainingBill -= amount;
+                    if (split_payee.equals(payer)) continue;
+
+                    if (payer.compareTo(split_payee) > 0) {
+                        String temp = payer;
+                        payer = split_payee;
+                        split_payee = temp;
+                        amount = -amount;
+                    }
+
+                    Balance oldBalance = balanceRepository.get(payer,split_payee);
+
+                    double totalBalance = oldBalance== null? amount : amount + oldBalance.totalOwing;
+                    balanceRepository.upsert(totalBalance, payer, split_payee);
+                    divider--;
+                }
+            }
+            userRepository.insertAll(users);
+        }).start();
+        return true;
+
+    }
+
+    public List<MultiSelectModel> getModelList(List<String> users) {
+        return IntStream
+                .range(0, users.size())
+                .mapToObj(i -> new MultiSelectModel(i, users.get(i)))
+                .collect(Collectors.toList());
+    }
+
+    public List<ReceiptsViewObject> getReceipts() {
+        return  receiptItems;
     }
 }

@@ -5,83 +5,51 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/masterLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:weightSum="6">
-
         <RelativeLayout
             android:id="@+id/editTextLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
             <EditText
                 android:id="@+id/itemNameText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Item name"
+                android:hint="@string/item_name"
                 android:inputType="textPersonName"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 />
-
             <EditText
                 android:id="@+id/itemCostText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:hint="Item cost"
+                android:layout_marginStart="30dp"
+                android:hint="@string/item_cost"
                 android:inputType="numberSigned"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@id/itemNameText"
+                android:layout_toEndOf="@id/itemNameText"
                 />
-
             <Button
                 android:id="@+id/addItemButton"
                 android:textColor="@color/buttonText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:text="Add item" />
+                android:layout_alignParentEnd="true"
+                android:text="@string/add_item" />
         </RelativeLayout>
 
-        <ScrollView
-            android:id="@+id/scroll"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent="0.8"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_weight="5">
-
-            <LinearLayout
-                android:id="@+id/receiptLinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="1dp"
-                android:layout_marginTop="1dp"
-                android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-
-        </ScrollView>
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginVertical="16dp"
+        android:id="@+id/recyclerView"
+        app:layout_constraintTop_toBottomOf="@+id/editTextLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 <FrameLayout
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"

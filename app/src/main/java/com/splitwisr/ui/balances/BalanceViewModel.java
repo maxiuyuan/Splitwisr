@@ -78,7 +78,7 @@ public class BalanceViewModel extends AndroidViewModel {
     }
 
     public void settleBalance(String bEmail){
-        new Thread(() -> balanceRepository.update(0, getCurrentUserEmail(), bEmail)).start();
+        new Thread(() -> balanceRepository.upsert(0, getCurrentUserEmail(), bEmail)).start();
     }
 
     public List<BalanceViewObject> getNonZeroBalances(List<BalanceViewObject> balanceViewObjects){
