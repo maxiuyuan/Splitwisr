@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFirebase() {
         mAuth = FirebaseAuth.getInstance();
-        // TODO: Use a loading spinner
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                         .popBackStack()){ }
                 NavHostFragment
                         .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
-                        .navigate(R.id.destination_balance_fragment);
+                        .navigate(R.id.action_global_destination_balance_fragment);
             } else {
                 // User is signed out
                 showLogout = false;
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.bottom_navigation).setVisibility(View.GONE);
                 NavHostFragment
                         .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
-                        .navigate(R.id.destination_login_fragment);
+                        .navigate(R.id.action_global_destination_login_fragment);
             }
         };
     }

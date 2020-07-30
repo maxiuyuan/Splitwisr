@@ -25,7 +25,9 @@
         android:label="ContactsFragment" />
     <action
         android:id="@+id/action_global_destination_login_fragment"
-        app:destination="@id/destination_login_fragment" />
+        app:destination="@id/destination_login_fragment"
+        app:enterAnim="@android:anim/slide_in_left"
+        app:exitAnim="@android:anim/slide_out_right" />
     <fragment
         android:id="@+id/destination_receipt_fragment"
         android:name="com.splitwisr.ui.receipts.ReceiptFragment"
@@ -35,4 +37,9 @@
         android:name="com.splitwisr.ui.LoadingSpinner"
         android:label="fragment_loading_spinner"
         tools:layout="@layout/fragment_loading_spinner" />
+    <action
+        android:id="@+id/action_global_destination_balance_fragment"
+        app:destination="@id/destination_balance_fragment"
+        app:enterAnim="@android:anim/slide_in_left"
+        app:exitAnim="@android:anim/slide_out_right" />
 </navigation>

@@ -65,6 +65,7 @@ public class LoginFragment extends Fragment {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
+        getView().findViewById(R.id.splash_image).setClipToOutline(true);
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
