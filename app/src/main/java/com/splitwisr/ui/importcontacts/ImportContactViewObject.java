@@ -4,7 +4,7 @@ public class ImportContactViewObject {
     String givenName;
     String lastName;
     String email;
-    public boolean isChecked = true;
+    public boolean isChecked = false;
 
     public ImportContactViewObject(String givenName, String lastName, String email) {
         this.givenName = givenName;
