@@ -38,7 +38,8 @@
             android:text="Family Name"
             android:id="@+id/familyName"
             android:padding="5dp"
-            android:layout_below="@+id/givenName"
+            android:layout_toRightOf="@+id/givenName"
+            android:layout_below="@+id/email"
              />
         <CheckBox
             android:layout_width="wrap_content"
