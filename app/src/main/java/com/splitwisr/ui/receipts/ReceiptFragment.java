@@ -133,42 +133,31 @@ public class ReceiptFragment extends Fragment {
 
         boolean[] selectedUsers = new boolean[users.size()];
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
-        builder.setTitle("Users in this receipt").setMultiChoiceItems(allUsers, selectedUsers, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                selectedUsers[which] = isChecked;
-            }
-        });
-        builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                boolean first = true;
-                HashMap<String,String> t = new HashMap<>();
-                List<String> u = new ArrayList<>();
-                for(int x = 0; x < selectedUsers.length; x++) {
-                    if (selectedUsers[x]) {
-                        u.add(allUsers[x]);
-                        t.put(allUsers[x], users.get(x).email);
-                        first = false;
-                    }
-                }
-                if (first) {
-                    NavController navController = NavHostFragment.findNavController(getParentFragment());
-                    navController.navigate(R.id.destination_balance_fragment);
-                } else {
-                    receiptsViewModel.setSelectableUsers(u.toArray(new String[0]));
-                    receiptsViewModel.setUserNames(t);
-                    dialog.dismiss();
+        builder.setTitle("Users in this receipt").setMultiChoiceItems(allUsers, selectedUsers, (dialog, which, isChecked) -> selectedUsers[which] = isChecked);
+        builder.setPositiveButton("Done", (dialog, which) -> {
+            boolean first = true;
+            HashMap<String,String> t = new HashMap<>();
+            List<String> u = new ArrayList<>();
+            for(int x = 0; x < selectedUsers.length; x++) {
+                if (selectedUsers[x]) {
+                    u.add(allUsers[x]);
+                    t.put(allUsers[x], users.get(x).email);
+                    first = false;
                 }
             }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+            if (first) {
                 NavController navController = NavHostFragment.findNavController(getParentFragment());
                 navController.navigate(R.id.destination_balance_fragment);
+            } else {
+                receiptsViewModel.setSelectableUsers(u.toArray(new String[0]));
+                receiptsViewModel.setUserNames(t);
+                dialog.dismiss();
             }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.dismiss();
+            NavController navController = NavHostFragment.findNavController(getParentFragment());
+            navController.navigate(R.id.destination_balance_fragment);
         });
         builder.show();
         return view;
@@ -180,25 +169,12 @@ public class ReceiptFragment extends Fragment {
 
         boolean[] selectedUsers = new boolean[receiptsViewModel.getSelectableUserSize()];
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
-        builder.setTitle("users splitting").setMultiChoiceItems(receiptsViewModel.getSelectableUsers(), selectedUsers, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                selectedUsers[which] = isChecked;
-            }
+        builder.setTitle("users splitting").setMultiChoiceItems(receiptsViewModel.getSelectableUsers(), selectedUsers, (dialog, which, isChecked) -> selectedUsers[which] = isChecked);
+        builder.setPositiveButton("Done", (dialog, which) -> {
+            addUsersToItem(id, selectedUsers);
+            dialog.dismiss();
         });
-        builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                addUsersToItem(id, selectedUsers);
-                dialog.dismiss();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 
@@ -249,12 +225,9 @@ public class ReceiptFragment extends Fragment {
         removeItem.setId(itemId);
         removeItem.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
         removeItem.setText("X");
-        removeItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                receiptsViewModel.removeReceiptItem(v.getId());
-                binding.receiptLinearLayout.removeView(itemLinearLayouts.get(v.getId()));
-            }
+        removeItem.setOnClickListener(v -> {
+            receiptsViewModel.removeReceiptItem(v.getId());
+            binding.receiptLinearLayout.removeView(itemLinearLayouts.get(v.getId()));
         });
         ll.addView(removeItem);
 
@@ -266,7 +239,7 @@ public class ReceiptFragment extends Fragment {
 
         TextView priceView = new TextView(this.getContext());
         priceView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.5f));
-        priceView.setText("$" + Double.toString(tempItemCost));
+        priceView.setText("$" + tempItemCost);
         ll.addView(priceView);
 
         // Create textview that will show the users currently selected for the item
@@ -282,12 +255,7 @@ public class ReceiptFragment extends Fragment {
         addUsers.setId(itemId);
         addUsers.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.7f));
         addUsers.setText("split");
-        addUsers.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectUsers(v.getId());
-            }
-        });
+        addUsers.setOnClickListener(v -> selectUsers(v.getId()));
         ll.addView(addUsers);
 
         // Add horizontal linearlayout to the vertical linearlayout
