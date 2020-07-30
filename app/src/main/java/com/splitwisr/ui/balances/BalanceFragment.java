@@ -37,6 +37,8 @@ public class BalanceFragment extends Fragment {
             }
         });
 
+        binding.emptyStateImage.setClipToOutline(true);
+
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerView.setAdapter(balancesAdapter);
@@ -65,6 +67,7 @@ public class BalanceFragment extends Fragment {
 
         viewModel.getAllBalances().observe(getViewLifecycleOwner(), balanceViewObjects -> {
             balancesAdapter.setData(balanceViewObjects);
+            binding.emptyStateImage.setVisibility(balanceViewObjects.isEmpty()? View.VISIBLE : View.GONE);
         });
     }
 
