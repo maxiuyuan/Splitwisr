@@ -40,8 +40,6 @@ public class BalanceFragment extends Fragment {
             }
         });
 
-//        binding.emptyStateImage.setClipToOutline(true);
-
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerView.setAdapter(balancesAdapter);
