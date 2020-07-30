@@ -14,7 +14,7 @@
         >
         <Button
             android:id="@+id/settle_up"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/settle_up"
