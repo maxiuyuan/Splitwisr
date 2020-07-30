@@ -173,12 +173,10 @@ public class ReceiptFragment extends Fragment {
                     receiptsViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
                 }
             }
-            if (!amountsOwed.isEmpty()){
-                amountsOwed.clear();
-                //resetReceiptContentsText();
-                NavController navController = NavHostFragment.findNavController(this);
-                navController.navigate(R.id.destination_balance_fragment);
-            }
+            amountsOwed.clear();
+            //resetReceiptContentsText();
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.destination_balance_fragment);
         });
 
         // Generate the userNames map and selectable users array
@@ -191,12 +189,6 @@ public class ReceiptFragment extends Fragment {
         }
 
         boolean[] selectedUsers = new boolean[users.size()];
-//        for (int x = 0; x < users.size(); x++) {
-//            String userName = users.get(x).firstName + " " + users.get(x).lastName;
-//            tempUserNames.put(userName, users.get(x).email);
-//        }
-//        receiptsViewModel.setSelectableUsers(tempUserNames.keySet().toArray(new String[0]));
-//        receiptsViewModel.setUserNames(tempUserNames);
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
         builder.setTitle("Users in this receipt").setMultiChoiceItems(allUsers, selectedUsers, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
