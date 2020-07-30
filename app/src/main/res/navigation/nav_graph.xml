@@ -42,4 +42,9 @@
         app:destination="@id/destination_balance_fragment"
         app:enterAnim="@android:anim/slide_in_left"
         app:exitAnim="@android:anim/slide_out_right" />
+    <fragment
+        android:id="@+id/destination_import_contacts"
+        android:name="com.splitwisr.ui.importcontacts.ImportContacts"
+        android:label="import_contacts_fragment"
+        tools:layout="@layout/import_contacts_fragment" />
 </navigation>

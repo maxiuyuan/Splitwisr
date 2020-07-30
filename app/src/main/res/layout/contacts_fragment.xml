@@ -71,6 +71,7 @@
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/import_contacts_fab"
             android:src="@android:color/transparent" />
 
         <TextView
