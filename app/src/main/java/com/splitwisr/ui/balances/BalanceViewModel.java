@@ -82,7 +82,7 @@ public class BalanceViewModel extends AndroidViewModel {
     public List<BalanceViewObject> getNonZeroBalances(List<BalanceViewObject> balanceViewObjects){
         return  balanceViewObjects
                 .stream()
-                .filter(obj -> obj.balance > 0.0)
+                .filter(obj -> obj.balance != 0.0)
                 .collect(Collectors.toList());
     }
 }
