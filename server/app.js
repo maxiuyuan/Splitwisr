@@ -110,8 +110,8 @@ function sendEMail(target_user, plaintext) {
   let transporter = mailer.createTransport({
     service: "gmail",
     auth: {
-      // user: "<some-service-account>@gmail.com",
-      // pass: "<some-password>"
+      user: "splitwisr@gmail.com",
+      pass: "splitwisr2020"
     }
   });
   
