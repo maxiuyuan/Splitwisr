@@ -82,23 +82,6 @@
                 app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
         </ScrollView>
-<!--        <LinearLayout-->
-<!--            android:id="@+id/buttonLayout"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:gravity="center"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHorizontal_bias="1.0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent">-->
-
-<!--            <Button-->
-<!--                android:id="@+id/submitButton"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="SUBMIT" />-->
-<!--        </LinearLayout>-->
-
     </LinearLayout>
 <FrameLayout
     app:layout_constraintBottom_toBottomOf="parent"
