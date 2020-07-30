@@ -44,7 +44,7 @@
         app:exitAnim="@android:anim/slide_out_right" />
     <fragment
         android:id="@+id/destination_import_contacts"
-        android:name="com.splitwisr.ui.importcontacts.ImportContacts"
+        android:name="com.splitwisr.ui.importcontacts.ImportContactsFragment"
         android:label="import_contacts_fragment"
         tools:layout="@layout/import_contacts_fragment" />
 </navigation>

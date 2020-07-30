@@ -27,7 +27,7 @@ import com.splitwisr.R;
 import com.splitwisr.databinding.ImportContactsFragmentBinding;
 import java.util.ArrayList;
 
-public class ImportContacts extends Fragment {
+public class ImportContactsFragment extends Fragment {
 
     final int CONTACTS_READ_RESULT = 0;
     private ImportContactsViewModel mViewModel;
