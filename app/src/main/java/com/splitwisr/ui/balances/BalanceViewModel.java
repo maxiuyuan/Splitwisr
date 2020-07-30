@@ -85,4 +85,8 @@ public class BalanceViewModel extends AndroidViewModel {
                 .filter(obj -> obj.balance != 0.0)
                 .collect(Collectors.toList());
     }
+
+    public void notifyUser(String bEmail) {
+        //TODO
+    }
 }

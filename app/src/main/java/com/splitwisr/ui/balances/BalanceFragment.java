@@ -23,7 +23,9 @@ import java.util.stream.Collectors;
 public class BalanceFragment extends Fragment {
     private BalanceViewModel viewModel;
     private BalanceFragmentBinding binding;
-    private BalancesAdapter balancesAdapter = new BalancesAdapter(bEmail -> viewModel.settleBalance(bEmail));
+    private BalancesAdapter balancesAdapter = new BalancesAdapter(
+            bEmail -> viewModel.settleBalance(bEmail),
+            bEmail -> viewModel.notifyUser(bEmail));
 
     @Nullable
     @Override

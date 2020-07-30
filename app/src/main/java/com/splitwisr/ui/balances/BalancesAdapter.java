@@ -1,6 +1,9 @@
 package com.splitwisr.ui.balances;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -8,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.splitwisr.R;
@@ -18,11 +22,13 @@ import java.util.List;
 
 public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.BalanceViewHolder> {
     private List<BalanceViewObject> balances = Collections.emptyList();
-    SettleBalanceCallBack callBack;
+    SettleBalanceCallBack settleBalanceCallBack;
+    NotifyUserCallBack notifyUserCallBack;
     private static DecimalFormat df = new DecimalFormat("0.00");
 
-    public BalancesAdapter(SettleBalanceCallBack callBack) {
-        this.callBack = callBack;
+    public BalancesAdapter(SettleBalanceCallBack settleBalanceCallBack, NotifyUserCallBack notifyUserCallBack) {
+        this.settleBalanceCallBack = settleBalanceCallBack;
+        this.notifyUserCallBack = notifyUserCallBack;
     }
 
     public static class BalanceViewHolder extends RecyclerView.ViewHolder {
@@ -57,11 +63,21 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
                         (!balanceViewObject.owesOtherUser && balanceViewObject.balance < 0)
         ) {
             balanceText.setTextColor(Color.RED);
+            for (Drawable drawable : balanceText.getCompoundDrawables()) {
+                if (drawable != null) {
+                    drawable.setColorFilter(
+                            new PorterDuffColorFilter(
+                                    ContextCompat.getColor(
+                                            balanceText.getContext(),R.color.disabledButton),
+                                            PorterDuff.Mode.SRC_IN));
+                }
+            }
         } else {
             balanceText.setTextColor(Color.GREEN);
+            balanceText.setOnClickListener(v -> this.notifyUserCallBack.callback(balanceViewObject.otherUser));
         }
         Button settleUpButton = holder.balanceView.findViewById(R.id.settle_up);
-        settleUpButton.setOnClickListener(v-> this.callBack.callback(balanceViewObject.otherUser));
+        settleUpButton.setOnClickListener(v-> this.settleBalanceCallBack.callback(balanceViewObject.otherUser));
     }
 
     @Override
