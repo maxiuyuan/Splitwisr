@@ -65,9 +65,11 @@ public class ContactsFragment extends Fragment {
         viewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
 
         viewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
-            if (users != null && users.size() > 0) {
+            if (users != null && users.size() > 1) {
                 usersAdapter.setData(users);
             }
+            binding.emptyStateImage.setVisibility(
+                    (users == null || users.size() == 1) ? View.VISIBLE : View.GONE);
         });
     }
 

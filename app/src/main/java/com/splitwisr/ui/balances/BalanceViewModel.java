@@ -63,7 +63,9 @@ public class BalanceViewModel extends AndroidViewModel {
     public String getNameForEmailOrEmailIfNull(String otherUserEmail) {
         User user = userRepository.getUserBlocking(otherUserEmail);
         if (user != null) {
-            return user.firstName + " " + user.lastName;
+            return ((user.firstName == null)?"" : user.firstName)
+                    + " "
+                    + ((user.lastName == null) ? "" : user.lastName);
         } else {
             return otherUserEmail;
         }
@@ -82,7 +84,7 @@ public class BalanceViewModel extends AndroidViewModel {
     public List<BalanceViewObject> getNonZeroBalances(List<BalanceViewObject> balanceViewObjects){
         return  balanceViewObjects
                 .stream()
-                .filter(obj -> obj.balance > 0.0)
+                .filter(obj -> obj.balance != 0.0)
                 .collect(Collectors.toList());
     }
 }
