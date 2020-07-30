@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/destination_login_fragment">
+    app:startDestination="@id/destination_loading_spinner">
 
     <fragment
         android:id="@+id/destination_balance_fragment"
@@ -25,9 +25,26 @@
         android:label="ContactsFragment" />
     <action
         android:id="@+id/action_global_destination_login_fragment"
-        app:destination="@id/destination_login_fragment" />
+        app:destination="@id/destination_login_fragment"
+        app:enterAnim="@android:anim/slide_in_left"
+        app:exitAnim="@android:anim/slide_out_right" />
     <fragment
         android:id="@+id/destination_receipt_fragment"
         android:name="com.splitwisr.ui.receipts.ReceiptFragment"
         android:label="ReceiptFragment" />
+    <fragment
+        android:id="@+id/destination_loading_spinner"
+        android:name="com.splitwisr.ui.LoadingSpinner"
+        android:label="fragment_loading_spinner"
+        tools:layout="@layout/fragment_loading_spinner" />
+    <action
+        android:id="@+id/action_global_destination_balance_fragment"
+        app:destination="@id/destination_balance_fragment"
+        app:enterAnim="@android:anim/slide_in_left"
+        app:exitAnim="@android:anim/slide_out_right" />
+    <fragment
+        android:id="@+id/destination_import_contacts"
+        android:name="com.splitwisr.ui.importcontacts.ImportContactsFragment"
+        android:label="import_contacts_fragment"
+        tools:layout="@layout/import_contacts_fragment" />
 </navigation>

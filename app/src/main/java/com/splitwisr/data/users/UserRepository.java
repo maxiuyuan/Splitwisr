@@ -19,10 +19,6 @@ public class UserRepository {
         allUsers = userDao.getAll();
     }
 
-    public LiveData<User> getUser(String email) {
-        return userDao.getUser(email);
-    }
-
     public User getUserBlocking(String email) {
         return userDao.getUserBlocking(email);
     }
@@ -33,16 +29,11 @@ public class UserRepository {
 
     public List<User> getUserList() { return userDao.getUserList(); }
 
-    public void insert(final User user) {
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            userDao.insertAll(user);
-        });
+    public void upsert(final User user) {
+        AppDatabase.databaseWriteExecutor.execute(() -> userDao.upsert(user));
     }
 
-    public void upsert(final User user) {
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            userDao.upsert(user);
-            System.out.println("Upserted User");
-        });
+    public void insertAll(List<User> users) {
+        AppDatabase.databaseWriteExecutor.execute(() -> userDao.insert(users));
     }
 }

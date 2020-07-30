@@ -5,6 +5,6 @@
     <color name="colorAccent">#03DAC5</color>
 
     <color name="button_icon">#ffffff</color>
-    <color name="text">#000000</color>
-    <color name="text_inverse">#ffffff</color>
+    <color name="text">#ffffff</color>
+    <color name="text_inverse">#000000</color>
 </resources>

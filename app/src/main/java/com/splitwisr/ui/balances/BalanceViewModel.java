@@ -25,8 +25,8 @@ public class BalanceViewModel extends AndroidViewModel {
     public BalanceViewModel(@NonNull Application application) {
         super(application);
         balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
-        allBalances = balanceRepository.getAllBalances();
         userRepository = new UserRepository(application);
+        allBalances = balanceRepository.getAllBalances();
     }
 
     LiveData<List<BalanceViewObject>> getAllBalances() {
@@ -73,5 +73,16 @@ public class BalanceViewModel extends AndroidViewModel {
         searchQuery = query;
         // Hacky way to restart the getAllBalances() call and filter again
         allBalances = balanceRepository.getAllBalances();
+    }
+
+    public void settleBalance(String bEmail){
+        new Thread(() -> balanceRepository.update(0, getCurrentUserEmail(), bEmail)).start();
+    }
+
+    public List<BalanceViewObject> getNonZeroBalances(List<BalanceViewObject> balanceViewObjects){
+        return  balanceViewObjects
+                .stream()
+                .filter(obj -> obj.balance > 0.0)
+                .collect(Collectors.toList());
     }
 }
