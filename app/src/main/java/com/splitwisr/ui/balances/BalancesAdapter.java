@@ -3,6 +3,7 @@ package com.splitwisr.ui.balances;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,11 @@ import java.util.List;
 
 public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.BalanceViewHolder> {
     private List<BalanceViewObject> balances = Collections.emptyList();
+    SettleBalanceCallBack callBack;
+
+    public BalancesAdapter(SettleBalanceCallBack callBack) {
+        this.callBack = callBack;
+    }
 
     public static class BalanceViewHolder extends RecyclerView.ViewHolder {
         public ConstraintLayout balanceView;
@@ -52,6 +58,8 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
         } else {
             balanceText.setTextColor(Color.GREEN);
         }
+        Button settleUpButton = holder.balanceView.findViewById(R.id.settle_up);
+        settleUpButton.setOnClickListener(v-> this.callBack.callback(balanceViewObject.otherUser));
     }
 
     @Override

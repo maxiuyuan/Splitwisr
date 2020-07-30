@@ -74,4 +74,8 @@ public class BalanceViewModel extends AndroidViewModel {
         // Hacky way to restart the getAllBalances() call and filter again
         allBalances = balanceRepository.getAllBalances();
     }
+
+    public void settleBalance(String bEmail){
+        new Thread(() -> balanceRepository.update(0, getCurrentUserEmail(), bEmail)).start();
+    }
 }
