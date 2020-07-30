@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/settle_up"
+            android:textColor="@color/text_inverse"
             android:background="@drawable/round_black_bg"/>
         <TextView
             android:id="@+id/user_text"
