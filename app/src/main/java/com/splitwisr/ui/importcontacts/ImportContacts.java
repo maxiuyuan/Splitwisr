@@ -74,6 +74,7 @@ public class ImportContacts extends Fragment {
         }
     }
 
+    // Can't really move this to a viewModel because the cursors need activity
     private void getContactList() {
         ContentResolver cr = getActivity().getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
