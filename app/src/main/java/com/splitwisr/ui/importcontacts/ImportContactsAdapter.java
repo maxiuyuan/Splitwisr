@@ -6,17 +6,20 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.card.MaterialCardView;
 import com.splitwisr.R;
-
 import java.util.Collections;
 import java.util.List;
 
+
 public class ImportContactsAdapter extends RecyclerView.Adapter<ImportContactsAdapter.ImportContactViewHolder> {
+
     private List<ImportContactViewObject> contacts = Collections.emptyList();
+    private CheckBoxCallBack checkBoxCallback;
+    public ImportContactsAdapter(CheckBoxCallBack checkBoxCallBack) {
+        this.checkBoxCallback = checkBoxCallBack;
+    }
 
     public static class ImportContactViewHolder extends RecyclerView.ViewHolder {
         public MaterialCardView importContactsView;
@@ -50,6 +53,7 @@ public class ImportContactsAdapter extends RecyclerView.Adapter<ImportContactsAd
 
         CheckBox checkBox = holder.importContactsView.findViewById(R.id.checkBox);
         checkBox.setChecked(importContactViewObject.isChecked);
+        checkBox.setOnClickListener(v-> this.checkBoxCallback.callback(position, checkBox.isChecked()));
     }
 
     @Override
