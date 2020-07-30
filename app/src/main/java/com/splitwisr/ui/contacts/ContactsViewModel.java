@@ -24,6 +24,6 @@ public class ContactsViewModel extends AndroidViewModel {
     }
 
     public void insertUser(User user) {
-        userRepository.insert(user);
+        userRepository.upsert(user);
     }
 }
