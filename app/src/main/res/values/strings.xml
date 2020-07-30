@@ -13,4 +13,6 @@
     <string name="first_name">First name</string>
     <string name="enter_an_email">Enter an email</string>
     <string name="last_name">Last name</string>
+    <string name="settle_up">Settle Up</string>
+
 </resources>

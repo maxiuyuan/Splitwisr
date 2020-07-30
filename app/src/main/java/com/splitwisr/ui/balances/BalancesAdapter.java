@@ -3,6 +3,7 @@ package com.splitwisr.ui.balances;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,11 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.splitwisr.R;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 
 public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.BalanceViewHolder> {
     private List<BalanceViewObject> balances = Collections.emptyList();
+    SettleBalanceCallBack callBack;
+    private static DecimalFormat df = new DecimalFormat("0.00");
+
+    public BalancesAdapter(SettleBalanceCallBack callBack) {
+        this.callBack = callBack;
+    }
 
     public static class BalanceViewHolder extends RecyclerView.ViewHolder {
         public ConstraintLayout balanceView;
@@ -41,7 +49,7 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
         TextView userText = holder.balanceView.findViewById(R.id.user_text);
         TextView balanceText = holder.balanceView.findViewById(R.id.balance_text);
         userText.setText(balanceViewObject.otherUser);
-        balanceText.setText("$" + Math.abs(balanceViewObject.balance));
+        balanceText.setText("$" + df.format(Math.abs(balanceViewObject.balance)));
         if (balanceViewObject.balance == 0d) {
             // pass
         } else if (
@@ -52,6 +60,8 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
         } else {
             balanceText.setTextColor(Color.GREEN);
         }
+        Button settleUpButton = holder.balanceView.findViewById(R.id.settle_up);
+        settleUpButton.setOnClickListener(v-> this.callBack.callback(balanceViewObject.otherUser));
     }
 
     @Override

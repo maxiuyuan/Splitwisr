@@ -17,10 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.splitwisr.databinding.BalanceFragmentBinding;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class BalanceFragment extends Fragment {
     private BalanceViewModel viewModel;
     private BalanceFragmentBinding binding;
-    private BalancesAdapter balancesAdapter = new BalancesAdapter();
+    private BalancesAdapter balancesAdapter = new BalancesAdapter(bEmail -> viewModel.settleBalance(bEmail));
 
     @Nullable
     @Override
@@ -64,7 +67,9 @@ public class BalanceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel.getAllBalances().observe(getViewLifecycleOwner(), balanceViewObjects -> {
-            balancesAdapter.setData(balanceViewObjects);
+            List<BalanceViewObject> filteredObjects = viewModel.getNonZeroBalances(balanceViewObjects);
+            balancesAdapter.setData(filteredObjects);
+            binding.emptyStateImage.setVisibility(filteredObjects.isEmpty()? View.VISIBLE : View.GONE);
         });
     }
 
