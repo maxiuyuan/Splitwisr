@@ -1,17 +1,12 @@
 package com.splitwisr.ui.importcontacts;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.ViewModel;
-
 import com.splitwisr.data.users.User;
 import com.splitwisr.data.users.UserRepository;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static java.util.stream.Collectors.toList;
 
 public class ImportContactsViewModel extends AndroidViewModel {
