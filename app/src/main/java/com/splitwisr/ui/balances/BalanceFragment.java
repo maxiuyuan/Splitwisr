@@ -67,12 +67,9 @@ public class BalanceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel.getAllBalances().observe(getViewLifecycleOwner(), balanceViewObjects -> {
-            List<BalanceViewObject> objects = balanceViewObjects
-                    .stream()
-                    .filter(obj -> obj.balance > 0.0)
-                    .collect(Collectors.toList());
-            balancesAdapter.setData(objects);
-            binding.emptyStateImage.setVisibility(objects.isEmpty()? View.VISIBLE : View.GONE);
+            List<BalanceViewObject> filteredObjects = viewModel.getNonZeroBalances(balanceViewObjects);
+            balancesAdapter.setData(filteredObjects);
+            binding.emptyStateImage.setVisibility(filteredObjects.isEmpty()? View.VISIBLE : View.GONE);
         });
     }
 
