@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loadingSpinner2">
+    app:startDestination="@id/destination_loading_spinner">
 
     <fragment
         android:id="@+id/destination_balance_fragment"
@@ -31,7 +31,7 @@
         android:name="com.splitwisr.ui.receipts.ReceiptFragment"
         android:label="ReceiptFragment" />
     <fragment
-        android:id="@+id/loadingSpinner2"
+        android:id="@+id/destination_loading_spinner"
         android:name="com.splitwisr.ui.LoadingSpinner"
         android:label="fragment_loading_spinner"
         tools:layout="@layout/fragment_loading_spinner" />
