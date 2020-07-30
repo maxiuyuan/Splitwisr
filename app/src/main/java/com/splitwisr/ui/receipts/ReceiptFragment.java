@@ -69,64 +69,7 @@ public class ReceiptFragment extends Fragment {
             binding.itemNameText.getText().clear();
 
             if (tempItemCost > 0d) {
-                // Create new receipt item and add to the map
-                receiptsViewModel.addReceiptItem(itemId, new ReceiptItem(tempItemName, tempItemCost));
-
-                // Create new horizontal linear layout for this item
-                LinearLayout ll = new LinearLayout(this.getContext());
-                ll.setOrientation(LinearLayout.HORIZONTAL);
-                ll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                ll.setWeightSum(10.0f);
-
-                Button removeItem = new Button(this.getContext());
-                removeItem.setId(itemId);
-                removeItem.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
-                removeItem.setText("X");
-                removeItem.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                       receiptsViewModel.removeReceiptItem(v.getId());
-                        binding.receiptLinearLayout.removeView(itemLinearLayouts.get(v.getId()));
-                    }
-                });
-                ll.addView(removeItem);
-
-                // Add item name + item cost textview to linear layout
-                TextView itemView = new TextView(this.getContext());
-                itemView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2.0f));
-                itemView.setText(tempItemName);
-                ll.addView(itemView);
-
-                TextView priceView = new TextView(this.getContext());
-                priceView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.5f));
-                priceView.setText("$" + Double.toString(tempItemCost));
-                ll.addView(priceView);
-
-                // Create textview that will show the users currently selected for the item
-                TextView userView = new TextView(this.getContext());
-                userView.setText("All");
-                userView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 3.8f));
-                usersSplittingItemViews.put(itemId, userView);
-                ll.addView(userView);
-
-
-                // Create add users button and add to linear layout
-                Button addUsers = new Button(this.getContext());
-                addUsers.setId(itemId);
-                addUsers.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.7f));
-                addUsers.setText("split");
-                addUsers.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        selectUsers(v.getId());
-                    }
-                });
-                ll.addView(addUsers);
-
-                // Add horizontal linearlayout to the vertical linearlayout
-                itemLinearLayouts.put(itemId, ll);
-                binding.receiptLinearLayout.addView(ll);
-                itemId++;
+                addItem(tempItemName, tempItemCost);
             }
         });
 
@@ -291,6 +234,66 @@ public class ReceiptFragment extends Fragment {
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    void addItem (String tempItemName, Double tempItemCost){
+        // Create new receipt item and add to the map
+        receiptsViewModel.addReceiptItem(itemId, new ReceiptItem(tempItemName, tempItemCost));
+        // Create new horizontal linear layout for this item
+        LinearLayout ll = new LinearLayout(this.getContext());
+        ll.setOrientation(LinearLayout.HORIZONTAL);
+        ll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        ll.setWeightSum(10.0f);
+
+        Button removeItem = new Button(this.getContext());
+        removeItem.setId(itemId);
+        removeItem.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
+        removeItem.setText("X");
+        removeItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                receiptsViewModel.removeReceiptItem(v.getId());
+                binding.receiptLinearLayout.removeView(itemLinearLayouts.get(v.getId()));
+            }
+        });
+        ll.addView(removeItem);
+
+        // Add item name + item cost textview to linear layout
+        TextView itemView = new TextView(this.getContext());
+        itemView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2.0f));
+        itemView.setText(tempItemName);
+        ll.addView(itemView);
+
+        TextView priceView = new TextView(this.getContext());
+        priceView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.5f));
+        priceView.setText("$" + Double.toString(tempItemCost));
+        ll.addView(priceView);
+
+        // Create textview that will show the users currently selected for the item
+        TextView userView = new TextView(this.getContext());
+        userView.setText("All");
+        userView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 3.8f));
+        usersSplittingItemViews.put(itemId, userView);
+        ll.addView(userView);
+
+
+        // Create add users button and add to linear layout
+        Button addUsers = new Button(this.getContext());
+        addUsers.setId(itemId);
+        addUsers.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.7f));
+        addUsers.setText("split");
+        addUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectUsers(v.getId());
+            }
+        });
+        ll.addView(addUsers);
+
+        // Add horizontal linearlayout to the vertical linearlayout
+        itemLinearLayouts.put(itemId, ll);
+        binding.receiptLinearLayout.addView(ll);
+        itemId++;
     }
 
 }
