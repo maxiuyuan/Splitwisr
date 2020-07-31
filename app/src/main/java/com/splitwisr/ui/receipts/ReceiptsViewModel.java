@@ -76,14 +76,16 @@ public class ReceiptsViewModel extends AndroidViewModel {
         }
         new Thread(() -> {
             for (ReceiptsViewObject receiptsViewObject: receiptItems){
-                int divider = receiptsViewObject.splitWith.size();
-                double remainingBill = Double.parseDouble(receiptsViewObject.itemCost);
-
                 // If empty split with everyone
                 if (receiptsViewObject.splitWith == null
                         || receiptsViewObject.splitWith.size() == 0){
                     receiptsViewObject.splitWith = users;
                 }
+
+                int divider = receiptsViewObject.splitWith.size();
+                double remainingBill = Double.parseDouble(receiptsViewObject.itemCost);
+
+
 
                 while (divider > 0){
                     String payer = getCurrentUserEmail();
