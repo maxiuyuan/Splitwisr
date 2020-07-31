@@ -61,7 +61,7 @@ public class ReceiptFragment extends Fragment {
         });
 
         binding.submitButton.setOnClickListener(v -> {
-            if(receiptsViewModel.submit()){
+            if(receiptsViewModel.submit(receiptsViewModel.getUsers(), receiptsViewModel.getReceipts())){
                 navigateToBalancesFragment();
             }
         });
@@ -94,11 +94,18 @@ public class ReceiptFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         binding.emptyStateImage.setVisibility(
                 (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
+        receiptsAdapater.setData(receiptsViewModel.getReceipts());
         splitUsersDialog(
                 (ids, selectedNames, dataString)->{
                     receiptsViewModel.updateSelectedUsers(ids);
                 },
                 this::navigateToBalancesFragment);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        receiptsViewModel.reset();
     }
 
     private void splitUsersDialog(

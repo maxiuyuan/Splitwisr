@@ -69,7 +69,8 @@ public class ReceiptsViewModel extends AndroidViewModel {
         users = userRepository.getUserList();
     }
 
-    public boolean submit() {
+    public boolean submit(List<User> users, List<ReceiptsViewObject> receiptItems) {
+        // Pass in as argument to copy them so we can safely reset even while running on a thread
         if (receiptItems.size() == 0){
             return false;
         }
@@ -122,4 +123,15 @@ public class ReceiptsViewModel extends AndroidViewModel {
     public List<ReceiptsViewObject> getReceipts() {
         return  receiptItems;
     }
+
+    public List<User> getUsers() {
+        return  users;
+    }
+
+    public void reset() {
+        users = null;
+        receiptItems = new ArrayList<>();
+    }
+
+
 }
