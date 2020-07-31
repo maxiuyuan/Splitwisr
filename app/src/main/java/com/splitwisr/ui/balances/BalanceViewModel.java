@@ -44,10 +44,12 @@ public class BalanceViewModel extends AndroidViewModel {
                     otherUserEmail = balance.aEmail;
                     owesOtherUser = true;
                 }
-                String otherUserName = getNameForEmailOrEmailIfNull(otherUserEmail);
-                return new BalanceViewObject(otherUserName, balance.totalOwing, owesOtherUser);
+                String otherUserName = getOtherName(otherUserEmail);
+                return new BalanceViewObject(otherUserEmail, otherUserName, balance.totalOwing, owesOtherUser);
             })
-            .filter(balanceViewObject -> balanceViewObject.otherUser.toLowerCase().contains(searchQuery.toLowerCase()))
+            .filter(balanceViewObject ->
+                    balanceViewObject.otherName.toLowerCase().contains(searchQuery.toLowerCase())
+                    || balanceViewObject.otherEmail.toLowerCase().contains(searchQuery.toLowerCase()))
             .collect(Collectors.toList()));
     }
 
@@ -60,15 +62,14 @@ public class BalanceViewModel extends AndroidViewModel {
         balanceRepository.getLatestBalances();
     }
 
-    public String getNameForEmailOrEmailIfNull(String otherUserEmail) {
+    public String getOtherName(String otherUserEmail) {
         User user = userRepository.getUserBlocking(otherUserEmail);
         if (user != null) {
             return ((user.firstName == null)?"" : user.firstName)
                     + " "
                     + ((user.lastName == null) ? "" : user.lastName);
-        } else {
-            return otherUserEmail;
         }
+        return "";
     }
 
     public void setSearchFilter(String query) {
