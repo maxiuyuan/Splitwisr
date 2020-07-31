@@ -46,7 +46,7 @@ server.post("/register", (req, res) => {
 
     res.status(200).send("Device registered for " + current_user)
   }, function (errorObject) {
-    res.status(400).send("The register failed: " + errorObject.code);
+    res.status(418).send("The register failed: " + errorObject.code);
   });
 });
 
@@ -88,7 +88,7 @@ server.get("/send", (req, res) => {
 
     res.status(200).send("Owing notified " + owing + " to " + target_user);
   }, function (errorObject) {
-    res.status(400).send("The notify failed: " + errorObject.code);
+    res.status(418).send("The notify failed: " + errorObject.code);
   });
 });
 
@@ -110,8 +110,8 @@ function sendEMail(target_user, plaintext) {
   let transporter = mailer.createTransport({
     service: "gmail",
     auth: {
-      // user: "<some-service-account>@gmail.com",
-      // pass: "<some-password>"
+      user: "splitwisr@gmail.com",
+      pass: "splitwisr2020"
     }
   });
   
@@ -148,7 +148,7 @@ server.get("/read", (req, res) => {
     }
     res.status(200).send(userToBalance)
   }, function (errorObject) {
-    res.status(400).send("The read failed: " + errorObject.code);
+    res.status(418).send("The read failed: " + errorObject.code);
   });
 });
 
@@ -160,61 +160,61 @@ server.post("/write", (req, res) => {
 
   // check lexicographic order
   if(!(id_A.localeCompare(id_B) < 0)) {
-    res.status(400).send("Not lexicographically sorted!");
+    res.status(400).send("Not lexicographically sorted!");''
+  } else {
+    baseRef.once("value", function(snapshot) {
+      let keyPrev = "";
+      let target_device_A = "";
+      let target_device_B = "";
+      let entry = {
+        payer : id_A,
+        payee : id_B,
+        balance : blnc
+      }
+  
+      // add or update balance
+      let receipt = snapshot.val().Receipt;
+      for(let temp in receipt) {
+        let curr = receipt[temp];
+        if(curr["payer"] === id_A && curr["payee"] === id_B) {
+          keyPrev = temp;
+          break;
+        }
+      }
+      if(keyPrev != "") {
+        receiptRef.child(keyPrev).set(entry);
+      } else {
+        receiptRef.push(entry);
+      }
+  
+      // balance update notification
+      let token = snapshot.val().Token;
+      for(let temp in token) {
+        let curr = token[temp];
+        if(curr["user"] === id_A) {
+          target_device_A = curr["device"];
+        } else if(curr["user"] === id_B) {
+          target_device_B = curr["device"];
+        }
+      }
+  
+      let message = (blnc < 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
+      if(target_device_A != "") {
+        sendAndroid(target_device_A, message);
+      } else {
+        sendEMail(id_A, message);
+      }
+      if(target_device_B != "") {
+        sendAndroid(target_device_B, message);
+      } else {
+        sendEMail(id_B, message);
+      }
+  
+      res.status(200).send("Balance Updated for " + id_A + " and " + id_B);
+    }, function (errorObject) {
+      res.status(418).send("The write failed: " + errorObject.code);
+    });
   }
-
-  baseRef.once("value", function(snapshot) {
-    let keyPrev = "";
-    let target_device_A = "";
-    let target_device_B = "";
-    let entry = {
-      payer : id_A,
-      payee : id_B,
-      balance : blnc
-    }
-
-    // add or update balance
-    let receipt = snapshot.val().Receipt;
-    for(let temp in receipt) {
-      let curr = receipt[temp];
-      if(curr["payer"] === id_A && curr["payee"] === id_B) {
-        keyPrev = temp;
-        break;
-      }
-    }
-    if(keyPrev != "") {
-      receiptRef.child(keyPrev).set(entry);
-    } else {
-      receiptRef.push(entry);
-    }
-
-    // balance update notification
-    let token = snapshot.val().Token;
-    for(let temp in token) {
-      let curr = token[temp];
-      if(curr["user"] === id_A) {
-        target_device_A = curr["device"];
-      } else if(curr["user"] === id_B) {
-        target_device_B = curr["device"];
-      }
-    }
-
-    let message = (blnc < 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
-    if(target_device_A != "") {
-      sendAndroid(target_device_A, message);
-    } else {
-      sendEMail(id_A, message);
-    }
-    if(target_device_B != "") {
-      sendAndroid(target_device_B, message);
-    } else {
-      sendEMail(id_B, message);
-    }
-
-    res.status(200).send("Balance Updated for " + id_A + " and " + id_B);
-  }, function (errorObject) {
-    res.status(400).send("The write failed: " + errorObject.code);
-  });
 });
 
 module.exports = server;
