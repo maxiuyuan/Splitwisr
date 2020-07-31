@@ -12,28 +12,35 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-            <EditText
-                android:id="@+id/itemNameText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/item_name"
-                android:inputType="textPersonName"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+            <LinearLayout
                 android:layout_alignParentStart="true"
-                />
-            <EditText
-                android:id="@+id/itemCostText"
+                android:layout_toStartOf="@+id/addItemButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:hint="@string/item_cost"
-                android:inputType="numberSigned"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@id/itemNameText"
-                />
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/itemNameText"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_marginHorizontal="4dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/item_name"
+                    android:inputType="textPersonName"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                <EditText
+                    android:id="@+id/itemCostText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:hint="@string/item_cost"
+                    android:inputType="numberSigned"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+            </LinearLayout>
+
             <Button
                 android:id="@+id/addItemButton"
                 android:textColor="@color/buttonText"
