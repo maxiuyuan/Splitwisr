@@ -44,6 +44,21 @@
                 android:text="@string/add_item" />
         </RelativeLayout>
 
+    <ScrollView
+        android:windowSoftInputMode="stateVisible|adjustPan"
+        app:layout_constraintTop_toBottomOf="@id/editTextLayout"
+        android:visibility="gone"
+        android:id="@+id/empty_state_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:overScrollMode="never">
+        <ImageView
+            android:src="@drawable/ic_receipts_empty_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </ScrollView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginVertical="16dp"
         android:id="@+id/recyclerView"

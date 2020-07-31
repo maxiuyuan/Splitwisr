@@ -53,6 +53,8 @@ public class ReceiptFragment extends Fragment {
             String itemName = binding.itemNameText.getText().toString();
             receiptsViewModel.addReceiptItem(itemCost, itemName);
 
+            binding.emptyStateImage.setVisibility(
+                    (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
             binding.itemCostText.getText().clear();
             binding.itemNameText.getText().clear();
             receiptsAdapater.setData(receiptsViewModel.getReceipts());
@@ -67,6 +69,8 @@ public class ReceiptFragment extends Fragment {
         receiptsAdapater = new ReceiptsAdapater(
                 i-> {
                     receiptsViewModel.removeReceiptItem(i);
+                    binding.emptyStateImage.setVisibility(
+                            (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
                     receiptsAdapater.setData(receiptsViewModel.getReceipts());
                 },
                 i -> splitUsersDialog(
@@ -88,6 +92,8 @@ public class ReceiptFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        binding.emptyStateImage.setVisibility(
+                (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
         splitUsersDialog(
                 (ids, selectedNames, dataString)->{
                     receiptsViewModel.updateSelectedUsers(ids);
