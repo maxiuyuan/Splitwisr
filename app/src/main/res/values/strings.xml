@@ -17,4 +17,6 @@
     <string name="item_name">Item name</string>
     <string name="item_cost">Item cost</string>
     <string name="add_item">Add item</string>
+    <string name="split">Split</string>
+    <string name="split_all">Split All</string>
 </resources>
