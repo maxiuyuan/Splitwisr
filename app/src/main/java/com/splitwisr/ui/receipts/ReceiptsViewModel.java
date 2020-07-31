@@ -52,7 +52,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
     public List<String> getUserNames() {
         return users
                 .stream()
-                .map(user -> user.firstName)
+                .map(user -> user.firstName + " " + user.lastName)
                 .collect(Collectors.toList());
     }
 
