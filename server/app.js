@@ -2,8 +2,8 @@ const express   = require('express');
 const parser    = require('body-parser');
 const admin     = require("firebase-admin");
 const key       = require("./ece452-297ff-firebase-adminsdk-o4qg7-41afcae2be.json");
-const database  = require('./database.js');
-const notif     = require('./notification.js');
+const database  = require('./service/database.js');
+const notif     = require('./service/notification.js');
 
 admin.initializeApp({
   credential: admin.credential.cert(key),
