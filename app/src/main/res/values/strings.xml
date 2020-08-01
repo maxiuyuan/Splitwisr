@@ -19,4 +19,5 @@
     <string name="add_item">Add item</string>
     <string name="split">Split</string>
     <string name="split_all">Split All</string>
+    <string name="log_out">Log Out</string>
 </resources>

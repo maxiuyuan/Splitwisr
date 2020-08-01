@@ -3,9 +3,12 @@ package com.splitwisr.ui.balances;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
@@ -15,12 +18,10 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.splitwisr.R;
 import com.splitwisr.databinding.BalanceFragmentBinding;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class BalanceFragment extends Fragment {
+public class BalanceFragment extends Fragment implements PopupMenu.OnMenuItemClickListener {
     private BalanceViewModel viewModel;
     private BalanceFragmentBinding binding;
     private BalancesAdapter balancesAdapter = new BalancesAdapter(bEmail -> viewModel.settleBalance(bEmail));
@@ -39,6 +40,8 @@ public class BalanceFragment extends Fragment {
                 (new Handler()).postDelayed(this::removeRefresh, 1000);
             }
         });
+
+        binding.filterButton.setOnClickListener(this::showFilterMenu);
 
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -66,11 +69,35 @@ public class BalanceFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel.getAllBalances().observe(getViewLifecycleOwner(), balanceViewObjects -> {
-            List<BalanceViewObject> filteredObjects = viewModel.getNonZeroBalances(balanceViewObjects);
-            balancesAdapter.setData(filteredObjects);
-            binding.emptyStateImage.setVisibility(filteredObjects.isEmpty()? View.VISIBLE : View.GONE);
+        viewModel.getBalances().observe(getViewLifecycleOwner(), balanceViewObjects -> {
+            balancesAdapter.setData(balanceViewObjects);
+            binding.emptyStateImage.setVisibility(balanceViewObjects.isEmpty()? View.VISIBLE : View.GONE);
         });
+    }
+
+    public void showFilterMenu(View v) {
+        PopupMenu popup = new PopupMenu(requireContext(), v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.balances_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(this);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.no_filter:
+                viewModel.setFilter(BalanceFilter.NONE);
+                return true;
+            case R.id.owed_filter:
+                viewModel.setFilter(BalanceFilter.OWED);
+                return true;
+            case R.id.owing_filter:
+                viewModel.setFilter(BalanceFilter.OWING);
+                return true;
+            default:
+                return false;
+        }
     }
 
     void removeRefresh() {

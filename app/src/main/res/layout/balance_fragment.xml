@@ -6,34 +6,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:windowSoftInputMode="stateVisible|adjustPan"
-
     tools:context=".ui.balances.BalanceFragment">
 
     <SearchView
         android:id="@+id/searchView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:iconifiedByDefault="false"
         android:queryHint="@string/search"
         app:layout_constraintBottom_toTopOf="@id/refreshView"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/filterButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/filterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_filter_list_24"
+        app:layout_constraintBottom_toTopOf="@id/refreshView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/searchView"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
-        android:windowSoftInputMode="stateVisible|adjustPan"
-        app:layout_constraintTop_toBottomOf="@id/searchView"
-        android:visibility="gone"
         android:id="@+id/empty_state_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:overScrollMode="never"
         android:scrollbars="none"
-        android:overScrollMode="never">
+        android:visibility="gone"
+        android:windowSoftInputMode="stateVisible|adjustPan"
+        app:layout_constraintTop_toBottomOf="@id/searchView">
+
         <ImageView
-            android:src="@drawable/ic_balance_empty_state"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_balance_empty_state" />
     </ScrollView>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -41,13 +50,16 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:windowSoftInputMode="stateVisible|adjustPan"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchView">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:windowSoftInputMode="stateVisible|adjustPan"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:windowSoftInputMode="stateVisible|adjustPan" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
