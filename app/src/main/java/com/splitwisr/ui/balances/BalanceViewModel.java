@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.splitwisr.data.MessagingService;
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.balances.BalanceRepository;
 import com.splitwisr.data.users.User;
@@ -21,6 +22,7 @@ public class BalanceViewModel extends AndroidViewModel {
     private final BalanceRepository balanceRepository;
     private final UserRepository userRepository;
     public String searchQuery = "";
+    MessagingService messagingService = new MessagingService();
 
     public BalanceViewModel(@NonNull Application application) {
         super(application);
@@ -90,6 +92,7 @@ public class BalanceViewModel extends AndroidViewModel {
     }
 
     public void notifyUser(String bEmail) {
-        //TODO
+        String aEmail = getCurrentUserEmail();
+        messagingService.sendMessage(bEmail);
     }
 }

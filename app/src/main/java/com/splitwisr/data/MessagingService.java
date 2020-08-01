@@ -79,4 +79,19 @@ public class MessagingService extends FirebaseMessagingService {
             Log.e("Messaging_Service", "Could not find current user");
         }
     }
+
+    public void sendMessage(@NotNull String target_user){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://localhost:3100")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ApiService apiService = retrofit.create(ApiService.class);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null){
+            Log.e("Messaging_Service", "Could not find current user");
+            return;
+        }
+        String userEmail = user.getEmail();
+        apiService.notifyUser(userEmail, target_user);
+    }
 }

@@ -57,11 +57,11 @@ public class ReceiptsViewModel extends AndroidViewModel {
     }
 
     public void updateSelectedUsers(ArrayList<Integer> selectedNameIndexes) {
-        users = IntStream
-                .range(0, selectedNameIndexes.size())
-                .filter(selectedNameIndexes::contains)
-                .mapToObj(i->users.get(i))
+        users = selectedNameIndexes
+                .stream()
+                .map(i->users.get(i))
                 .collect(Collectors.toList());
+        users.size();
 
     }
 
@@ -74,43 +74,44 @@ public class ReceiptsViewModel extends AndroidViewModel {
         if (receiptItems.size() == 0){
             return false;
         }
-        new Thread(() -> {
-            for (ReceiptsViewObject receiptsViewObject: receiptItems){
-                // If empty split with everyone
-                if (receiptsViewObject.splitWith == null
-                        || receiptsViewObject.splitWith.size() == 0){
-                    receiptsViewObject.splitWith = users;
-                }
 
-                int divider = receiptsViewObject.splitWith.size();
-                double remainingBill = Double.parseDouble(receiptsViewObject.itemCost);
-
-
-
-                while (divider > 0){
-                    String payer = getCurrentUserEmail();
-                    String split_payee = receiptsViewObject.splitWith.get(divider-1).email;
-
-                    double amount = Math.round((remainingBill/divider)*100.0)/100.0;
-                    remainingBill -= amount;
-                    if (split_payee.equals(payer)) continue;
-
-                    if (payer.compareTo(split_payee) > 0) {
-                        String temp = payer;
-                        payer = split_payee;
-                        split_payee = temp;
-                        amount = -amount;
-                    }
-
-                    Balance oldBalance = balanceRepository.get(payer,split_payee);
-
-                    double totalBalance = oldBalance== null? amount : amount + oldBalance.totalOwing;
-                    balanceRepository.upsert(totalBalance, payer, split_payee);
-                    divider--;
-                }
+        for (ReceiptsViewObject receiptsViewObject: receiptItems){
+            // If empty split with everyone
+            if (receiptsViewObject.splitWith == null
+                    || receiptsViewObject.splitWith.size() == 0){
+                receiptsViewObject.splitWith = users;
             }
-            userRepository.insertAll(users);
-        }).start();
+
+            int divider = receiptsViewObject.splitWith.size();
+            double remainingBill = Double.parseDouble(receiptsViewObject.itemCost);
+
+
+
+            while (divider > 0){
+                String payer = getCurrentUserEmail();
+                String split_payee = receiptsViewObject.splitWith.get(divider-1).email;
+
+                double amount = Math.round((remainingBill/divider)*100.0)/100.0;
+                divider--;
+
+                remainingBill -= amount;
+                if (split_payee.equals(payer)) continue;
+
+                if (payer.compareTo(split_payee) > 0) {
+                    String temp = payer;
+                    payer = split_payee;
+                    split_payee = temp;
+                    amount = -amount;
+                }
+
+                Balance oldBalance = balanceRepository.get(payer,split_payee);
+
+                double totalBalance = oldBalance== null? amount : amount + oldBalance.totalOwing;
+                balanceRepository.upsert(totalBalance, payer, split_payee);
+            }
+        }
+        userRepository.insertAll(users);
+
         return true;
 
     }

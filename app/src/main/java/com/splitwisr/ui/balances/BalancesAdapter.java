@@ -75,12 +75,14 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
                                             PorterDuff.Mode.SRC_IN));
                 }
             }
+            balanceText.setEnabled(false);
         } else {
             balanceText.setTextColor(Color.GREEN);
-            balanceText.setOnClickListener(v -> this.notifyUserCallBack.callback(balanceViewObject.otherUser));
+            balanceText.setEnabled(true);
         }
+        balanceText.setOnClickListener(v -> this.notifyUserCallBack.callback(balanceViewObject.otherEmail));
         Button settleUpButton = holder.balanceView.findViewById(R.id.settle_up);
-        settleUpButton.setOnClickListener(v-> this.callBack.callback(balanceViewObject.otherEmail));
+        settleUpButton.setOnClickListener(v-> this.settleBalanceCallBack.callback(balanceViewObject.otherEmail));
     }
 
     @Override
