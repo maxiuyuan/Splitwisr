@@ -92,7 +92,6 @@ public class BalanceViewModel extends AndroidViewModel {
     }
 
     public void notifyUser(String bEmail) {
-        String aEmail = getCurrentUserEmail();
         messagingService.sendMessage(bEmail);
     }
 }

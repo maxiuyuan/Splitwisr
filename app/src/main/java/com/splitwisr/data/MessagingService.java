@@ -82,7 +82,7 @@ public class MessagingService extends FirebaseMessagingService {
 
     public void sendMessage(@NotNull String target_user){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://localhost:3100")
+                .baseUrl("https://ece452project.herokuapp.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         ApiService apiService = retrofit.create(ApiService.class);
@@ -92,6 +92,16 @@ public class MessagingService extends FirebaseMessagingService {
             return;
         }
         String userEmail = user.getEmail();
-        apiService.notifyUser(userEmail, target_user);
+        apiService.notifyUser(userEmail, target_user).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("Messaging_Service", response.message());
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("Messaging_Service:", t.toString());
+            }
+        });;
     }
 }
