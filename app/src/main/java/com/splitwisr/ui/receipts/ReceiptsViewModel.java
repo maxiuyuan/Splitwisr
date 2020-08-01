@@ -9,7 +9,9 @@ import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.balances.BalanceRepository;
 import com.splitwisr.data.users.User;
 import com.splitwisr.data.users.UserRepository;
+import com.splitwisr.ui.camera.CameraClass;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,8 +21,13 @@ public class ReceiptsViewModel extends AndroidViewModel {
     private UserRepository userRepository;
     private BalanceRepository balanceRepository;
 
-    private List<User> users;
-    private ArrayList<ReceiptsViewObject> receiptItems = new ArrayList<>();
+    public boolean camera = false;
+
+    public static CameraClass cameraClass = new CameraClass();
+
+    public List<User> users;
+    public ArrayList<ReceiptsViewObject> receiptItems = new ArrayList<>();
+    public File outFile;
 
     public ReceiptsViewModel(@NonNull Application application) {
         super(application);
