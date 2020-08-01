@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/no_filter"
+        android:title="No Filter" />
+    <item
+        android:id="@+id/owing_filter"
+        android:title="Only Owing" />
+    <item
+        android:id="@+id/owed_filter"
+        android:title="Only Owed" />
+</menu>
