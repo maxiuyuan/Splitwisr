@@ -20,7 +20,8 @@ public class BalanceViewModel extends AndroidViewModel {
     private LiveData<List<Balance>> allBalances;
     private final BalanceRepository balanceRepository;
     private final UserRepository userRepository;
-    public String searchQuery = "";
+    private String searchQuery = "";
+    private BalanceFilter filter = BalanceFilter.NONE;
 
     public BalanceViewModel(@NonNull Application application) {
         super(application);
@@ -29,7 +30,7 @@ public class BalanceViewModel extends AndroidViewModel {
         allBalances = balanceRepository.getAllBalances();
     }
 
-    LiveData<List<BalanceViewObject>> getAllBalances() {
+    LiveData<List<BalanceViewObject>> getBalances() {
         return Transformations.map(allBalances, balances ->
             balances
             .stream()
@@ -47,10 +48,20 @@ public class BalanceViewModel extends AndroidViewModel {
                 String otherUserName = getOtherName(otherUserEmail);
                 return new BalanceViewObject(otherUserEmail, otherUserName, balance.totalOwing, owesOtherUser);
             })
-            .filter(balanceViewObject ->
-                    balanceViewObject.otherName.toLowerCase().contains(searchQuery.toLowerCase())
-                    || balanceViewObject.otherEmail.toLowerCase().contains(searchQuery.toLowerCase()))
+            .filter(this::matchSearch)
+            .filter(obj -> obj.balance != 0.0)
+            .filter(obj -> filter == BalanceFilter.OWING ? isOwing(obj) : true)
+            .filter(obj -> filter == BalanceFilter.OWED ? !isOwing(obj) : true)
             .collect(Collectors.toList()));
+    }
+
+    public Boolean matchSearch(BalanceViewObject obj) {
+        return obj.otherName.toLowerCase().contains(searchQuery.toLowerCase())
+                || obj.otherEmail.toLowerCase().contains(searchQuery.toLowerCase());
+    }
+
+    public Boolean isOwing(BalanceViewObject obj) {
+        return (obj.owesOtherUser && obj.balance > 0) || (!obj.owesOtherUser && obj.balance < 0);
     }
 
     public String getCurrentUserEmail(){
@@ -72,20 +83,19 @@ public class BalanceViewModel extends AndroidViewModel {
         return "";
     }
 
+    public void settleBalance(String bEmail){
+        new Thread(() -> balanceRepository.upsert(0, getCurrentUserEmail(), bEmail)).start();
+    }
+
     public void setSearchFilter(String query) {
         searchQuery = query;
         // Hacky way to restart the getAllBalances() call and filter again
         allBalances = balanceRepository.getAllBalances();
     }
 
-    public void settleBalance(String bEmail){
-        new Thread(() -> balanceRepository.upsert(0, getCurrentUserEmail(), bEmail)).start();
-    }
-
-    public List<BalanceViewObject> getNonZeroBalances(List<BalanceViewObject> balanceViewObjects){
-        return  balanceViewObjects
-                .stream()
-                .filter(obj -> obj.balance != 0.0)
-                .collect(Collectors.toList());
+    public void setFilter(BalanceFilter newFilter) {
+        filter = newFilter;
+        // Hacky way to restart the getAllBalances() call and filter again
+        allBalances = balanceRepository.getAllBalances();
     }
 }
