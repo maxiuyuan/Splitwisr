@@ -61,7 +61,7 @@ public class BalanceRepository {
         sendBalance(balance.aEmail, balance.bEmail, balance.totalOwing);
     }
 
-    public void update(final double totalOwing, final String aEmail, final String bEmail) {
+    public void upsert(final double totalOwing, final String aEmail, final String bEmail) {
         StringBuilder email_a = new StringBuilder();
         StringBuilder email_b = new StringBuilder();
 
@@ -73,7 +73,7 @@ public class BalanceRepository {
             email_b.append(aEmail);
         }
         AppDatabase.databaseWriteExecutor.execute(() -> {
-            balanceDao.update(totalOwing, email_a.toString(), email_b.toString());
+            balanceDao.upsert(totalOwing, email_a.toString(), email_b.toString());
         });
         sendBalance(email_a.toString(), email_b.toString(), totalOwing);
     }
