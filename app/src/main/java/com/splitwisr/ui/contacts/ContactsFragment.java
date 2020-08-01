@@ -41,14 +41,13 @@ public class ContactsFragment extends Fragment {
             String newEmail = binding.email.getText().toString();
             String newFirstName = binding.firstName.getText().toString();
             String newLastName = binding.lastName.getText().toString();
-            User newUser = new User(newEmail, newFirstName, newLastName);
 
-            if (!newEmail.isEmpty()) {
+            if (!newEmail.isEmpty() && !newFirstName.isEmpty() && !newLastName.isEmpty()) {
+                User newUser = new User(newEmail, newFirstName, newLastName);
                 viewModel.insertUser(newUser);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
-
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         });
         binding.importContactsFab.setOnClickListener(v->{
             NavController navController = NavHostFragment.findNavController(this);
@@ -65,9 +64,11 @@ public class ContactsFragment extends Fragment {
         viewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
 
         viewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
-            if (users != null && users.size() > 0) {
+            if (users != null && users.size() > 1) {
                 usersAdapter.setData(users);
             }
+            binding.emptyStateImage.setVisibility(
+                    (users == null || users.size() == 1) ? View.VISIBLE : View.GONE);
         });
     }
 

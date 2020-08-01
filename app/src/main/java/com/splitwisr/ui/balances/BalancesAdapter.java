@@ -54,7 +54,10 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
         BalanceViewObject balanceViewObject = balances.get(position);
         TextView userText = holder.balanceView.findViewById(R.id.user_text);
         TextView balanceText = holder.balanceView.findViewById(R.id.balance_text);
-        userText.setText(balanceViewObject.otherUser);
+        userText.setText(
+                (balanceViewObject.otherName.isEmpty())
+                        ? balanceViewObject.otherEmail
+                        : balanceViewObject.otherName );
         balanceText.setText("$" + df.format(Math.abs(balanceViewObject.balance)));
         if (balanceViewObject.balance == 0d) {
             // pass
@@ -77,7 +80,7 @@ public class BalancesAdapter extends RecyclerView.Adapter<BalancesAdapter.Balanc
             balanceText.setOnClickListener(v -> this.notifyUserCallBack.callback(balanceViewObject.otherUser));
         }
         Button settleUpButton = holder.balanceView.findViewById(R.id.settle_up);
-        settleUpButton.setOnClickListener(v-> this.settleBalanceCallBack.callback(balanceViewObject.otherUser));
+        settleUpButton.setOnClickListener(v-> this.callBack.callback(balanceViewObject.otherEmail));
     }
 
     @Override

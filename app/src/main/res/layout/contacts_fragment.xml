@@ -47,9 +47,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/add_contact"
+        android:textColor="@color/buttonText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lastName" />
+    <ScrollView
+        android:windowSoftInputMode="stateVisible|adjustPan"
+        app:layout_constraintTop_toBottomOf="@id/submit"
+        android:visibility="gone"
+        android:id="@+id/empty_state_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:overScrollMode="never">
+        <ImageView
+            android:scaleType="fitStart"
+            android:src="@drawable/ic_contacts_empty_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </ScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userRecycler"

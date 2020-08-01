@@ -38,7 +38,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = users.get(position);
         TextView nameText = holder.userView.findViewById(R.id.name_text);
-        nameText.setText(user.firstName + " " + user.lastName);
+        String name = ((user.firstName == null)?"":user.firstName)
+                + " "
+                + ((user.lastName == null)? "": user.lastName);
+        nameText.setText(name);
     }
 
     @Override

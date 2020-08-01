@@ -14,5 +14,9 @@
     <string name="enter_an_email">Enter an email</string>
     <string name="last_name">Last name</string>
     <string name="settle_up">Settle Up</string>
-
+    <string name="item_name">Item name</string>
+    <string name="item_cost">Item cost</string>
+    <string name="add_item">Add item</string>
+    <string name="split">Split</string>
+    <string name="split_all">Split All</string>
 </resources>

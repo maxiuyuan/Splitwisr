@@ -1,11 +1,11 @@
 package com.splitwisr.ui.receipts;
 
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,170 +13,137 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.abdeveloper.library.MultiSelectDialog;
+import com.abdeveloper.library.MultiSelectModel;
 import com.splitwisr.R;
-import com.splitwisr.data.balances.Balance;
-import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class ReceiptFragment extends Fragment {
+
     private ReceiptsViewModel receiptsViewModel;
     private ReceiptFragmentBinding binding;
-
-    StringBuilder usersSplittingItemText = new StringBuilder();
-    StringBuilder receiptContentsText = new StringBuilder();
-
-    private List<String> usersToSplitItem = new ArrayList<>();
-    private List<String> userNamesToSplitItem = new ArrayList<>();
-    private HashMap<String,String> userNames = new HashMap<>();
-    private HashMap<String, Double> amountsOwed = new HashMap<>();
-    private String selectedUser = "";
+    private ReceiptsAdapater receiptsAdapater;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
+        receiptsViewModel = new ViewModelProvider(requireActivity()).get(ReceiptsViewModel.class);
+        receiptsViewModel.updateUserList();
+
         View view = binding.getRoot();
 
-        receiptsViewModel = new ViewModelProvider(requireActivity()).get(ReceiptsViewModel.class);
-        List<User> users = receiptsViewModel.getUserList();
-
-        if (users != null) {
-            for (int x = 0; x < users.size(); x++) {
-                String userName = users.get(x).firstName + " " + users.get(x).lastName;
-                userNames.put(userName, users.get(x).email);
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    requireContext(),
-                    android.R.layout.simple_spinner_dropdown_item,
-                    userNames.keySet().toArray(new String[0])
-            );
-            binding.userDropDown.setAdapter(adapter);
-        } else {
-            String[] s = new String[]{"no users"};
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    requireContext(),
-                    android.R.layout.simple_spinner_dropdown_item,
-                    s
-            );
-            binding.userDropDown.setAdapter(adapter);
-        }
-
-        binding.userDropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                selectedUser = (String) parent.getItemAtPosition(pos);
-            }
-
-
-            public void onNothingSelected(AdapterView<?> parent) {
-                selectedUser = "";
-            }
-        });
-
-        binding.addUserToItemButton.setOnClickListener(v -> {
-            if (!selectedUser.equals("") && !usersToSplitItem.contains(selectedUser)) {
-                usersToSplitItem.add(userNames.get(selectedUser));
-                userNamesToSplitItem.add(selectedUser);
-                addUsersSplittingItemText(selectedUser);
-            }
-        });
-
         binding.addItemButton.setOnClickListener(v -> {
-            double tempItemCost = 0d;
-            String tempItemName;
-
-            if (!binding.itemCostText.getText().toString().equals("")) {
-                tempItemCost = Double.parseDouble(binding.itemCostText.getText().toString());
+            if (binding.itemCostText.getText().toString().isEmpty()
+                    || binding.itemNameText.getText().toString().isEmpty()) {
+                return;
             }
-            tempItemName = binding.itemNameText.getText().toString();
-
-            if (tempItemCost > 0d && usersToSplitItem.size() > 0) {
-                double costPerUser = round(tempItemCost/usersToSplitItem.size());
-                StringBuilder s = new StringBuilder("\n" + tempItemName + " - " + tempItemCost + " ");
-                for (int x = 0; x < userNamesToSplitItem.size(); x++) {
-                    String user = usersToSplitItem.get(x);
-                    String userName = userNamesToSplitItem.get(x);
-                    if (!user.equals(receiptsViewModel.getCurrentUserEmail())) {
-                        if (!amountsOwed.containsKey(user)) {
-                            amountsOwed.put(user, 0d);
-                        }
-                        amountsOwed.put(user, amountsOwed.get(user) + costPerUser);
-                    }
-                    s.append(userName);
-                    if (x != userNamesToSplitItem.size() - 1) s.append(", ");
-                }
-                addReceiptContentsText(s.toString());
-                usersToSplitItem.clear();
-                userNamesToSplitItem.clear();
-                resetUsersSplittingItemText();
+            double itemCost = Double.parseDouble(binding.itemCostText.getText().toString());
+            if (itemCost <= 0d){
+                return;
             }
+            String itemName = binding.itemNameText.getText().toString();
+            receiptsViewModel.addReceiptItem(itemCost, itemName);
+
+            binding.emptyStateImage.setVisibility(
+                    (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
+            binding.itemCostText.getText().clear();
+            binding.itemNameText.getText().clear();
+            receiptsAdapater.setData(receiptsViewModel.getReceipts());
         });
 
         binding.submitButton.setOnClickListener(v -> {
-            for (String splitUser : amountsOwed.keySet()) {
-                double amountOwed = amountsOwed.get(splitUser);
-                if (!splitUser.equals(receiptsViewModel.getCurrentUserEmail())) {
-                    Balance balance = receiptsViewModel.get(receiptsViewModel.getCurrentUserEmail(), splitUser);
-                    Balance b = null;
-                    if (balance != null) {
-                        b = balance;
-                    } else {
-                        receiptsViewModel.insertBalance(new Balance(receiptsViewModel.getCurrentUserEmail(), splitUser, 0d));
-                        b = receiptsViewModel.get(receiptsViewModel.getCurrentUserEmail(), splitUser);
-                    }
-                    if (b.aEmail.equals(receiptsViewModel.getCurrentUserEmail())) {
-                        b.totalOwing += amountOwed;
-                    } else {
-                        b.totalOwing -= amountOwed;
-                    }
-                    receiptsViewModel.update(b.totalOwing, b.aEmail, b.bEmail);
-                }
-            }
-            if (!amountsOwed.isEmpty()){
-                amountsOwed.clear();
-                resetReceiptContentsText();
-                NavController navController = NavHostFragment.findNavController(this);
-                navController.navigate(R.id.destination_balance_fragment);
+            if(receiptsViewModel.submit(receiptsViewModel.getUsers(), receiptsViewModel.getReceipts())){
+                navigateToBalancesFragment();
             }
         });
 
-        resetReceiptContentsText();
-        resetUsersSplittingItemText();
+        receiptsAdapater = new ReceiptsAdapater(
+                i-> {
+                    receiptsViewModel.removeReceiptItem(i);
+                    binding.emptyStateImage.setVisibility(
+                            (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
+                    receiptsAdapater.setData(receiptsViewModel.getReceipts());
+                },
+                i -> splitUsersDialog(
+                        (ids, selectedNames, dataString)-> {
+                            receiptsViewModel.addUserToReceipt(i, ids);
+                            receiptsAdapater.setData(receiptsViewModel.getReceipts());
+                        },
+                        ()->{})
+        );
+
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerView.setAdapter(receiptsAdapater);
+        binding.recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayout.VERTICAL));
 
         return view;
     }
 
-    // Rounding function for rounding to 2 decimal places
-    public static double round(double value) {
-        BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(2, RoundingMode.HALF_UP);
-        return bd.doubleValue();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding.emptyStateImage.setVisibility(
+                (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
+        receiptsAdapater.setData(receiptsViewModel.getReceipts());
+        splitUsersDialog(
+                (ids, selectedNames, dataString)->{
+                    receiptsViewModel.updateSelectedUsers(ids);
+                },
+                this::navigateToBalancesFragment);
     }
 
-    public void resetUsersSplittingItemText() {
-        usersSplittingItemText = new StringBuilder("Users to Split Item:");
-        binding.usersSplittingItem.setText(usersSplittingItemText.toString());
+    @Override
+    public void onStop() {
+        super.onStop();
+        receiptsViewModel.reset();
     }
 
-    public void resetReceiptContentsText() {
-        receiptContentsText = new StringBuilder("Receipt Contents:");
-        binding.receiptContents.setText(receiptContentsText.toString());
+    private void splitUsersDialog(
+            MultiSelectModelOnSelected onSelected,
+            MultiSelectModelOnCancel onCancel ){
+
+        List<MultiSelectModel> modelList = receiptsViewModel.getModelList(receiptsViewModel.getUserNames());
+        MultiSelectDialog multiSelectDialog = new MultiSelectDialog()
+                .title("Select Users")
+                .titleSize(25)
+                .positiveText("Done")
+                .negativeText("Cancel")
+                .setMinSelectionLimit(1)
+                .multiSelectList(new ArrayList<>(modelList)) // the multi select model list with ids and name
+                .onSubmit(new MultiSelectDialog.SubmitCallbackListener() {
+                    @Override
+                    public void onSelected(ArrayList<Integer> selectedIds, ArrayList<String> selectedNames, String dataString) {
+                        onSelected.callback(selectedIds, selectedNames, dataString);
+                    }
+                    @Override
+                    public void onCancel() {
+                        onCancel.callback();
+                    }
+                });
+        multiSelectDialog.show(getActivity().getSupportFragmentManager(), "multiSelectDialog");
+        multiSelectDialog.setShowsDialog(true);
     }
 
-    public void addUsersSplittingItemText(String user) {
-        usersSplittingItemText.append("\n").append(user);
-        binding.usersSplittingItem.setText(usersSplittingItemText.toString());
+    private void navigateToBalancesFragment() {
+        NavController navController = NavHostFragment.findNavController(this);
+        navController.navigate(R.id.destination_balance_fragment);
     }
 
-    public void addReceiptContentsText(String s) {
-        receiptContentsText.append(s);
-        binding.receiptContents.setText(receiptContentsText.toString());
+    private interface MultiSelectModelOnSelected{
+        void callback(ArrayList<Integer> selectedIds, ArrayList<String> selectedNames, String dataString);
+    }
+    private interface MultiSelectModelOnCancel{
+        void callback();
     }
 }
+
