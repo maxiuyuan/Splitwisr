@@ -16,4 +16,7 @@ public interface ApiService {
 
     @POST("/register")
     Call<Void> registerUser(@Query("current_user") String user, @Query("device_id") String token);
+
+    @GET("/send")
+    Call<Void>  notifyUser(@Query("current_user") String currentUser, @Query("target_user") String targetUser);
 }

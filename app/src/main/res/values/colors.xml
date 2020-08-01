@@ -5,6 +5,7 @@
     <color name="colorAccent">#03DAC5</color>
 
     <color name="buttonText">#ffffff</color>
+    <color name="disabledButton">#80FFFFFF</color>
     <color name="text">#000000</color>
     <color name="text_inverse">#ffffff</color>
 </resources>

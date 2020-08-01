@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,7 +25,12 @@ import com.splitwisr.databinding.BalanceFragmentBinding;
 public class BalanceFragment extends Fragment implements PopupMenu.OnMenuItemClickListener {
     private BalanceViewModel viewModel;
     private BalanceFragmentBinding binding;
-    private BalancesAdapter balancesAdapter = new BalancesAdapter(bEmail -> viewModel.settleBalance(bEmail));
+    private BalancesAdapter balancesAdapter = new BalancesAdapter(
+            bEmail -> viewModel.settleBalance(bEmail),
+            bEmail -> {
+                viewModel.notifyUser(bEmail);
+                Toast.makeText(getContext(), "Notification Sent!", Toast.LENGTH_SHORT).show();
+            });
 
     @Nullable
     @Override

@@ -1,17 +1,19 @@
-const express   = require('express');
-const parser    = require('body-parser');
-const admin     = require("firebase-admin");
-const key       = require("./ece452-297ff-firebase-adminsdk-o4qg7-41afcae2be.json");
-const database  = require('./service/database.js');
-const notif     = require('./service/notification.js');
+const express = require('express');
+const parser = require('body-parser');
+const admin = require("firebase-admin");
+const key = require("./ece452-297ff-firebase-adminsdk-o4qg7-41afcae2be.json");
+const database = require('./service/database.js');
+const notif = require('./service/notification.js');
+
+const server = express();
+server.use(parser.json());
 
 admin.initializeApp({
   credential: admin.credential.cert(key),
   databaseURL: "https://ece452-297ff.firebaseio.com"
 });
 
-const db        = admin.database();
-const server    = express();
+const db = admin.database();
 server.use(parser.json());
 
 // ########## Notification ##########
