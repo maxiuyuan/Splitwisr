@@ -8,7 +8,6 @@ import com.splitwisr.data.AppDatabase;
 import java.util.List;
 
 public class UserRepository {
-
     private UserDao userDao;
     private LiveData<List<User>> allUsers;
 

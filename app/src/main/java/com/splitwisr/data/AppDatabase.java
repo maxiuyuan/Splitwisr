@@ -1,22 +1,29 @@
 package com.splitwisr.data;
 
 import android.content.Context;
+
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import com.splitwisr.data.balances.Balance;
 import com.splitwisr.data.balances.BalanceDao;
+import com.splitwisr.data.groups.Group;
+import com.splitwisr.data.groups.GroupDao;
+import com.splitwisr.data.groups.GroupUsersConverters;
 import com.splitwisr.data.users.User;
 import com.splitwisr.data.users.UserDao;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Balance.class}, version = 1, exportSchema = false)
+@Database(entities = {User.class, Balance.class, Group.class}, version = 1, exportSchema = false)
+@TypeConverters({GroupUsersConverters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract UserDao userDao();
+    public abstract GroupDao groupDao();
     public abstract BalanceDao balanceDao();
 
     private static volatile AppDatabase INSTANCE;
