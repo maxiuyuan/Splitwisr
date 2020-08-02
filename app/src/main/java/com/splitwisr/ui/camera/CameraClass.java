@@ -5,8 +5,6 @@ import androidx.annotation.NonNull;
 import android.content.Context;
 import android.graphics.Point;
 import android.net.Uri;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -15,6 +13,7 @@ import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
+import com.splitwisr.ui.receipts.ReceiptFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,11 +21,8 @@ import java.util.List;
 
 public class CameraClass {
     static final float SCALING_FACTOR = 70f / 3f;
-    public List<String> receiptItems;
     private List<String> itemNames;
     private List<Double> itemCosts;
-    private boolean failed = false;
-    private boolean wait = true;
 
     public List<String> getItemNames() {
         return itemNames;
@@ -36,8 +32,7 @@ public class CameraClass {
         return itemCosts;
     }
 
-    public boolean detectTextFromReceipt(Context c, Uri imageUri) {
-        System.out.println("WEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+    public boolean detectTextFromReceipt(Context c, Uri imageUri, ReceiptFragment r) {
         try {
             FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(c, imageUri);
             FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
@@ -46,25 +41,17 @@ public class CameraClass {
                             .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                                 @Override
                                 public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                                    System.out.println("YEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP COCK");
-                                    parseTextFromImage(firebaseVisionText);
+                                    parseTextFromImage(firebaseVisionText, r);
                                 }
                             })
                             .addOnFailureListener(
                                     new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-//                                            Toast.makeText(c, "ERROR: " + e.getMessage(), Toast.LENGTH_SHORT);
-//                                            Log.d("Error ", e.getMessage());
-                                            System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHJFKSD:LJ FKLSDJFLK:SDJF:LKSDJ " + e.getMessage());
-                                            failed = true;
+
                                         }
                                     });
-            if (!failed) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         }
         catch (Exception e){
             System.out.println("Exception throw while doing ml stuff" + e.getMessage());
@@ -72,7 +59,7 @@ public class CameraClass {
         }
     }
 
-    private void parseTextFromImage(FirebaseVisionText firebaseVisionText) {
+    private void parseTextFromImage(FirebaseVisionText firebaseVisionText, ReceiptFragment r) {
         List<FirebaseVisionText.TextBlock> textBlockList = firebaseVisionText.getTextBlocks();
 
         itemNames = new ArrayList<>();
@@ -148,16 +135,35 @@ public class CameraClass {
                 }
                 prevY = curY;
             }
+
+            r.addScannedItems();
         }
     }
 
     private void addLineToReceiptItems(String line) {
         if (line.matches("(.*)\\$([0-9Oo]*[.])?[0-9Oo]+[ ]+.")) {
-           // receiptItems.add(line);
-            System.out.println("ADDING 8888888888888888888888888888888888888888888");
-            itemNames.add(line);
-            itemCosts.add(0d);
+            String[] strs = line.split("\\$");
+            // Split the line into the name and the price
+            if (strs.length == 2) {
+                int state = 0;
+                itemNames.add(strs[0]);
+                StringBuilder cost = new StringBuilder();
+                for (int x = 0; x < strs[1].length(); x++) {
+                    char c = strs[1].charAt(x);
+                    if (c == ' ') break;
+                    if (state == 0) {
+                        if (c == 'O' || c == 'o') c = 0;
+                        cost.append(c);
+                        if (c == '.') state = 1;
+                    } else if (state == 1) {
+                        cost.append(c);
+                    }
+                }
+                itemCosts.add(Double.parseDouble(cost.toString()));
+            }
         }
     }
+
+
 
 }
