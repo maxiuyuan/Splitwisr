@@ -20,13 +20,11 @@ import java.util.stream.IntStream;
 public class ReceiptsViewModel extends AndroidViewModel {
     private UserRepository userRepository;
     private BalanceRepository balanceRepository;
-
-    public boolean camera = false;
-
     public static CameraClass cameraClass = new CameraClass();
 
+    // this is gonna be public until the whole user list resetting on nav-ing back after camera thing is fixed
     public List<User> users;
-    public ArrayList<ReceiptsViewObject> receiptItems = new ArrayList<>();
+    public List<ReceiptsViewObject> receiptItems = new ArrayList<>();
     public File outFile;
 
     public ReceiptsViewModel(@NonNull Application application) {

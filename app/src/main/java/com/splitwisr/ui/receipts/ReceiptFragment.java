@@ -3,6 +3,7 @@ package com.splitwisr.ui.receipts;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.fonts.SystemFonts;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -28,8 +29,6 @@ import com.abdeveloper.library.MultiSelectModel;
 import com.splitwisr.MainActivity;
 import com.splitwisr.R;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
-import com.splitwisr.ui.camera.CameraActivity;
-import com.splitwisr.ui.camera.CameraClass;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -86,33 +85,21 @@ public class ReceiptFragment extends Fragment {
             }
         });
 
+        // Button to take picture
         binding.cameraButton.setOnClickListener(v -> {
-            try {
-                throw new Exception("fuck you");
-            }
-            catch (Exception e) {
-
-            }
             Long tsLong = System.currentTimeMillis()/1000;
             String ts = tsLong.toString() + ".jpg";
+            // Inform the main activity we are returning from camera so nav back to receipt frag
             ((MainActivity)getActivity()).hasCamera = true;
-            receiptsViewModel.camera = true;
-//            ((MainActivity)getActivity()).savedReceiptItems = receiptsViewModel.receiptItems;
-            ((MainActivity)getActivity()).savedUsers = receiptsViewModel.users;
+            // Save the user list because upon nav-ing back after the camera the user list resets and idk how to fix it so this is whats happening for now
+            ((MainActivity)getActivity()).savedUsers = receiptsViewModel.getUsers();
+          //  ((MainActivity)getActivity()).savedItems = receiptsViewModel.getReceipts();
             dispatchTakePictureIntent();
         });
 
+        // Temp button to update receipts adapter because it doesn't update when its called in addScannedItems by the camera class
         binding.detectButton.setOnClickListener(v -> {
-            List<String> newItemNames = receiptsViewModel.cameraClass.getItemNames();
-            List<Double> newItemCosts = receiptsViewModel.cameraClass.getItemCosts();
-            if (newItemNames != null && newItemCosts != null) {
-                for (int x = 0; x < newItemNames.size(); x++) {
-                    receiptsViewModel.addReceiptItem(newItemCosts.get(x), newItemNames.get(x));
-                }
-                receiptsAdapater.setData(receiptsViewModel.getReceipts());
-            } else {
-                System.out.println("YEAH THESE ARE NULL XDDDDDDDDDDDDDDDDDDDDDDd");
-            }
+            receiptsAdapater.setData(receiptsViewModel.getReceipts());
 
         });
 
@@ -165,29 +152,39 @@ public class ReceiptFragment extends Fragment {
         }
     }
 
+    public void addScannedItems() {
+        List<String> newItemNames = receiptsViewModel.cameraClass.getItemNames();
+        List<Double> newItemCosts = receiptsViewModel.cameraClass.getItemCosts();
+        if (newItemNames != null && newItemCosts != null) {
+            for (int x = 0; x < newItemNames.size(); x++) {
+                System.out.println("adding " + newItemNames.get(x) + " " + newItemNames.get(x));
+                receiptsViewModel.addReceiptItem(newItemCosts.get(x), newItemNames.get(x));
+            }
+            // This call fails silently for some dumbass reason
+            receiptsAdapater.setData(receiptsViewModel.getReceipts());
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
-            System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHh");
-            receiptsViewModel.cameraClass.detectTextFromReceipt(this.getContext(), Uri.fromFile(receiptsViewModel.outFile));
-            //if (cameraClass.detectTextFromReceipt(this.getContext(), imageUri)) {
-            //}
+            receiptsViewModel.cameraClass.detectTextFromReceipt(this.getContext(), Uri.fromFile(receiptsViewModel.outFile), this);
         } else {
             System.out.println("Problem while taking image");
         }
     }
 
 
-//    private void deleteImageUri() {
-//        if (receiptsViewModel.outFile.exists()) {
-//            if (receiptsViewModel.outFile.delete()) {
-//                System.out.println("file Deleted :" + imageUri.toString());
-//            } else {
-//                System.out.println("file not Deleted :" + imageUri.toString());
-//            }
-//        }
-//    }
+    private void deleteImageUri() {
+        if (receiptsViewModel.outFile.exists()) {
+            if (receiptsViewModel.outFile.delete()) {
+                System.out.println("file Deleted :" + receiptsViewModel.outFile.toString());
+            } else {
+                System.out.println("file not Deleted :" + receiptsViewModel.outFile.toString());
+            }
+        }
+    }
 
 
 
@@ -204,23 +201,21 @@ public class ReceiptFragment extends Fragment {
                     },
                     this::navigateToBalancesFragment);
         } else {
-            System.out.println("hi");
+            // I don't wanna have to use this but the user list resets if you don't run the contents of the above if
+            // and idk how that works so we're saving it in the activity until someone else fixes it
 
-            if (((MainActivity)getActivity()).savedUsers == null) {
-                System.out.println("kill yourself 8=============================================================================D");
-            } else {
-                System.out.println(("KJLSDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFf"));
-            }
-//            receiptsViewModel.receiptItems = ((MainActivity)getActivity()).savedReceiptItems;
             receiptsViewModel.users = ((MainActivity)getActivity()).savedUsers;
-            System.out.println(("Users: " + Integer.toString(receiptsViewModel.users.size()) + " items: " + Integer.toString(receiptsViewModel.receiptItems.size())));
+           // receiptsViewModel.receiptItems = ((MainActivity)getActivity()).savedItems;
+
+            System.out.println("SAVED STATE: " + receiptsViewModel.users.size() + " " + receiptsViewModel.receiptItems.size());
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (!receiptsViewModel.camera) {
+        if (!((MainActivity)getActivity()).hasCamera) {
+            System.out.println("RESETTING");
             receiptsViewModel.reset();
         }
     }

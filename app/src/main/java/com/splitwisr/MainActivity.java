@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean showLogout;
     public boolean hasCamera = false;
     public List<User> savedUsers;
-    public ArrayList<ReceiptsViewObject> savedReceiptItems;
+  //  public List<ReceiptsViewObject> savedItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
