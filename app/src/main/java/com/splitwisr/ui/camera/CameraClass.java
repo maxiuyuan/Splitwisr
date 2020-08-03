@@ -42,6 +42,7 @@ public class CameraClass {
                                 @Override
                                 public void onSuccess(FirebaseVisionText firebaseVisionText) {
                                     parseTextFromImage(firebaseVisionText, r);
+                                    r.addScannedItems();
                                 }
                             })
                             .addOnFailureListener(
@@ -136,7 +137,6 @@ public class CameraClass {
                 prevY = curY;
             }
 
-            r.addScannedItems();
         }
     }
 

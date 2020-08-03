@@ -92,28 +92,11 @@
     android:layout_height="wrap_content">
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_margin="16dp"
-        android:src="@drawable/ic_baseline_save_24"
+        android:src="@drawable/ic_baseline_photo_camera_24"
         app:tint="@android:color/white"
         android:id="@+id/cameraButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/detectButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_baseline_save_24"
-            app:tint="@android:color/white" />
-    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

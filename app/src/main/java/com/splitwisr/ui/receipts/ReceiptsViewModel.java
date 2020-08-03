@@ -129,7 +129,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
     }
 
     public List<ReceiptsViewObject> getReceipts() {
-        return  receiptItems;
+        return receiptItems;
     }
 
     public List<User> getUsers() {
@@ -138,7 +138,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
 
     public void reset() {
         users = null;
-        receiptItems = new ArrayList<>();
+        receiptItems.clear();
     }
 
 

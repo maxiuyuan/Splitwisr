@@ -33,13 +33,20 @@ import com.splitwisr.databinding.ReceiptFragmentBinding;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+class ReceiptUpdateThread implements Runnable {
+    @Override
+    public void run() {
+        ReceiptFragment.receiptsAdapater.notifyDataSetChanged();
+    }
+}
 
 public class ReceiptFragment extends Fragment {
 
     private ReceiptsViewModel receiptsViewModel;
     private ReceiptFragmentBinding binding;
-    private ReceiptsAdapater receiptsAdapater;
+    static ReceiptsAdapater receiptsAdapater;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -95,12 +102,6 @@ public class ReceiptFragment extends Fragment {
             ((MainActivity)getActivity()).savedUsers = receiptsViewModel.getUsers();
           //  ((MainActivity)getActivity()).savedItems = receiptsViewModel.getReceipts();
             dispatchTakePictureIntent();
-        });
-
-        // Temp button to update receipts adapter because it doesn't update when its called in addScannedItems by the camera class
-        binding.detectButton.setOnClickListener(v -> {
-            receiptsAdapater.setData(receiptsViewModel.getReceipts());
-
         });
 
         receiptsAdapater = new ReceiptsAdapater(
@@ -162,6 +163,7 @@ public class ReceiptFragment extends Fragment {
             }
             // This call fails silently for some dumbass reason
             receiptsAdapater.setData(receiptsViewModel.getReceipts());
+            getActivity().runOnUiThread(new ReceiptUpdateThread());
         }
     }
 
@@ -206,9 +208,15 @@ public class ReceiptFragment extends Fragment {
 
             receiptsViewModel.users = ((MainActivity)getActivity()).savedUsers;
            // receiptsViewModel.receiptItems = ((MainActivity)getActivity()).savedItems;
-
+            ((MainActivity)getActivity()).hasCamera = false;
             System.out.println("SAVED STATE: " + receiptsViewModel.users.size() + " " + receiptsViewModel.receiptItems.size());
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        receiptsAdapater.notifyDataSetChanged();
     }
 
     @Override
