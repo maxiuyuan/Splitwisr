@@ -47,6 +47,9 @@ public class ContactsFragment extends Fragment {
                 viewModel.insertUser(newUser);
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                binding.email.setText("");
+                binding.firstName.setText("");
+                binding.lastName.setText("");
             }
         });
         binding.importContactsFab.setOnClickListener(v->{
