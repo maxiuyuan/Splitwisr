@@ -13,4 +13,9 @@ public class Group {
     public String name;
 
     public List<String> userEmails;
+
+    public Group(@NonNull String name, List<String> userEmails) {
+        this.name = name;
+        this.userEmails = userEmails;
+    }
 }

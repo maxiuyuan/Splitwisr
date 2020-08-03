@@ -20,4 +20,8 @@ public class GroupRepository {
     }
 
     public LiveData<List<Group>> getAllGroups() { return allGroups; }
+
+    public void insert(String groupName, List<String> userEmails) {
+        groupDao.insert(new Group(groupName, userEmails));
+    }
 }

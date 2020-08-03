@@ -70,7 +70,7 @@ public class ContactsFragment extends Fragment {
                         .onSubmit(new MultiSelectDialog.SubmitCallbackListener() {
                             @Override
                             public void onSelected(ArrayList<Integer> selectedIds, ArrayList<String> selectedNames, String dataString) {
-                                // TODO: Add group
+                                viewModel.insertGroup(newGroupName, selectedIds);
                             }
 
                             @Override
