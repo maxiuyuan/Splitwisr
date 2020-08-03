@@ -63,7 +63,9 @@ public class ReceiptFragment extends Fragment {
 
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
         receiptsViewModel = new ViewModelProvider(requireActivity()).get(ReceiptsViewModel.class);
-        receiptsViewModel.updateUserList();
+        if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.BASE_STATE) {
+            receiptsViewModel.updateUserList();
+        }
 
         View view = binding.getRoot();
 
@@ -72,7 +74,7 @@ public class ReceiptFragment extends Fragment {
                     || binding.itemNameText.getText().toString().isEmpty()) {
                 return;
             }
-            double itemCost = Double.parseDouble(binding.itemCostText.getText().toString());
+            double itemCost = receiptsViewModel.round(Double.parseDouble(binding.itemCostText.getText().toString()));
             if (itemCost <= 0d){
                 return;
             }
@@ -97,10 +99,8 @@ public class ReceiptFragment extends Fragment {
             Long tsLong = System.currentTimeMillis()/1000;
             String ts = tsLong.toString() + ".jpg";
             // Inform the main activity we are returning from camera so nav back to receipt frag
-            ((MainActivity)getActivity()).hasCamera = true;
-            // Save the user list because upon nav-ing back after the camera the user list resets and idk how to fix it so this is whats happening for now
-            ((MainActivity)getActivity()).savedUsers = receiptsViewModel.getUsers();
-          //  ((MainActivity)getActivity()).savedItems = receiptsViewModel.getReceipts();
+            ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.RETURNING_FROM_CAMERA;
+            System.out.println("RETURNING FROM CAMERA ================");
             dispatchTakePictureIntent();
         });
 
@@ -159,7 +159,7 @@ public class ReceiptFragment extends Fragment {
         if (newItemNames != null && newItemCosts != null) {
             for (int x = 0; x < newItemNames.size(); x++) {
                 System.out.println("adding " + newItemNames.get(x) + " " + newItemNames.get(x));
-                receiptsViewModel.addReceiptItem(newItemCosts.get(x), newItemNames.get(x));
+                receiptsViewModel.addReceiptItem(ReceiptsViewModel.round(newItemCosts.get(x)), newItemNames.get(x));
             }
             // This call fails silently for some dumbass reason
             receiptsAdapater.setData(receiptsViewModel.getReceipts());
@@ -196,20 +196,25 @@ public class ReceiptFragment extends Fragment {
         binding.emptyStateImage.setVisibility(
                 (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
         receiptsAdapater.setData(receiptsViewModel.getReceipts());
-        if (((MainActivity)getActivity()).hasCamera == false) {
+        if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.BASE_STATE) {
             splitUsersDialog(
                     (ids, selectedNames, dataString) -> {
                         receiptsViewModel.updateSelectedUsers(ids);
                     },
                     this::navigateToBalancesFragment);
         } else {
-            // I don't wanna have to use this but the user list resets if you don't run the contents of the above if
-            // and idk how that works so we're saving it in the activity until someone else fixes it
-
-            receiptsViewModel.users = ((MainActivity)getActivity()).savedUsers;
-           // receiptsViewModel.receiptItems = ((MainActivity)getActivity()).savedItems;
-            ((MainActivity)getActivity()).hasCamera = false;
-            System.out.println("SAVED STATE: " + receiptsViewModel.users.size() + " " + receiptsViewModel.receiptItems.size());
+            System.out.println("VIEW NOT BASE STATE ================");
+            if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNING_FROM_CAMERA) {
+                ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.RETURNING_FROM_MAIN;
+                System.out.println("VIEW RETURNING FROM CAMERA");
+            } else if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNING_FROM_MAIN) {
+                ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.RETURNED_PAST_VIEW;
+                System.out.println("VIEW RETURNING FROM MAIN");
+            } else if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNED_PAST_PAUSE) {
+                ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.BASE_STATE;
+                System.out.println("VIEW PAST PAUSE");
+            }
+           // System.out.println("SAVED STATE: " + receiptsViewModel.users.size() + " " + receiptsViewModel.receiptItems.size());
         }
     }
 
@@ -220,11 +225,15 @@ public class ReceiptFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        if (!((MainActivity)getActivity()).hasCamera) {
+    public void onPause() {
+        super.onPause();
+        if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.BASE_STATE) {
             System.out.println("RESETTING");
             receiptsViewModel.reset();
+        } else if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNING_FROM_MAIN) {
+            ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.RETURNED_PAST_PAUSE;
+        } else if (((((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNED_PAST_VIEW))) {
+            ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.BASE_STATE;
         }
     }
 

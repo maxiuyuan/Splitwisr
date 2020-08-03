@@ -32,9 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     NavController navController;
     private boolean showLogout;
-    public boolean hasCamera = false;
-    public List<User> savedUsers;
-  //  public List<ReceiptsViewObject> savedItems;
+    public enum ReceiptStates{BASE_STATE, RETURNING_FROM_CAMERA, RETURNING_FROM_MAIN, RETURNED_PAST_PAUSE, RETURNED_PAST_VIEW};
+    public ReceiptStates receiptState = ReceiptStates.BASE_STATE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
-                if (hasCamera) {
+                if (receiptState != ReceiptStates.BASE_STATE) {
+                    receiptState = ReceiptStates.RETURNING_FROM_MAIN;
                     NavHostFragment
                             .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
                             .navigate(R.id.action_global_destination_receipt_fragment);

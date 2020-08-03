@@ -141,7 +141,7 @@ public class CameraClass {
     }
 
     private void addLineToReceiptItems(String line) {
-        if (line.matches("(.*)\\$([0-9Oo]*[.])?[0-9Oo]+[ ]+.")) {
+        if (line.matches("(.*)\\$([0-9Oo]*[.])?[0-9Oo]*+[ .*]?")) {
             String[] strs = line.split("\\$");
             // Split the line into the name and the price
             if (strs.length == 2) {

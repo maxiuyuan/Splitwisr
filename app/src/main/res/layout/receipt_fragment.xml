@@ -35,7 +35,7 @@
                     android:layout_weight="1"
                     android:layout_marginHorizontal="4dp"
                     android:hint="@string/item_cost"
-                    android:inputType="numberSigned"
+                    android:inputType="numberDecimal"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     />

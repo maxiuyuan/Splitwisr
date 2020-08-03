@@ -12,6 +12,8 @@ import com.splitwisr.data.users.UserRepository;
 import com.splitwisr.ui.camera.CameraClass;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,8 +25,8 @@ public class ReceiptsViewModel extends AndroidViewModel {
     public static CameraClass cameraClass = new CameraClass();
 
     // this is gonna be public until the whole user list resetting on nav-ing back after camera thing is fixed
-    public List<User> users;
-    public List<ReceiptsViewObject> receiptItems = new ArrayList<>();
+    private List<User> users;
+    private List<ReceiptsViewObject> receiptItems = new ArrayList<>();
     public File outFile;
 
     public ReceiptsViewModel(@NonNull Application application) {
@@ -96,7 +98,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
                 String payer = getCurrentUserEmail();
                 String split_payee = receiptsViewObject.splitWith.get(divider-1).email;
 
-                double amount = Math.round((remainingBill/divider)*100.0)/100.0;
+                double amount = round(remainingBill/divider);
                 divider--;
 
                 remainingBill -= amount;
@@ -137,9 +139,14 @@ public class ReceiptsViewModel extends AndroidViewModel {
     }
 
     public void reset() {
-        users = null;
+        updateUserList();
         receiptItems.clear();
     }
-
+    // This stays
+    public static double round(double value) {
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 
 }
