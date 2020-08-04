@@ -166,6 +166,8 @@ public class ReceiptFragment extends Fragment {
             receiptsAdapater.setData(receiptsViewModel.getReceipts());
             getActivity().runOnUiThread(new ReceiptUpdateThread());
         }
+        // delete stored image as we no longer need it
+        deleteImageUri();
     }
 
     @Override
