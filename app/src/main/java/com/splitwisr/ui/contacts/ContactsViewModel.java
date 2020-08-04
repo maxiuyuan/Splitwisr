@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 import com.abdeveloper.library.MultiSelectModel;
 import com.splitwisr.data.groups.GroupRepository;
@@ -26,8 +27,27 @@ public class ContactsViewModel extends AndroidViewModel {
         groupRepository = new GroupRepository(application);
     }
 
-    LiveData<List<User>> getAllUsers() {
-        return userRepository.getAllUsers();
+    LiveData<List<String>> getAllUsers() {
+        return Transformations.map(userRepository.getAllUsers(), users -> users
+                .stream()
+                .map(user -> user.firstName + " " + user.lastName)
+                .collect(Collectors.toList()));
+    }
+
+    List<String> getAllGroups() {
+        return groupRepository.getAllGroups()
+                .stream()
+                .map(group -> {
+                    StringBuilder string = new StringBuilder();
+                    for (String email : group.userEmails) {
+                        User user = userRepository.getUserBlocking(email);
+                        String name = user.firstName + " " + user.lastName;
+                        string.append(name).append(", ");
+                    }
+                    // Get rid of trailing space and comma
+                    return group.name + " (" + string.substring(0, string.length()-2) + ")";
+                })
+                .collect(Collectors.toList());
     }
 
     public void insertUser(User user) {
@@ -52,5 +72,6 @@ public class ContactsViewModel extends AndroidViewModel {
                 .collect(Collectors.toList());
 
         groupRepository.insert(groupName, userEmails);
+
     }
 }

@@ -24,6 +24,7 @@ import com.splitwisr.data.users.User;
 import com.splitwisr.databinding.ContactsFragmentBinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ContactsFragment extends Fragment {
     private ContactsFragmentBinding binding;
@@ -71,6 +72,14 @@ public class ContactsFragment extends Fragment {
                             @Override
                             public void onSelected(ArrayList<Integer> selectedIds, ArrayList<String> selectedNames, String dataString) {
                                 viewModel.insertGroup(newGroupName, selectedIds);
+
+                                // Hacky fix to deal with the fact that groups aren't LiveData and need to be updated manually
+                                StringBuilder string = new StringBuilder();
+                                for (String name : selectedNames) {
+                                    string.append(name).append(", ");
+                                }
+                                String groupEntry = newGroupName + " (" + string.substring(0, string.length() - 2) + ")";
+                                usersAdapter.addData(Collections.singletonList(groupEntry));
                             }
 
                             @Override
@@ -78,6 +87,7 @@ public class ContactsFragment extends Fragment {
                                 Log.d("ContactsFragment","Dialog cancelled");
                             }
                         });
+
                 multiSelectDialog.show(getParentFragmentManager(), "multiSelectDialog");
                 hideKeyboard(view);
                 binding.groupName.setText("");
@@ -87,7 +97,6 @@ public class ContactsFragment extends Fragment {
         binding.importContactsFab.setOnClickListener(v->{
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.destination_import_contacts);
-
         });
 
         return view;
@@ -101,9 +110,10 @@ public class ContactsFragment extends Fragment {
         viewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
             if (users != null && users.size() > 1) {
                 usersAdapter.setData(users);
+                usersAdapter.addData(viewModel.getAllGroups());
             }
-            binding.emptyStateImage.setVisibility(
-                    (users == null || users.size() == 1) ? View.VISIBLE : View.GONE);
+
+            binding.emptyStateImage.setVisibility((users == null || users.size() == 1) ? View.VISIBLE : View.GONE);
         });
     }
 

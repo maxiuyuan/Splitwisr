@@ -2,8 +2,8 @@ package com.splitwisr.data.groups;
 
 import androidx.room.TypeConverter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class GroupUsersConverters {
@@ -18,8 +18,6 @@ public class GroupUsersConverters {
 
     @TypeConverter
     public static List<String> toUserEmailsList(String concatenatedEmails) {
-        List<String> emails = Collections.emptyList();
-        emails.addAll(Arrays.asList(concatenatedEmails.split(",")));
-        return emails;
+        return new ArrayList<>(Arrays.asList(concatenatedEmails.split(",")));
     }
 }
