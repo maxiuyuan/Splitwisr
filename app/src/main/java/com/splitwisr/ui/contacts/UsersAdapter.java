@@ -9,13 +9,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.splitwisr.R;
-import com.splitwisr.data.users.User;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
-    private List<User> users = Collections.emptyList();
+    private List<String> users = new ArrayList<>();
 
     public static class UserViewHolder extends RecyclerView.ViewHolder {
         public ConstraintLayout userView;
@@ -36,12 +35,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        User user = users.get(position);
+        String userName = users.get(position);
         TextView nameText = holder.userView.findViewById(R.id.name_text);
-        String name = ((user.firstName == null)?"":user.firstName)
-                + " "
-                + ((user.lastName == null)? "": user.lastName);
-        nameText.setText(name);
+        nameText.setText(userName);
     }
 
     @Override
@@ -49,8 +45,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         return users.size();
     }
 
-    public void setData(@NonNull List<User> newUsers) {
+    public void setData(@NonNull List<String> newUsers) {
         users = newUsers;
+        notifyDataSetChanged();
+    }
+
+    public void addData(@NonNull List<String> newGroups) {
+        users.addAll(newGroups);
         notifyDataSetChanged();
     }
 }
