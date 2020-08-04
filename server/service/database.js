@@ -42,7 +42,7 @@ function update(id_A, id_B, blnc, res, db) {
                 }
             }
 
-            if(blnc === "0" || blnc === 0) { // TODO: dirty fix to filter remove zero balance bug sent from client side
+            if(blnc === "0" || blnc === "0.0" || blnc === 0 || blnc === 0.0) { // TODO: dirty fix to filter remove zero balance bug sent from client side
                 // just remove the old balance
                 db.ref("Receipt").child(keyPrev).remove();
             } else {     
@@ -52,30 +52,30 @@ function update(id_A, id_B, blnc, res, db) {
                 } else {
                     db.ref("Receipt").push(entry);
                 }   
-            }
-        
-            // balance update notification
-            let token = snapshot.val().Token;
-            for(let temp in token) {
-                let curr = token[temp];
-                if(curr["user"] === id_A) {
-                    target_device_A = curr["device"];
-                } else if(curr["user"] === id_B) {
-                    target_device_B = curr["device"];
+
+                // balance update notification
+                let token = snapshot.val().Token;
+                for(let temp in token) {
+                    let curr = token[temp];
+                    if(curr["user"] === id_A) {
+                        target_device_A = curr["device"];
+                    } else if(curr["user"] === id_B) {
+                        target_device_B = curr["device"];
+                    }
                 }
-            }
-        
-            // TODO: dirty fix to reverse the payer and payee bug from client side
-            let message = (blnc > 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
-            if(target_device_A != "") {
-                external.sendAndroid(target_device_A, message);
-            } else {
-                external.sendEMail(id_A, message);
-            }
-            if(target_device_B != "") {
-                external.sendAndroid(target_device_B, message);
-            } else {
-                external.sendEMail(id_B, message);
+            
+                // TODO: dirty fix to reverse the payer and payee bug from client side
+                let message = (blnc > 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
+                if(target_device_A != "") {
+                    external.sendAndroid(target_device_A, message);
+                } else {
+                    external.sendEMail(id_A, message);
+                }
+                if(target_device_B != "") {
+                    external.sendAndroid(target_device_B, message);
+                } else {
+                    external.sendEMail(id_B, message);
+                }
             }
         
             res.status(200).send("Balance Updated for " + id_A + " and " + id_B);
