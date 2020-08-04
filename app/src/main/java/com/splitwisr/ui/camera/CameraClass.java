@@ -147,7 +147,6 @@ public class CameraClass {
             String[] strs = line.split("\\$");
             // Split the line into the name and the price
             if (strs.length == 2) {
-                boolean decimal = false;
                 itemNames.add(strs[0]);
                 StringBuilder cost = new StringBuilder();
                 for (int x = 0; x < strs[1].length(); x++) {
