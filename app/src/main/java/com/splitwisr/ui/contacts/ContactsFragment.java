@@ -74,11 +74,8 @@ public class ContactsFragment extends Fragment {
                                 viewModel.insertGroup(newGroupName, selectedIds);
 
                                 // Hacky fix to deal with the fact that groups aren't LiveData and need to be updated manually
-                                StringBuilder string = new StringBuilder();
-                                for (String name : selectedNames) {
-                                    string.append(name).append(", ");
-                                }
-                                String groupEntry = newGroupName + " (" + string.substring(0, string.length() - 2) + ")";
+                                String names = String.join(", ", selectedNames);
+                                String groupEntry = newGroupName + " (" + names + ")";
                                 usersAdapter.addData(Collections.singletonList(groupEntry));
                             }
 
