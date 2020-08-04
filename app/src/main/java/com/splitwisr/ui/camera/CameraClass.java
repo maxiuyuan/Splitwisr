@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import android.content.Context;
 import android.graphics.Point;
 import android.net.Uri;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -67,8 +68,9 @@ public class CameraClass {
         itemCosts = new ArrayList<>();
 
         if (textBlockList.isEmpty()) {
-         //   Toast.makeText(CameraActivity.this, "No text was detected", Toast.LENGTH_SHORT);
+            Toast.makeText(r.getActivity(), "No text was detected", Toast.LENGTH_SHORT).show();
         }
+
         else {
 
             // intermediate list to sort lines by coordinate
@@ -145,19 +147,14 @@ public class CameraClass {
             String[] strs = line.split("\\$");
             // Split the line into the name and the price
             if (strs.length == 2) {
-                int state = 0;
+                boolean decimal = false;
                 itemNames.add(strs[0]);
                 StringBuilder cost = new StringBuilder();
                 for (int x = 0; x < strs[1].length(); x++) {
                     char c = strs[1].charAt(x);
                     if (c == ' ') break;
-                    if (state == 0) {
-                        if (c == 'O' || c == 'o') c = 0;
-                        cost.append(c);
-                        if (c == '.') state = 1;
-                    } else if (state == 1) {
-                        cost.append(c);
-                    }
+                    if (c == 'O' || c == 'o') c = '0';
+                    cost.append(c);
                 }
                 itemCosts.add(Double.parseDouble(cost.toString()));
             }

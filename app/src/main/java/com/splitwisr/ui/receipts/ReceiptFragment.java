@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,7 +143,7 @@ public class ReceiptFragment extends Fragment {
             try {
                 receiptsViewModel.outFile.createNewFile();
             } catch (Exception e) {
-                System.out.println("Exception thrown cant create file" + e.getMessage());
+                Log.e("ReceiptFragment", "Exception thrown cant create file" + e.getMessage());
             }
         }
 
@@ -173,7 +174,7 @@ public class ReceiptFragment extends Fragment {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
             receiptsViewModel.cameraClass.detectTextFromReceipt(this.getContext(), Uri.fromFile(receiptsViewModel.outFile), this);
         } else {
-            System.out.println("Problem while taking image");
+            Log.e("ReceiptFragment", "Problem while taking image");
         }
     }
 
