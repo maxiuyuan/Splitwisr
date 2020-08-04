@@ -32,8 +32,7 @@ function update(id_A, id_B, blnc, res, db) {
                 payee : id_B,
                 balance : blnc
             }
-        
-            // add or update balance
+          
             let receipt = snapshot.val().Receipt;
             for(let temp in receipt) {
                 let curr = receipt[temp];
@@ -42,10 +41,17 @@ function update(id_A, id_B, blnc, res, db) {
                     break;
                 }
             }
-            if(keyPrev != "") {
-                db.ref("Receipt").child(keyPrev).set(entry);
-            } else {
-                db.ref("Receipt").push(entry);
+
+            if(blnc === "0" || blnc === 0) { // TODO: dirty fix to filter remove zero balance bug sent from client side
+                // just remove the old balance
+                db.ref("Receipt").child(keyPrev).remove();
+            } else {     
+                // add or update balance
+                if(keyPrev != "") {
+                    db.ref("Receipt").child(keyPrev).set(entry);
+                } else {
+                    db.ref("Receipt").push(entry);
+                }   
             }
         
             // balance update notification
@@ -59,7 +65,8 @@ function update(id_A, id_B, blnc, res, db) {
                 }
             }
         
-            let message = (blnc < 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
+            // TODO: dirty fix to reverse the payer and payee bug from client side
+            let message = (blnc > 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
             if(target_device_A != "") {
                 external.sendAndroid(target_device_A, message);
             } else {
