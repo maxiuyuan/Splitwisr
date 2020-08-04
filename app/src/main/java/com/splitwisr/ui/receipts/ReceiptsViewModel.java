@@ -41,7 +41,8 @@ public class ReceiptsViewModel extends AndroidViewModel {
         super(application);
         userRepository = new UserRepository(application);
         balanceRepository = new BalanceRepository(application, getCurrentUserEmail());
-        updateUserList();
+        groupRepository = new GroupRepository(application);
+        updatePersonsList();
     }
 
     public void addReceiptItem(Double itemCost, String itemName) {
@@ -156,7 +157,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
 
             while (divider > 0){
                 String payer = getCurrentUserEmail();
-                String split_payee = payee_emails[divider];
+                String split_payee = payee_emails[divider-1];
                 double amount = round(remainingBill / divider);
                 divider--;
 
@@ -198,7 +199,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
     }
 
     public void reset() {
-        updateUserList();
+        updatePersonsList();
         receiptItems.clear();
     }
     // This stays
