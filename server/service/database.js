@@ -65,7 +65,7 @@ function update(id_A, id_B, blnc, res, db) {
                 }
             
                 // TODO: dirty fix to reverse the payer and payee bug from client side
-                let message = (blnc > 0) ? "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc)) : "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc;
+                let message = (blnc > 0) ? "Balance updated: "+id_A+" needs to pay "+id_B+" $"+blnc : "Balance updated: "+id_B+" needs to pay "+id_A+" $"+(-1*parseInt(blnc));
                 if(target_device_A != "") {
                     external.sendAndroid(target_device_A, message);
                 } else {
