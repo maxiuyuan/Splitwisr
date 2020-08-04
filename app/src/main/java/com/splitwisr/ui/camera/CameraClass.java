@@ -122,8 +122,10 @@ public class CameraClass {
             // build each line and append to receiptItems
             StringBuilder curLine = new StringBuilder();
             int prevY = 0;
+            int prevX = 0;
             for (FirebaseVisionText.Line line: receiptLines) {
                 int curY = line.getCornerPoints()[0].y;
+
                 int acceptableError = (int) (lineHeight * 0.5);
 
                 // if we see a new line, add prev line and clear string builder
@@ -131,19 +133,29 @@ public class CameraClass {
                     String prevLine = curLine.toString();
                     curLine.setLength(0);
                     curLine.append(line.getText());
-                    addLineToReceiptItems(prevLine);
+                    addLineToReceiptItems(prevLine, prevX, rightBound);
                 }
                 else {
                     curLine.append(" ").append(line.getText());
                 }
                 prevY = curY;
+                prevX = line.getCornerPoints()[1].x;
             }
 
         }
     }
 
-    private void addLineToReceiptItems(String line) {
-        if (line.matches("(.*)\\$([0-9Oo]*[.])?[0-9Oo]*+[ .*]?")) {
+    private void addLineToReceiptItems(String line, int rightX, int rightBound) {
+        // ideally most receipt items we want will have the item name aligned
+        //    to the left column and price to the right column. We want to filter
+        //    lines that end earlier than the right column
+        //    e.g. "YOU SAVED $1.99" and "0.8 kg @ $4.50/kg" are usually aligned
+        //          in the left column and will be filtered by this, which we want
+        double horizontalTolerance = 0.7;
+        if (rightX < rightBound * horizontalTolerance)
+            return;
+
+        if (line.matches("(.*)\\$([0-9Oo]*[.])?[0-9Oo]+[ ]*.*")) {
             String[] strs = line.split("\\$");
             // Split the line into the name and the price
             if (strs.length == 2) {
