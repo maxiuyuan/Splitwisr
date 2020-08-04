@@ -46,18 +46,13 @@ public class BalanceRepository {
     }
 
     public void insert(Balance balance) {
-        StringBuilder email_a = new StringBuilder();
-        StringBuilder email_b = new StringBuilder();
-
         if (!(balance.aEmail.compareTo(balance.bEmail) < 0)) {
             String t = balance.aEmail;
             balance.aEmail = balance.bEmail;
             balance.bEmail = t;
         }
 
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            balanceDao.insertAll(balance);
-        });
+        AppDatabase.databaseWriteExecutor.execute(() -> balanceDao.insertAll(balance));
         sendBalance(balance.aEmail, balance.bEmail, balance.totalOwing);
     }
 
@@ -71,6 +66,7 @@ public class BalanceRepository {
         } else {
             email_a.append(bEmail);
             email_b.append(aEmail);
+            // TODO: shouldn't the value of totalOwing be flipped to negative here? - Joey
         }
         AppDatabase.databaseWriteExecutor.execute(() -> {
             balanceDao.upsert(totalOwing, email_a.toString(), email_b.toString());
