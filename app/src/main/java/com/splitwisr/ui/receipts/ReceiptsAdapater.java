@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.card.MaterialCardView;
 import com.splitwisr.R;
+import com.splitwisr.data.persons.Persons;
 import com.splitwisr.data.users.User;
 import com.splitwisr.ui.receipts.ReceiptsViewObject;
 
@@ -64,8 +65,8 @@ public class ReceiptsAdapater extends RecyclerView.Adapter<ReceiptsAdapater.Rece
 
         StringBuilder splitWithSB = new StringBuilder();
         if (receiptsViewObject.splitWith != null){
-            for (User user : receiptsViewObject.splitWith){
-                splitWithSB.append(user.firstName.concat(", "));
+            for (Persons person : receiptsViewObject.splitWith){
+                splitWithSB.append(person.getShortName().concat(", "));
             }
             splitWith.setText(splitWithSB.toString());
         }

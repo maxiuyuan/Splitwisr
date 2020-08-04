@@ -65,7 +65,7 @@ public class ReceiptFragment extends Fragment {
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
         receiptsViewModel = new ViewModelProvider(requireActivity()).get(ReceiptsViewModel.class);
         if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.BASE_STATE) {
-            receiptsViewModel.updateUserList();
+            receiptsViewModel.updatePersonsList();
         }
 
         View view = binding.getRoot();
@@ -114,7 +114,7 @@ public class ReceiptFragment extends Fragment {
                 },
                 i -> splitUsersDialog(
                         (ids, selectedNames, dataString)-> {
-                            receiptsViewModel.addUserToReceipt(i, ids);
+                            receiptsViewModel.addPersonToReceipt(i, ids);
                             receiptsAdapater.setData(receiptsViewModel.getReceipts());
                         },
                         ()->{})
@@ -202,7 +202,7 @@ public class ReceiptFragment extends Fragment {
         if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.BASE_STATE) {
             splitUsersDialog(
                     (ids, selectedNames, dataString) -> {
-                        receiptsViewModel.updateSelectedUsers(ids);
+                        receiptsViewModel.updateSelectedPersons(ids);
                     },
                     this::navigateToBalancesFragment);
         } else {
@@ -244,9 +244,9 @@ public class ReceiptFragment extends Fragment {
             MultiSelectModelOnSelected onSelected,
             MultiSelectModelOnCancel onCancel ){
 
-        List<MultiSelectModel> modelList = receiptsViewModel.getModelList(receiptsViewModel.getUserNames());
+        List<MultiSelectModel> modelList = receiptsViewModel.getModelList(receiptsViewModel.getNames());
         MultiSelectDialog multiSelectDialog = new MultiSelectDialog()
-                .title("Select Users")
+                .title("Select Users/Groups")
                 .titleSize(25)
                 .positiveText("Done")
                 .negativeText("Cancel")
