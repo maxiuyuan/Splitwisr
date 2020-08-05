@@ -191,7 +191,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
                     balanceAdjustments.put(split_payee, 0d);
                 }
 
-                balanceAdjustments.put(split_payee, balanceAdjustments.get(split_payee) + amount);
+                balanceAdjustments.put(split_payee, addDoubles(balanceAdjustments.get(split_payee), amount));
             }
         }
 
