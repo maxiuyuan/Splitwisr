@@ -65,8 +65,9 @@ public class ReceiptsAdapater extends RecyclerView.Adapter<ReceiptsAdapater.Rece
 
         StringBuilder splitWithSB = new StringBuilder();
         if (receiptsViewObject.splitWith != null){
-            for (Persons person : receiptsViewObject.splitWith){
-                splitWithSB.append(person.getShortName().concat(", "));
+            for (int x = 0; x < receiptsViewObject.splitWith.size(); x++){
+                String s = x < receiptsViewObject.splitWith.size()-1 ? receiptsViewObject.splitWith.get(x).getShortName().concat(", ") : receiptsViewObject.splitWith.get(x).getShortName();
+                splitWithSB.append(s);
             }
             splitWith.setText(splitWithSB.toString());
         }
