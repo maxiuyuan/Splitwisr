@@ -2,6 +2,7 @@ package com.splitwisr;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,12 +21,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.splitwisr.data.MessagingService;
+import com.splitwisr.data.users.User;
+import com.splitwisr.ui.receipts.ReceiptsViewObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth mAuth;
     NavController navController;
     private boolean showLogout;
+    public enum ReceiptStates{BASE_STATE, RETURNING_FROM_CAMERA, RETURNING_FROM_MAIN, RETURNED_PAST_PAUSE, RETURNED_PAST_VIEW};
+    public ReceiptStates receiptState = ReceiptStates.BASE_STATE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,27 +59,36 @@ public class MainActivity extends AppCompatActivity {
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
-                showLogout = true;
-                invalidateOptionsMenu();
+                if (receiptState != ReceiptStates.BASE_STATE) {
+                    receiptState = ReceiptStates.RETURNING_FROM_MAIN;
+                    NavHostFragment
+                            .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
+                            .navigate(R.id.action_global_destination_receipt_fragment);
+                } else {
+                    showLogout = true;
+                    invalidateOptionsMenu();
 
-                findViewById(R.id.bottom_navigation).setVisibility(View.VISIBLE);
+                    findViewById(R.id.bottom_navigation).setVisibility(View.VISIBLE);
 
-                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.e("Firebase", "getInstanceId failed", task.getException());
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+                        if (!task.isSuccessful()) {
+                            Log.e("Firebase", "getInstanceId failed", task.getException());
+                        }
+
+                        String token = task.getResult().getToken();
+                        Log.d("Firebase", "token: " + token);
+                        (new MessagingService()).onNewToken(token);
+                    });
+
+
+                    while (NavHostFragment
+                            .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
+                            .popBackStack()) {
                     }
-
-                    String token = task.getResult().getToken();
-                    Log.d("Firebase", "token: " + token);
-                    (new MessagingService()).onNewToken(token);
-                });
-
-                while (NavHostFragment
-                        .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
-                        .popBackStack()){ }
-                NavHostFragment
-                        .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
-                        .navigate(R.id.action_global_destination_balance_fragment);
+                    NavHostFragment
+                            .findNavController(getSupportFragmentManager().getPrimaryNavigationFragment())
+                            .navigate(R.id.action_global_destination_balance_fragment);
+                }
             } else {
                 // User is signed out
                 showLogout = false;
@@ -130,5 +147,10 @@ public class MainActivity extends AppCompatActivity {
             invalidateOptionsMenu();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

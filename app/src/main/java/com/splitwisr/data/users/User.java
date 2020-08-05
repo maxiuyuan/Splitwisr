@@ -5,8 +5,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.splitwisr.data.persons.Persons;
+
 @Entity
-public class User {
+public class User extends Persons {
     @PrimaryKey
     @NonNull
     public String email;
@@ -25,5 +27,13 @@ public class User {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public String getName() {
+        return firstName + " " + lastName;
+    }
+
+    public String getShortName() {
+        return firstName;
     }
 }

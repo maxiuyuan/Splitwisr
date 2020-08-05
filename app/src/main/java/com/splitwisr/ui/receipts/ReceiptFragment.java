@@ -1,9 +1,19 @@
 package com.splitwisr.ui.receipts;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.fonts.SystemFonts;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -17,17 +27,35 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.abdeveloper.library.MultiSelectDialog;
 import com.abdeveloper.library.MultiSelectModel;
+import com.splitwisr.MainActivity;
 import com.splitwisr.R;
 import com.splitwisr.databinding.ReceiptFragmentBinding;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+class ReceiptUpdateThread implements Runnable {
+    @Override
+    public void run() {
+        ReceiptFragment.receiptsAdapater.notifyDataSetChanged();
+    }
+}
 
 public class ReceiptFragment extends Fragment {
 
     private ReceiptsViewModel receiptsViewModel;
     private ReceiptFragmentBinding binding;
-    private ReceiptsAdapater receiptsAdapater;
+    static ReceiptsAdapater receiptsAdapater;
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
 
     @Nullable
     @Override
@@ -36,7 +64,9 @@ public class ReceiptFragment extends Fragment {
 
         binding = ReceiptFragmentBinding.inflate(inflater, container, false);
         receiptsViewModel = new ViewModelProvider(requireActivity()).get(ReceiptsViewModel.class);
-        receiptsViewModel.updateUserList();
+        if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.BASE_STATE) {
+            receiptsViewModel.updatePersonsList();
+        }
 
         View view = binding.getRoot();
 
@@ -45,7 +75,7 @@ public class ReceiptFragment extends Fragment {
                     || binding.itemNameText.getText().toString().isEmpty()) {
                 return;
             }
-            double itemCost = Double.parseDouble(binding.itemCostText.getText().toString());
+            double itemCost = receiptsViewModel.round(Double.parseDouble(binding.itemCostText.getText().toString()));
             if (itemCost <= 0d){
                 return;
             }
@@ -65,6 +95,16 @@ public class ReceiptFragment extends Fragment {
             }
         });
 
+        // Button to take picture
+        binding.cameraButton.setOnClickListener(v -> {
+            Long tsLong = System.currentTimeMillis()/1000;
+            String ts = tsLong.toString() + ".jpg";
+            // Inform the main activity we are returning from camera so nav back to receipt frag
+            ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.RETURNING_FROM_CAMERA;
+            System.out.println("RETURNING FROM CAMERA ================");
+            dispatchTakePictureIntent();
+        });
+
         receiptsAdapater = new ReceiptsAdapater(
                 i-> {
                     receiptsViewModel.removeReceiptItem(i);
@@ -74,7 +114,7 @@ public class ReceiptFragment extends Fragment {
                 },
                 i -> splitUsersDialog(
                         (ids, selectedNames, dataString)-> {
-                            receiptsViewModel.addUserToReceipt(i, ids);
+                            receiptsViewModel.addPersonToReceipt(i, ids);
                             receiptsAdapater.setData(receiptsViewModel.getReceipts());
                         },
                         ()->{})
@@ -88,32 +128,125 @@ public class ReceiptFragment extends Fragment {
         return view;
     }
 
+    private void dispatchTakePictureIntent() {
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        Long tsLong = System.currentTimeMillis()/1000;
+        String ts = tsLong.toString() + ".jpg";
+
+        receiptsViewModel.outFile = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), ts + ".jpg");
+
+        if (!receiptsViewModel.outFile.exists()) {
+            try {
+                receiptsViewModel.outFile.createNewFile();
+            } catch (Exception e) {
+                Log.e("ReceiptFragment", "Exception thrown cant create file" + e.getMessage());
+            }
+        }
+
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(receiptsViewModel.outFile));
+
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            this.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    public void addScannedItems() {
+        List<String> newItemNames = receiptsViewModel.cameraClass.getItemNames();
+        List<Double> newItemCosts = receiptsViewModel.cameraClass.getItemCosts();
+        if (newItemNames != null && newItemCosts != null) {
+            for (int x = 0; x < newItemNames.size(); x++) {
+                System.out.println("adding " + newItemNames.get(x) + " " + newItemNames.get(x));
+                receiptsViewModel.addReceiptItem(ReceiptsViewModel.round(newItemCosts.get(x)), newItemNames.get(x));
+            }
+            // This call fails silently for some dumbass reason
+            receiptsAdapater.setData(receiptsViewModel.getReceipts());
+            getActivity().runOnUiThread(new ReceiptUpdateThread());
+        }
+        // delete stored image as we no longer need it
+        deleteImageUri();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
+            receiptsViewModel.cameraClass.detectTextFromReceipt(this.getContext(), Uri.fromFile(receiptsViewModel.outFile), this);
+        } else {
+            Log.e("ReceiptFragment", "Problem while taking image");
+        }
+    }
+
+
+    private void deleteImageUri() {
+        if (receiptsViewModel.outFile.exists()) {
+            if (receiptsViewModel.outFile.delete()) {
+                System.out.println("file Deleted :" + receiptsViewModel.outFile.toString());
+            } else {
+                System.out.println("file not Deleted :" + receiptsViewModel.outFile.toString());
+            }
+        }
+    }
+
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.emptyStateImage.setVisibility(
                 (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
         receiptsAdapater.setData(receiptsViewModel.getReceipts());
-        splitUsersDialog(
-                (ids, selectedNames, dataString)->{
-                    receiptsViewModel.updateSelectedUsers(ids);
-                },
-                this::navigateToBalancesFragment);
+        if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.BASE_STATE) {
+            splitUsersDialog(
+                    (ids, selectedNames, dataString) -> {
+                        receiptsViewModel.updateSelectedPersons(ids);
+                    },
+                    this::navigateToBalancesFragment);
+        } else {
+            System.out.println("VIEW NOT BASE STATE ================");
+            if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNING_FROM_CAMERA) {
+                ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.RETURNING_FROM_MAIN;
+                System.out.println("VIEW RETURNING FROM CAMERA");
+            } else if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNING_FROM_MAIN) {
+                ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.RETURNED_PAST_VIEW;
+                System.out.println("VIEW RETURNING FROM MAIN");
+            } else if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNED_PAST_PAUSE) {
+                ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.BASE_STATE;
+                System.out.println("VIEW PAST PAUSE");
+            }
+           // System.out.println("SAVED STATE: " + receiptsViewModel.users.size() + " " + receiptsViewModel.receiptItems.size());
+        }
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        receiptsViewModel.reset();
+    public void onStart() {
+        super.onStart();
+        receiptsAdapater.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.BASE_STATE) {
+            System.out.println("RESETTING");
+            receiptsViewModel.reset();
+        } else if (((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNING_FROM_MAIN) {
+            ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.RETURNED_PAST_PAUSE;
+        } else if (((((MainActivity)getActivity()).receiptState == MainActivity.ReceiptStates.RETURNED_PAST_VIEW))) {
+            ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.BASE_STATE;
+        }
     }
 
     private void splitUsersDialog(
             MultiSelectModelOnSelected onSelected,
             MultiSelectModelOnCancel onCancel ){
 
-        List<MultiSelectModel> modelList = receiptsViewModel.getModelList(receiptsViewModel.getUserNames());
+        List<MultiSelectModel> modelList = receiptsViewModel.getModelList(receiptsViewModel.getNames());
         MultiSelectDialog multiSelectDialog = new MultiSelectDialog()
-                .title("Select Users")
+                .title("Select Users/Groups")
                 .titleSize(25)
                 .positiveText("Done")
                 .negativeText("Cancel")
