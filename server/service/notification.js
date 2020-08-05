@@ -55,7 +55,7 @@ function notify(current_user, target_user, res, db) {
             }
         }
     
-        let message = current_user+" reminds you that you owe $"+owing;
+        let message = current_user+" reminds you that you owe $"+(-1*owing); // TODO: consequence of the dirty fix from client side bug
         if(target_device != "") {
             external.sendAndroid(target_device, message); // push notification for registered device
         } else {

@@ -41,12 +41,8 @@ function update(id_A, id_B, blnc, res, db) {
                     break;
                 }
             }
-
-            // if(blnc === "0" || blnc === "0.0" || blnc === 0 || blnc === 0.0) { // TODO: dirty fix to filter remove zero balance bug sent from client side
-            //     // just remove the old balance
-            //     db.ref("Receipt").child(keyPrev).remove();
-            // } else {     
-                // add or update balance
+ 
+            // add or update balance
             if(keyPrev != "") {
                 db.ref("Receipt").child(keyPrev).set(entry);
             } else {
@@ -69,7 +65,7 @@ function update(id_A, id_B, blnc, res, db) {
             if(blnc === "0" || blnc === "0.0" || blnc === 0 || blnc === 0.0) { 
                 message = "Balance settled for "+id_A+" & "+id_B; 
             } else {
-                message = (parseInt(blnc) > 0) ? id_B+" needs to pay "+id_A+" $"+blnc : id_A+" needs to pay "+id_B+" $"+(-1*parseInt(blnc));
+                message = (parseFloat(blnc) > 0) ? id_B+" needs to pay "+id_A+" $"+blnc : id_A+" needs to pay "+id_B+" $"+(-1*parseFloat(blnc));
             }
             if(target_device_A != "") {
                 external.sendAndroid(target_device_A, message);
