@@ -3,7 +3,7 @@ const mailer    = require("nodemailer");
 
 // deliver GCM notification (registered users)
 function sendAndroid(target_device, plaintext) {
-    let message = {notification : {title : plaintext}, token: target_device};
+    let message = {notification : {title: "Balance Updated", body : plaintext}, token: target_device};
     
     admin.messaging().send(message)
     .then((response) => {
