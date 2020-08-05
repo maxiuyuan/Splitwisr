@@ -109,7 +109,9 @@ public class BalanceFragment extends Fragment implements PopupMenu.OnMenuItemCli
     }
 
     void removeRefresh() {
-        binding.refreshView.setRefreshing(false);
+        if (binding != null) {
+            binding.refreshView.setRefreshing(false);
+        }
     }
 
     @Override
