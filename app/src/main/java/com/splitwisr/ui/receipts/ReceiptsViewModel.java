@@ -18,6 +18,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -130,6 +131,9 @@ public class ReceiptsViewModel extends AndroidViewModel {
             return false;
         }
 
+        HashMap<String, Double> balanceAdjustments = new HashMap<>();
+        String payer = getCurrentUserEmail();
+
         for (ReceiptsViewObject receiptsViewObject: receiptItems){
             // If empty split with everyone
             if (receiptsViewObject.splitWith == null
@@ -155,9 +159,26 @@ public class ReceiptsViewModel extends AndroidViewModel {
 
 
             while (divider > 0){
-                String payer = getCurrentUserEmail();
                 String split_payee = payee_emails[divider-1];
+
+                if(!balanceAdjustments.containsKey(split_payee)) {
+                    balanceAdjustments.put(split_payee, 0d);
+                }
+
                 double amount = round(remainingBill / divider);
+                // Ensure only two decimal places
+                String double_string = Double.toString(amount);
+                String[] split = double_string.split("\\.");
+
+                if (split.length == 2 && split[1].length() > 2) {
+                    StringBuilder new_double = new StringBuilder(split[0] + ".");
+                    for (int x = 0; x < 2; x++) {
+                        new_double.append(split[1].charAt(x));
+                    }
+                    amount = Double.parseDouble(new_double.toString());
+                }
+
+
                 divider--;
 
                 remainingBill -= amount;
@@ -170,7 +191,12 @@ public class ReceiptsViewModel extends AndroidViewModel {
                     amount = -amount;
                 }
 
+                balanceAdjustments.put(split_payee, balanceAdjustments.get(split_payee) + amount);
+            }
+
+            for (String split_payee : balanceAdjustments.keySet()) {
                 Balance oldBalance = balanceRepository.get(payer, split_payee);
+                Double amount = balanceAdjustments.get(split_payee);
 
                 double totalBalance = oldBalance == null ? amount : amount + oldBalance.totalOwing;
                 balanceRepository.upsert(totalBalance, payer, split_payee);
