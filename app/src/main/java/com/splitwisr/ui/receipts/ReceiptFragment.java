@@ -162,7 +162,6 @@ public class ReceiptFragment extends Fragment {
                 System.out.println("adding " + newItemNames.get(x) + " " + newItemNames.get(x));
                 receiptsViewModel.addReceiptItem(ReceiptsViewModel.round(newItemCosts.get(x)), newItemNames.get(x));
             }
-            // This call fails silently for some dumbass reason
             receiptsAdapater.setData(receiptsViewModel.getReceipts());
             getActivity().runOnUiThread(new ReceiptUpdateThread());
         }
@@ -217,7 +216,6 @@ public class ReceiptFragment extends Fragment {
                 ((MainActivity)getActivity()).receiptState = MainActivity.ReceiptStates.BASE_STATE;
                 System.out.println("VIEW PAST PAUSE");
             }
-           // System.out.println("SAVED STATE: " + receiptsViewModel.users.size() + " " + receiptsViewModel.receiptItems.size());
         }
     }
 
