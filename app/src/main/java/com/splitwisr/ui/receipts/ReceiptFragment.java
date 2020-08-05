@@ -30,13 +30,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
+class ReceiptUpdateThread implements Runnable {
+    @Override
+    public void run() {
+        ReceiptFragment.receiptsAdapater.notifyDataSetChanged();
+        ReceiptFragment.binding.emptyStateImage.setVisibility(
+                (ReceiptFragment.receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
+    }
+}
 
 public class ReceiptFragment extends Fragment {
 
-    private ReceiptsViewModel receiptsViewModel;
-    private ReceiptFragmentBinding binding;
-    private ReceiptsAdapater receiptsAdapater;
+    static ReceiptsViewModel receiptsViewModel;
+    static ReceiptFragmentBinding binding;
+    static ReceiptsAdapater receiptsAdapater;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -276,13 +283,6 @@ public class ReceiptFragment extends Fragment {
             }
         }
     }
-    class ReceiptUpdateThread implements Runnable {
-        @Override
-        public void run() {
-            receiptsAdapater.notifyDataSetChanged();
-            binding.emptyStateImage.setVisibility(
-                    (receiptsViewModel.getReceipts().isEmpty())? View.VISIBLE : View.GONE);
-        }
-    }
+
 }
 
