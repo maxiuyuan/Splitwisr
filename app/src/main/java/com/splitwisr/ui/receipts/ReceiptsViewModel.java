@@ -162,6 +162,7 @@ public class ReceiptsViewModel extends AndroidViewModel {
                 String split_payee = payee_emails[divider-1];
 
                 double amount = round(remainingBill / divider);
+
                 // Ensure only two decimal places
                 String double_string = Double.toString(amount);
                 String[] split = double_string.split("\\.");
@@ -173,7 +174,6 @@ public class ReceiptsViewModel extends AndroidViewModel {
                     }
                     amount = Double.parseDouble(new_double.toString());
                 }
-
 
                 divider--;
 
@@ -201,12 +201,10 @@ public class ReceiptsViewModel extends AndroidViewModel {
 
             System.out.println("AMOUTN: " + split_payee + " " + Double.toString(amount));
 
-            double totalBalance = oldBalance == null ? amount : amount + oldBalance.totalOwing;
+            double totalBalance = oldBalance == null ? amount : addDoubles(amount, oldBalance.totalOwing);
             balanceRepository.upsert(totalBalance, payer, split_payee);
             System.out.println("NEW BALANCE: " + Double.toString(balanceRepository.get(payer, split_payee).totalOwing));
         }
-
-       // userRepository.insertAll(users);
 
         return true;
 
@@ -238,4 +236,10 @@ public class ReceiptsViewModel extends AndroidViewModel {
         return bd.doubleValue();
     }
 
+    // Handles floating point errors
+    public static double addDoubles(double a, double b) {
+        BigDecimal bigA = new BigDecimal(a);
+        BigDecimal result = bigA.add(new BigDecimal(b));
+        return result.doubleValue();
+    }
 }
