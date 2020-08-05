@@ -161,10 +161,6 @@ public class ReceiptsViewModel extends AndroidViewModel {
             while (divider > 0){
                 String split_payee = payee_emails[divider-1];
 
-                if(!balanceAdjustments.containsKey(split_payee)) {
-                    balanceAdjustments.put(split_payee, 0d);
-                }
-
                 double amount = round(remainingBill / divider);
                 // Ensure only two decimal places
                 String double_string = Double.toString(amount);
@@ -191,18 +187,26 @@ public class ReceiptsViewModel extends AndroidViewModel {
                     amount = -amount;
                 }
 
+                if(!balanceAdjustments.containsKey(split_payee)) {
+                    balanceAdjustments.put(split_payee, 0d);
+                }
+
                 balanceAdjustments.put(split_payee, balanceAdjustments.get(split_payee) + amount);
             }
-
-            for (String split_payee : balanceAdjustments.keySet()) {
-                Balance oldBalance = balanceRepository.get(payer, split_payee);
-                Double amount = balanceAdjustments.get(split_payee);
-
-                double totalBalance = oldBalance == null ? amount : amount + oldBalance.totalOwing;
-                balanceRepository.upsert(totalBalance, payer, split_payee);
-            }
         }
-        userRepository.insertAll(users);
+
+        for (String split_payee : balanceAdjustments.keySet()) {
+            Balance oldBalance = balanceRepository.get(payer, split_payee);
+            Double amount = balanceAdjustments.get(split_payee);
+
+            System.out.println("AMOUTN: " + split_payee + " " + Double.toString(amount));
+
+            double totalBalance = oldBalance == null ? amount : amount + oldBalance.totalOwing;
+            balanceRepository.upsert(totalBalance, payer, split_payee);
+            System.out.println("NEW BALANCE: " + Double.toString(balanceRepository.get(payer, split_payee).totalOwing));
+        }
+
+       // userRepository.insertAll(users);
 
         return true;
 
