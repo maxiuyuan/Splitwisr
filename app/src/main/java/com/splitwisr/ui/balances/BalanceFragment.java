@@ -40,12 +40,7 @@ public class BalanceFragment extends Fragment implements PopupMenu.OnMenuItemCli
         View view = binding.getRoot();
         viewModel = ViewModelProviders.of(this).get(BalanceViewModel.class);
 
-        binding.refreshView.setOnRefreshListener(() -> {
-            viewModel.refreshBalances();
-            if (binding.refreshView.isRefreshing()) {
-                (new Handler()).postDelayed(this::removeRefresh, 1000);
-            }
-        });
+
 
         binding.filterButton.setOnClickListener(this::showFilterMenu);
 
@@ -78,6 +73,13 @@ public class BalanceFragment extends Fragment implements PopupMenu.OnMenuItemCli
         viewModel.getBalances().observe(getViewLifecycleOwner(), balanceViewObjects -> {
             balancesAdapter.setData(balanceViewObjects);
             binding.emptyStateImage.setVisibility(balanceViewObjects.isEmpty()? View.VISIBLE : View.GONE);
+        });
+
+        binding.refreshView.setOnRefreshListener(() -> {
+            viewModel.refreshBalances();
+            if (binding.refreshView.isRefreshing()) {
+                (new Handler()).postDelayed(this::removeRefresh, 1000);
+            }
         });
     }
 
